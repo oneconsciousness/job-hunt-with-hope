@@ -59,7 +59,7 @@ A **portfolio folder** at `career-graph/documents/portfolios/portfolio-<slug>-<d
 - **Selected experience** — 3 to 5 most relevant Experiences as cards, each with: title, company, dates, a 1-sentence framing, the strongest contribution (STAR with a metric), and the skills demonstrated.
 - **Selected projects** — same shape as experience, for portfolio-worthy projects outside formal employment.
 - **Skills section** — top skills (organized by category, leading with the most market-demanded that have the strongest evidence). Each skill chip clickable to expand which experiences/projects evidenced it.
-- **Education / Certifications** — short, factual.
+- **Education / Certifications** — short, factual. When an entry carries **honors or an achievement worth showing** that lives in the career file (a scholarship, award, distinction, notable thesis), render it as a **rich card** — see "Rich education & certification cards" below. Otherwise a basic `.edu-card`. Never invent honors; render only what's there.
 - **Contact** — email and LinkedIn, nothing more. Optional.
 - **Theme toggle** — sun/moon button in the top-right; switches light/dark, layout unchanged.
 - **Hidden résumé view** — `#resume-view`, invisible on screen, populated at generation time for the résumé print path (see "Resume view — substitution contract" below).
@@ -121,6 +121,46 @@ cat "$PLUGIN_ROOT/assets/templates/portfolio/data.js"  # carries the authoring c
 Copy `portfolio.css` and `portfolio.js` into the output folder **verbatim** — every substitution targets `index.html` and `data.js` only. Replace placeholders with content from the graph. **Do not deviate from the design tokens** in `$PLUGIN_ROOT/references/design-tokens.md` (loaded above).
 
 **Reuse shipped patterns — grep `portfolio.css` before you write any new CSS or markup.** Search for the pattern that already exists and reuse it: responsive grids (`grep -nE 'auto-fit|auto-fill|grid-template' portfolio.css`), card shells (`.item-card`, `.edu-card`), chips (`.skill-chip`), pills, hex KPIs. Because `portfolio.css` ships **verbatim** and custom CSS has nowhere clean to live, a hand-rolled rule — e.g. a fixed `grid-template-columns: 1fr 1fr` that never collapses on a phone — is a **bug, not a shortcut**. The shipped patterns are the only way to stay consistent and responsive: treat "reuse the existing pattern" as a required pre-flight, not a preference.
+
+### Rich education & certification cards
+
+A degree or certification with **honors or an achievement that's actually in the career file** earns a **rich card**; one without stays **basic**. Both ship in `portfolio.css` — choose per entry, and never invent content to fill a richer card.
+
+**Basic** (no achievements) — logo + credential + institution + dates, one row. This is the default; most certifications are basic:
+
+```html
+<div class="edu-card">
+  <img class="org-logo" src="https://www.google.com/s2/favicons?domain=<school-domain>&sz=128" width="44" height="44" alt="" onerror="this.outerHTML='<span class=&quot;org-fallback&quot;><initial></span>'">
+  <div class="info">
+    <div class="title-line"><credential></div>
+    <div class="sub-line"><institution></div>
+    <div class="date-line"><dates></div>
+  </div>
+</div>
+```
+
+**Rich** (has honors/achievements) — add `rich`, wrap the header in `.edu-head`, and add a `.edu-body` with achievement bullets. Optionally an `HONORS` pill in the `.title-row` and the skills the entry evidenced as `.skill-chip`s:
+
+```html
+<div class="edu-card rich">
+  <div class="edu-head">
+    <img class="org-logo" src="…" width="44" height="44" alt="" onerror="…">
+    <div class="info">
+      <div class="title-row"><span class="title-line"><credential></span><span class="status-pill honors">Honors</span></div>
+      <div class="sub-line"><institution></div>
+      <div class="date-line"><dates></div>
+    </div>
+  </div>
+  <div class="edu-body">
+    <ul class="ach-bullets">
+      <li><span class="material-symbols-rounded">check</span><span><achievement, with the <strong>load-bearing phrase</strong> bolded></span></li>
+    </ul>
+    <div class="contrib-skills"><span class="skill-chip" data-cat="<category>"><skill></span></div>
+  </div>
+</div>
+```
+
+Rules: the `HONORS` pill appears **only** when the entry is genuinely an honor (scholarship, distinction, award) — omit it otherwise. Achievement bullets come straight from the entry's `notes`/achievements in the career file; bold the one phrase that carries the weight. Skill chips only for skills the entry actually evidenced, with `data-cat` matching the Skills section's categories. When an entry has nothing beyond credential/school/date, the basic card is correct — don't pad it.
 
 ### Projects loop — substitution contract (item-cards, not tiles)
 
