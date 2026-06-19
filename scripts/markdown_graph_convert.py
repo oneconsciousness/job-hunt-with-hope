@@ -38,6 +38,19 @@ def graph_to_markdown(graph: dict) -> str:
             out.append(f"- **{k}:** {v}")
     out.append("")
 
+    # Goal
+    goals = graph["nodes"].get("Goal", [])
+    if goals:
+        goal = sorted(goals, key=lambda g: g.get("created_at", ""), reverse=True)[0]
+        out.append("## Goal")
+        for k in ("target_role", "target_level", "target_industry", "target_geo",
+                  "comp_floor", "time_per_week", "deadline", "deadline_reason"):
+            v = goal.get(k)
+            if v in (None, "", []):
+                continue
+            out.append(f"- **{k}:** {v}")
+        out.append("")
+
     # Skills
     out.append("## Skills")
     for s in graph["nodes"].get("Skill", []):
@@ -110,12 +123,12 @@ def markdown_to_graph(md: str) -> dict:
     from datetime import datetime, timezone
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     graph = {
-        "hope_schema_version": "1.0",
+        "hope_schema_version": "1.1",
         "created_at": now,
         "updated_at": now,
         "user_id": None,
         "nodes": {k: [] for k in [
-            "Person", "Skill", "Experience", "Education", "Certification",
+            "Person", "Goal", "Skill", "Experience", "Education", "Certification",
             "Project", "JobPosting", "Company", "Memory", "Document",
             "CuratedPortfolio", "Application", "Interview", "Offer", "Connection"
         ]},

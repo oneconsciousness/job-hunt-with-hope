@@ -1,7 +1,7 @@
 {
   "name": "hope",
   "displayName": "JobHunt with Hope",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "description": "JobHunt with Hope — a Claude plugin for your job hunt. It builds a designed HTML portfolio from your own facts and publishes it to a free GitHub Pages site you own — one link to share. Built while job-hunting; the maker's Hope-generated portfolio is getting interview calls.",
   "author": {
     "name": "Hope contributors",

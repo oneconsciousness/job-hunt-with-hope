@@ -9,7 +9,7 @@
       "name": "hope",
       "displayName": "JobHunt with Hope",
       "description": "JobHunt with Hope — build a designed portfolio website from your own facts and publish it to a free GitHub Pages site you own, all from a career file stored on your machine. One link to share.",
-      "version": "1.1.5",
+      "version": "1.2.0",
       "source": ".",
       "license": "MIT",
       "tags": [

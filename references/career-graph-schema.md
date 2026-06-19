@@ -1,4 +1,4 @@
-# Hope Career Graph Schema · v1.0
+# Hope Career Graph Schema · v1.1
 
 This document defines Hope's portable career graph — the personal data model every Hope skill reads and writes. The schema is a port of the original Hope MVP's Neo4j schema, adapted for file-based storage so the user owns their data without running a database server.
 
@@ -29,7 +29,7 @@ career-graph/
 
 ```json
 {
-  "hope_schema_version": "1.0",
+  "hope_schema_version": "1.1",
   "created_at": "2026-05-06T22:00:00Z",
   "updated_at": "2026-05-06T22:00:00Z",
   "user_id": "deterministic-from-email-or-uuid",
@@ -54,7 +54,7 @@ career-graph/
 }
 ```
 
-## Node types (15 total)
+## Node types (16 total)
 
 The first 11 are ported directly from Hope MVP. Four new ones (Application, Interview, Offer, Connection) extend the schema to cover the milestones beyond Presentation.
 
@@ -86,6 +86,48 @@ Two **optional** fields feed the portfolio's summary band:
 - `headline_stats` — up to **4** hero numbers, each `{"icon": str, "value": str, "label": str}` where `icon` is a Material Symbols name (e.g. `rocket_launch`, `payments`, `groups`, `public`). **Curated by the human, never auto-summed** — the metrics are heterogeneous (dollars, headcounts, percentages, countries), so any automatic aggregation across them produces nonsense. Hope asks the user for their proudest numbers and records them verbatim.
 - `interests` — up to **6** genuinely personal interests (typography, trail running) — **not skill keywords**. Skills earn their own nodes with evidence edges; interests are who the person is off the org chart.
 
+### Goal — the seeker's structured aim (added v1.1)
+
+The target of the hunt. Before v1.1, the aim lived only as free-text in a Memory node; that made it unqueryable and easy to lose. The Goal node makes the aim a first-class, mergeable, history-carrying entity that every downstream skill (Skill Gap, Proof Projects, Discovery) reads to size and rank its work.
+
+```json
+{
+  "type": "Goal",
+  "id": "goal:jane-doe:2026-06-12",
+  "target_role": "Senior Backend Engineer",
+  "target_level": "senior",
+  "target_industry": "AI / developer tools",
+  "target_geo": "SF / NYC / remote",
+  "comp_floor": {"amount": 180000, "currency": "USD"},
+  "time_per_week": "~10 hrs",
+  "deadline": "2026-09-01",
+  "deadline_reason": "H1B status — 60-day clock if current role ends",
+  "confidence": 0.70,
+  "source": "conversation",
+  "created_at": "2026-06-12T00:00:00Z",
+  "updated_at": "2026-06-12T00:00:00Z"
+}
+```
+
+**ID:** `goal:<user-slug>:<date>` — deterministic on user + capture date, so re-running onboarding on the same day MERGES (idempotent), while a goal captured on a later date creates a NEW Goal node, preserving the history of how the aim shifted.
+
+**Fields** (all optional except `id` — Hope gap-fills missing ones over time):
+
+| Field | Type | Meaning |
+|---|---|---|
+| `target_role` | str | The role being aimed for |
+| `target_level` | str | Seniority sought (`junior`/`mid`/`senior`/`staff`/`lead`/`pivot`) |
+| `target_industry` | str | Industry / domain target |
+| `target_geo` | str | Geography / remote preference |
+| `comp_floor` | object | `{"amount": int, "currency": str}` — floor below which a role isn't worth it. `null` if unstated. |
+| `time_per_week` | str | Realistic weekly hours the seeker can invest. **Sizes every later plan.** |
+| `deadline` | str (ISO date) or `null` | Hard date the hunt must resolve by, if any |
+| `deadline_reason` | str or `null` | Why the clock exists (visa, runway, situation) — load-bearing for urgency + tone |
+
+`comp_floor` and `deadline` are nullable (not omitted) so a skill can tell "unstated" from "no constraint".
+
+**Edge:** `HAS_GOAL` — Person → Goal. A Person may own multiple Goal nodes over time; the most recent (by `created_at`) is the active aim.
+
 ### Skill — global, shared across users in spirit (deduped within graph)
 
 ```json
@@ -95,6 +137,7 @@ Two **optional** fields feed the portfolio's summary band:
   "category": "design",
   "subcategory": "type",
   "level": "advanced",
+  "target_assessment": "Proficient",
   "years": 8,
   "confidence": 0.92,
   "market_demand": "high",
@@ -106,6 +149,8 @@ Two **optional** fields feed the portfolio's summary band:
 ```
 
 Skills are **derived deterministically from contributions, not extracted as a flat list.** Every skill earns its place by being demonstrated in an Experience, Project, or Education node. No orphan skills.
+
+**`target_assessment`** (added v1.1, optional) — the Skill Gap skill's plain-language read of how deep the seeker is on this skill *for the role they're targeting*, on a named four-rung scale: **`Aware` → `Practicing` → `Proficient` → `Expert`**. It is the output of a warm, story-based calibration chat, not a self-rate slider. **This field is SEPARATE from `level` and MUST NOT overwrite it** — `level` is the résumé-derived experience grade; `target_assessment` is a fresh, role-relative judgement. They answer different questions and must coexist. A Skill Gap run writes `target_assessment` via `add_node(merge=True)`; `level` is in `add_node`'s upgrade-only skip-list so the merge never touches it.
 
 ### Experience
 
@@ -144,6 +189,8 @@ Skills are **derived deterministically from contributions, not extracted as a fl
 ### Education, Certification, Project
 
 Same shape — `id`, descriptive fields, `contributions` (STAR with metrics), `confidence`, `source`, timestamps.
+
+**Proof projects (added v1.1).** Projects the seeker plans-then-ships specifically to close a skill gap are stored as ordinary `Project` nodes — NOT a separate node type — so a shipped proof project flows into the portfolio through the existing `INCLUDES_PROJECT` edge with zero special-casing (the portfolio still makes its own inclusion call at generation time). Two fields mark them: `source: "hope-proof-plan"` (a new allowed value of the existing `source` field) and `status: "planned" | "in_progress" | "shipped"`. Optional `closes_gap` (proof projects only) names the skill(s) the project is designed to evidence, so the Skill Gap re-score can find the project that closed a gap. Rationale for reusing `Project`: a planned project and a shipped one are the same entity at different `status`; a separate type would force every portfolio/dashboard/markdown reader to learn a second shape for no semantic gain.
 
 ### JobPosting
 
@@ -317,7 +364,7 @@ A subgraph curated for one specific job. Picks subset of skills, experiences, pr
 }
 ```
 
-## Edge types (29 total)
+## Edge types (30 total)
 
 Edges live in a flat `edges` array, each with `from`, `to`, `type`, and optional properties.
 
@@ -329,6 +376,7 @@ Edges live in a flat `edges` array, each with `from`, `to`, `type`, and optional
 - `HAS_CERTIFICATION` — Person → Certification
 - `HAS_PROJECT` — Person → Project
 - `HAS_MEMORY` — Person → Memory
+- `HAS_GOAL` — Person → Goal (the seeker's structured aim; most recent by `created_at` is active)
 - `UPLOADED` — Person → Document
 - `HAS_CURATED_PORTFOLIO` — Person → CuratedPortfolio
 - `KNOWS` — Person → Connection

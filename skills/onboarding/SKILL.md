@@ -4,7 +4,7 @@ description: Use when a user is starting their job hunt with Hope for the first 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.1.5 -->
+<!-- hope-skill-version: 1.2.0 -->
 
 # Hope Onboarding · Milestone 1
 
@@ -94,6 +94,22 @@ Any subset in any phrasing is legal — "check my linkedin, that's all I have", 
 
 **Step 1's answer is also a vocabulary read.** How the user phrases it — "pull my repos" vs. "the website thing", "my Behance" vs. "some design pictures online" — reveals their vocabulary level. Calibrate per voice-guide rule #4's "Meet them at their words" **from your first reply onward**: technical users get technical words; everyone else gets the plain word with a one-time translation. This read also lands in `user-story.md`'s "How they like to work" at hand-off (see below).
 
+### Step 1.5 · The aim — role, goal, time, runway
+
+Ask this of **everyone, on every path** — right after the inventory, before you start gathering. The inventory tells you what they *have*; this tells you what they're *for*. It's four short asks, and it's load-bearing: an H1B candidate with two months of runway gets a fundamentally different plan than a relaxed switcher, and **every downstream skill branches on these answers** (the skill-gap pass sizes its time estimates against the hours-per-week here; the runway shapes urgency and tone everywhere). The no-assets path's old "what kind of work?" question now lives here — don't ask it twice.
+
+Each is an `AskUserQuestion` ask per voice-guide rule #6 — 2–4 options, exactly one "(recommended)" with a one-clause why, the tool's "enter your own answer" always present. **Scaffold the options from what the Step 0 scan / Step 3 extract already surfaced** (e.g. if they're a senior backend engineer, the "step up" option names the next level concretely) so it sparks their own answer rather than reading as a quiz. The two personal asks carry a **💬 "Chat about this first"** option. Each answer writes to a single `Goal` node (see "Writing to the graph").
+
+1. **Target role + level** — *"What role are you aiming for next?"* Options scaffolded from the scan: e.g. "A step up — senior in what I do now (recommended — most strong hunts start from proven ground)" / "Same level, new company or industry" / "A real pivot into something new" / 💬 chat about it. Writes `Goal.target_role` and `Goal.target_level`.
+
+2. **The goal in this hunt** — *"What does winning look like?"* e.g. "My first role in this field (recommended for new entrants — it shapes the whole plan)" / "Higher comp or a bigger title" / "Out of a bad situation, fast" / "Switching domains" / 💬. This shapes urgency and tone everywhere downstream. Writes `Goal.goal`.
+
+3. **Time you can spend** — *"How much time per week can you put into this?"* e.g. "A few hours" / "~10 hours (recommended baseline — enough to make real progress without burning out)" / "This is my full-time job right now" / 💬. **This sizes every later plan** — the skill-gap pass reads it to give realistic, honest time estimates. Writes `Goal.time_per_week`.
+
+4. **Runway / deadline** — *"Is there a clock on this?"* e.g. "No hard deadline (recommended to say if true — it lets us build properly)" / "A few months" / "Weeks — it's urgent" / 💬 "There's a visa or situation you should know about". Writes `Goal.deadline` and `Goal.deadline_reason`. **The 💬 path is the load-bearing one:** it captures H1B / OPT / STEM-OPT-style constraints, a hard family deadline, or any time pressure — write that to a `constraint` Memory tagged "(you asked me to remember this)" *and* set `Goal.deadline_reason`, so every downstream skill branches on the real clock, not a guessed one.
+
+Keep it warm and quick — four taps, not an intake form. If the user volunteered any of these earlier ("I'm looking for a senior PM role, I've got about two months"), acknowledge what you already have and only ask the gaps.
+
 ### Step 2 · Gather, cheapest-first
 
 Minimize user work; announce each move before you make it. If a named source isn't in hand yet — a file that's not in the folder, a GitHub/Behance with no handle or URL — ask for it in the same announcement: "drop the file here, or paste the link."
@@ -127,6 +143,7 @@ Extract Experiences/Education/Projects/Skills with structured contributions from
 Show the user what you captured, confirm it, then ask **only about gaps**. Typically:
 
 - **Missing metrics** on the strongest contributions (see "Capturing experiences" below).
+- **Any still-empty aim fields** — if extraction left any of the four Step 1.5 fields (`target_role`, `target_level`, `time_per_week`, `deadline`) blank, gap-fill them here; they're as load-bearing as a missing experience, and every downstream skill reads them.
 - **The constraint/fear question** — Q3 from the no-assets path below, asked verbatim; data can't answer it, so it's almost always a gap.
 - **The headline-stats & interests pass** — choices derived from captured metrics, as specified in its own section below.
 
@@ -134,16 +151,9 @@ No grilling. If a source already answered a question, never ask it again.
 
 ### The no-assets path — option 6
 
-If the user has nothing (option 6, or the inventory comes back empty), build it from a conversation — ask three things, not more, not fewer. Ask each per **voice-guide rule #6 ("Choices, not blanks.")** **through the `AskUserQuestion` tool**: 2–4 options the user can pick (the tool's "enter your own answer" is always there as the escape hatch), exactly one marked "(recommended)" with a one-clause why. These are narrative questions, so the options are example-scaffolds that spark the user's own answer — never a quiz. Keep the warmth; this is a conversation, not a form.
+If the user has nothing (option 6, or the inventory comes back empty), build it from a conversation — ask the aim question via Step 1.5, then two more, not more, not fewer. Ask each per **voice-guide rule #6 ("Choices, not blanks.")** **through the `AskUserQuestion` tool**: 2–4 options the user can pick (the tool's "enter your own answer" is always there as the escape hatch), exactly one marked "(recommended)" with a one-clause why. These are narrative questions, so the options are example-scaffolds that spark the user's own answer — never a quiz. Keep the warmth; this is a conversation, not a form.
 
-1. **What kind of work are you looking for?** (Listen for role family, level, industry — but don't grill.)
-
-   > "What are we hunting for?
-   > 1. More of what you do now, one level up (recommended — most strong hunts start from proven ground)
-   > 2. Same craft, different industry or company size
-   > 3. A real pivot — new role family entirely
-   >
-   > Or just tell me in your own words."
+1. **What you're aiming for** — this is **Step 1.5 above**, not a separate question. Run those four asks (target role + level, the goal, time per week, runway) here; they capture role family, level, and urgency in one structured pass. Don't duplicate them with a free-text "what kind of work?" — Step 1.5 *is* that question now.
 
 2. **Tell me about something you've done that you're proud of.** (This is the entry point for the first Experience or Project node. Lead with their best work.)
 
@@ -253,6 +263,8 @@ Then **protect their private data from git.** If no `.gitignore` exists in the f
 ```
 # Hope — your private career data stays out of version control
 career-graph/career.json
+career-graph/skill-gap.json
+career-graph/skill-gap.xlsx
 user-story.md
 user-story-archive.md
 .hope-meta.json
@@ -267,6 +279,7 @@ site/
 Use `$PLUGIN_ROOT/scripts/graph_query.py` (the `add_node`, `add_edge` helpers) or edit the JSON file directly. The script is bundled in the plugin, not the user's folder, so invoke it by its `$PLUGIN_ROOT` path (e.g. `python "$PLUGIN_ROOT/scripts/graph_query.py" ...`). Either way:
 
 - **Always check if a node exists before creating** (deterministic IDs make this cheap).
+- **Write the `Goal` node** from Step 1.5. Use `add_node(..., merge=True)` with the deterministic id `goal:<user-slug>:<date>` and a `HAS_GOAL` edge from the Person node, carrying the fields you captured (`target_role`, `target_level`, `goal`, `time_per_week`, `deadline`, `deadline_reason`). It's `conversation`-sourced (the user told you directly), so `source: "conversation"`, `confidence: 0.70`. The deterministic id means re-runs MERGE rather than duplicate, and the node carries history. Never downgrade — if a later run leaves a field blank, keep the existing value.
 - **Set `confidence` and `source`** on every node and edge. `source: "document"` for file extraction (résumé, LinkedIn PDF), `source: "conversation"` for chat-derived, `source: "github"` for GitHub-derived, `source: "web_enrichment"` for browser/web-fetched. Confidence defaults: document=0.85, conversation=0.70, github=0.95, web_enrichment=0.90.
 - **Never downgrade.** If a Skill already exists with `years: 8` and the new evidence says 6, keep 8.
 - **Set `hope_schema_version: "1.0"`** on the graph file if it's new.
@@ -319,7 +332,7 @@ When onboarding is complete, write a Memory node:
 {
   "id": "mem:<user-slug>:onboarding-complete:<date>",
   "topic": "onboarding-complete",
-  "content": "Onboarded on <date>. User is looking for <role>. Top skills: <list>. Constraints: <list>. Style preferences: <list>.",
+  "content": "Onboarded on <date>. User is aiming for <role> (<level>). Goal this hunt: <goal>. Time available: <time_per_week>/week. Runway: <deadline> (<deadline_reason if any>). Top skills: <list>. Constraints: <list>. Style preferences: <list>.",
   "category": "constraint",
   "importance": 0.95
 }
@@ -329,9 +342,9 @@ This becomes the foundation every other Hope skill reads first. Treat it with ca
 
 **Alongside the Memory node, create `user-story.md`** — the human-readable memory, in the project folder beside `career-graph/`. The format, section layout, maintenance discipline, and never-store rules live in `$PLUGIN_ROOT/references/user-story-guide.md` — read it and follow it; don't improvise the structure. Seed it from what onboarding just learned:
 
-- **"Now"** — the working-state block (journey stage: onboarded; next step: generate the portfolio). Rewritten, not appended, per the guide — this is what a fresh chat reads first.
+- **"Now"** — the working-state block (journey stage: onboarded; next step: generate the portfolio). Carry the **aim and the clock** here so every later skill opens already knowing them: target role + level, the goal this hunt, time per week, and runway/deadline (with the reason if they gave one). Rewritten, not appended, per the guide — this is what a fresh chat reads first.
 - **"Who <name> is"** — 2–3 sentences in their words, from the confirmed Person summary.
-- **"How they like to work"** — the vocabulary read from Step 1 (technical / plain — see voice-guide "Meet them at their words"), pace, how they took to the numbered choices.
+- **"How they like to work"** — the vocabulary read from Step 1 (technical / plain — see voice-guide "Meet them at their words"), pace, how they took to the numbered choices. Add one calibrating line on the **AI-first ethos**: the modern hire ships *with* AI — proof-of-work built visibly with an agent beats solo-grind, so later skills will guide them toward building and publishing real, shipped proof, not toward grinding alone. This sets the expectation early so the proof-of-work guidance later lands as natural, not novel.
 - **"What matters to them"** — the constraint/fear answer in plain language (the same fact the Memory node holds, mirrored as prose — sync in spirit, never by duplication).
 - **"The journey so far"** — one dated line: onboarded, graph built from <sources>.
 

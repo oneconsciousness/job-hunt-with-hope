@@ -25,7 +25,7 @@ from typing import Any, Iterable
 # Project-folder relative (the folder the user runs Hope in) — NOT a home dir.
 # Callers should pass an explicit path; this default assumes cwd is the job-hunt folder.
 DEFAULT_GRAPH_PATH = Path("career-graph") / "career.json"
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 
 # --------- IO ---------
 
@@ -60,7 +60,7 @@ def _empty_graph() -> dict:
         "updated_at": now,
         "user_id": None,
         "nodes": {
-            "Person": [], "Skill": [], "Experience": [], "Education": [],
+            "Person": [], "Goal": [], "Skill": [], "Experience": [], "Education": [],
             "Certification": [], "Project": [], "JobPosting": [], "Company": [],
             "Memory": [], "Document": [], "CuratedPortfolio": [],
             "Application": [], "Interview": [], "Offer": [], "Connection": [],
@@ -151,6 +151,20 @@ def add_edge(graph: dict, from_id: str, to_id: str, edge_type: str, **properties
 def get_person(graph: dict) -> dict | None:
     persons = graph["nodes"].get("Person", [])
     return persons[0] if persons else None
+
+
+def get_active_goal(graph: dict) -> dict | None:
+    """Return the most recent Goal node (by created_at), or None."""
+    goals = graph["nodes"].get("Goal", [])
+    if not goals:
+        return None
+    return sorted(goals, key=lambda g: g.get("created_at", ""), reverse=True)[0]
+
+
+def make_goal_id(user_id: str, date: str) -> str:
+    """goal:<user-slug>:<YYYY-MM-DD>. Strips the 'person:' prefix from user_id."""
+    user_part = user_id.split(":", 1)[1] if ":" in user_id else user_id
+    return f"goal:{user_part}:{date}"
 
 
 def list_skills(graph: dict, *, min_confidence: float = 0.0,
