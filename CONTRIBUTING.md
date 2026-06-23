@@ -84,12 +84,18 @@ plugin.json                the plugin manifest (+ .claude-plugin/marketplace.jso
 | the **schema** (`references/career-graph-schema.md`) | Bump `hope_schema_version`, document the migration path, update `scripts/graph_query.py` **and** `scripts/markdown_graph_convert.py`, and update the persona fixture so it still conforms. |
 | a **script** (`scripts/*.py`) | Run it **end-to-end** against the persona fixture. |
 | the **publish path** (GitHub Pages) | After publishing, fetch the **live URL cache-busted** (e.g. `?v=<timestamp>` or a no-cache request) and confirm it serves the **new** content — not just that `git push` or the Pages Action went green. Pages has deploy lag + CDN caching; that's an **external wait**, and "the Action is green" is not "the new site is live." |
+| **anything a user will feel** (a new or upgraded skill, a roadmap skill published from here on, a visible template change) | Add a **user-facing changelog entry** — see *"Every user-visible change earns a changelog line"* below. A skill that ships without one is an **incomplete ship.** |
 
 **Captured is not correct.** When a change touches a template, theme, or the portfolio, **open every render and name each defect** — truncation, leaked layout, a token that resolved wrong, a broken toggle. Never report success from a single glance. "Rendered" is not "correct," and "10/10 generated" without a per-render defect list is not a passing report.
 
 **Choosing between variants** (two layouts, two cover-letter tones, a theme tweak)? Render both, have a **separate reviewer** — a second agent or a human — judge them against the voice guide and design tokens, and record **problem → options → findings → pick** in the PR. **You never grade your own variant** — the implementer is biased toward its own work.
 
 **If you can't verify a change, say so explicitly in the PR.** Don't claim success you didn't earn.
+
+**Every user-visible change earns a changelog line.** A skill that ships — a new one, an upgrade to one that exists, **any roadmap skill published from here on** — is **not done until a non-technical, benefit-first entry lands in the user-facing changelog**: `agenthope.ai`'s `_data/changelog.yml`, rendered on `/skills/`. Adding it is one YAML row; the format makes consistency automatic. This is a **release gate**, not an afterthought — shipping a skill without a changelog line is an incomplete ship, the same as shipping it without bumping the version. Write for the **job seeker, not the engineer**: the `headline` is the **one thing they gain**, in plain words (this is the skim target); the `body` is a sentence on what it means for them. **No jargon** (`graph`, `node`, `schema`, filenames), no version numbers, no internal mechanics — what matters to *them* is what matters.
+
+> Good — *"Hope now learns your goal and your timeline."*
+> Bad — *"Added a Goal node to the career-graph schema (v1.1)."*
 
 ---
 
