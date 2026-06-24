@@ -321,16 +321,20 @@ def _run_chrome_watchdog(
                 proc.kill()
 
 
-def measure_scroll_height(chrome: str, work: Path, html_path: Path) -> Optional[int]:
-    """Pass 1: --dump-dom the measurement copy and recover data-scroll-height."""
+def dump_dom(chrome: str, work: Path, html_path: Path, profile_name: str = "chrome-profile-dump") -> str:
+    """Render html_path headless and return the post-JS-render DOM string.
+
+    --dump-dom writes the serialized DOM to stdout; we redirect it to a file so
+    the watchdog can poll it even if Chrome never exits (pages with animation
+    loops / intervals keep the browser alive after the DOM is fully written).
+    Poll until `</html>` lands, let the tail flush, then terminate Chrome.
+    """
+    import time
+
     dump_path = html_path.with_suffix(".dump.html")
     if dump_path.exists():
         dump_path.unlink()
-    # --dump-dom writes the serialized DOM to stdout; redirect it to a file so
-    # the watchdog can poll it even if Chrome never exits.
-    import time
-
-    profile = work / "chrome-profile-dump"
+    profile = work / profile_name
     profile.mkdir(exist_ok=True)
     cmd = [
         chrome, "--headless", "--disable-gpu", "--hide-scrollbars",
@@ -356,11 +360,43 @@ def measure_scroll_height(chrome: str, work: Path, html_path: Path) -> Optional[
                     proc.wait(timeout=5)
                 except subprocess.TimeoutExpired:
                     proc.kill()
-    dom = dump_path.read_text(encoding="utf-8", errors="replace") if dump_path.exists() else ""
+    return dump_path.read_text(encoding="utf-8", errors="replace") if dump_path.exists() else ""
+
+
+def measure_scroll_height(chrome: str, work: Path, html_path: Path) -> Optional[int]:
+    """Pass 1: --dump-dom the measurement copy and recover data-scroll-height."""
+    dom = dump_dom(chrome, work, html_path)
     m = re.search(r'data-scroll-height="(\d+)"', dom)
     if not m:
         m = re.search(r"SCROLLHEIGHT:(\d+)", dom)
     return int(m.group(1)) if m else None
+
+
+def count_resume_entries(chrome: str, work: Path, html_path: Path) -> Optional[int]:
+    """Spec §F guard: --dump-dom the prepared (body-classed) HTML and count
+    `.resume-entry` elements physically INSIDE `#resume-view`.
+
+    A blank `#resume-view` that prints cleanly is a false PASS: the resume mode
+    adds `print-doc-resume` to <body> and the print engine prints only
+    `#resume-view`, so a renderer that never populates it yields a blank-but-
+    valid PDF. Verifying "Chrome waits" is not enough — we must observe that the
+    renderer actually filled the view. Returns the count, or None if
+    `#resume-view` can't be located in the dumped DOM (treated as a hard fail
+    by the caller).
+    """
+    dom = dump_dom(chrome, work, html_path, profile_name="chrome-profile-resume")
+    if not dom or "</html>" not in dom:
+        return None
+    # Strip HTML comments first: an authoring/marker comment containing a
+    # literal class="…resume-entry…" example would otherwise inflate the count
+    # (same comment-blindness class fixed in verify_portfolio_structure.py).
+    dom = re.sub(r"<!--.*?-->", "", dom, flags=re.S)
+    m = re.search(r'id\s*=\s*"resume-view"', dom)
+    if not m:
+        return None
+    # Slice from #resume-view's open tag to EOF (it's the last .wrap child),
+    # then count .resume-entry occurrences within that slice.
+    return len(re.findall(r'class\s*=\s*"[^"]*\bresume-entry\b[^"]*"', dom[m.start():]))
 
 
 def print_to_pdf(chrome: str, work: Path, html_path: Path, pdf_path: Path) -> bool:
@@ -694,6 +730,25 @@ def verify_mode(
     except ValueError as exc:
         report.add(mode.name, "prepare", "FAIL", f"HTML rewrite failed: {exc}")
         return
+
+    # 0 — RESUME NON-BLANK (spec §F): before --print-to-pdf, --dump-dom the
+    # body-classed resume HTML and assert #resume-view has > 0 .resume-entry
+    # children. portfolio.js runs under --virtual-time-budget=10000, so
+    # renderResumeView() should have populated #resume-view; a blank view that
+    # prints cleanly is a false PASS. Hard FAIL on 0 entries / missing view.
+    if mode.is_resume:
+        n_entries = count_resume_entries(chrome, work, print_path)
+        if n_entries is None:
+            report.add(mode.name, "resume-entries", "FAIL",
+                       "#resume-view not found in rendered DOM (renderResumeView never built it)")
+            return
+        if n_entries == 0:
+            report.add(mode.name, "resume-entries", "FAIL",
+                       "#resume-view rendered with 0 .resume-entry children — blank resume would "
+                       "print as a false PASS (renderResumeView produced no entries)")
+            return
+        report.add(mode.name, "resume-entries", "PASS",
+                   f"#resume-view has {n_entries} .resume-entry children before print")
 
     if not print_to_pdf(chrome, work, print_path, pdf_path):
         report.add(mode.name, "render", "FAIL", "Chrome --print-to-pdf produced no output")

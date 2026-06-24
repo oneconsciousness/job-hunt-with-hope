@@ -66,6 +66,37 @@ A **warm dark** — near-black browns, not a cold blue HUD. Light remains the de
 }
 ```
 
+## 3b. Runtime renderer tokens (skill-tier · skill-category · integrity)
+
+The runtime data-driven portfolio (`data.js` → `portfolio.js`) carries **semantic** values only — `level:4`, `category:"programming"`, `confidence.band:"high"` — and resolves them to `var(--token)` at render. That requires **15 `:root` tokens** that the old build-time template stamped as per-element inline hex. They are added to `portfolio.css` (`:root` + `[data-theme="dark"]` + the print-ink overrides, matching the existing accent pattern) so the renderer emits zero hex and the zero-token grep stays green across all four files.
+
+Most alias an existing accent, so light/dark/print already track with no new hex.
+
+**4 skill-tier tokens** — color the 4-bar skill-level visual (§9). **Seg color = LEVEL tier, never category** (locked below):
+
+| Token | Tier (level) | Alias |
+|---|---|---|
+| `--skill-expert` | level 4 — expert | `var(--accent-cyan)` |
+| `--skill-advanced` | level 3 — advanced | `var(--accent-emerald)` |
+| `--skill-proficient` | level 2 — proficient | `var(--accent-amber)` |
+| `--skill-beginner` | level 1 — beginner | `var(--accent-violet)` |
+
+Lit segs use the tier token; unlit segs use `color-mix(in srgb, var(--skill-{tier}) 20%, transparent)` — never a separate hex.
+
+**8 skill-category tokens** — drive `--cat-color` for each skill-category. Values are the css-contract §13 cat palette, defined once in `:root` with dark/print overrides:
+
+`--cat-programming` · `--cat-tools` · `--cat-languages` · `--cat-methods` · `--cat-analytical` · `--cat-design` · `--cat-domain` · `--cat-interpersonal`
+
+> **LOCKED — seg color = LEVEL tier; `--cat-color` colors ledge + name only.** The 4 skill-bar segs are colored by the skill's `level` tier (the `--skill-*` tokens above), entirely decoupled from category. `--cat-color` (one of the 8 `--cat-*` tokens) colors ONLY the `.skill-cat-header .ledge` and the `.name` — it never touches the segs. An unknown category omits `--cat-color` and the CSS falls back to `var(--accent-cyan)`.
+
+**3 integrity tokens** — the per-section confidence bars (§9), via `--conf-color`:
+
+| Token | Band | Alias |
+|---|---|---|
+| `--integrity-high` | high-confidence bar | `var(--accent-emerald)` |
+| `--integrity-mid` | medium-confidence bar | `var(--accent-amber)` |
+| `--integrity-low` | low-confidence bar | `var(--accent-rose)` |
+
 ## 4. Custom themes (extension point)
 
 A user may recolor without breaking the brand, because layout is independent of color. The supported, safe path:
@@ -136,15 +167,18 @@ A generated portfolio is a **folder of four named files**, opened by double-clic
 
 | File | Owns |
 |---|---|
-| `index.html` | Skeleton + all content markup (plus JSON-LD, OG metas, stamping targets) |
+| `index.html` | SEO-stamped `<head>` (title/description/OG/Twitter/enriched-JSON-LD/canonical/hope:share-url) + inline theme-init + static skeleton with empty mount points + a static `.seo-fallback` body block (name/headline/summary, removed at hydration) + static topbar/export-modal. NO other content markup — the visible body is rendered at runtime by `portfolio.js` from `window.HOPE_DATA`. |
 | `portfolio.css` | The full stylesheet — including the `:root` token block (§2–§3) |
-| `portfolio.js` | The full behavior script |
-| `data.js` | Exactly one global — `window.HOPE_DATA = {…}` — the dataset the Throughline (§11) reads |
+| `portfolio.js` | The full behavior script **and the full runtime renderer** — builds the entire visible `<body>` from `window.HOPE_DATA`. |
+| `data.js` | Exactly one global — `window.HOPE_DATA = {…}` — **now the complete dataset for the entire page** (meta+confidence, identity, overview, experience, projects, skills, education, certifications, resume, timeline, traveler, social), semantic values only (NO hex). |
 
 - **Tokens stay single-source.** `:root` lives in `portfolio.css` and nowhere else; components reference `var(--token)` only (§1).
 - **No inline `<style>`/`<script>` in `index.html`**, with the **theme-init snippet** as the one named exception (it MUST stay inline in `<head>` to avoid theme flash) — plus the JSON-LD data block.
 - **Cross-file id/class contracts** — any id or class one file defines and another consumes — live in the markup's authoring comments, never implied.
-- **The zero-token grep** (no raw color values outside the token blocks) runs across **ALL files in the folder**, not just the stylesheet.
+- **DIRECT-CHILD invariants (cross-file contract).** Because the visible body is now JS-rendered, two DOM-nesting invariants are load-bearing — the CSS print order, the wide-screen grid-col-2, and the sticky rail all select with direct-child combinators, so an extra wrapper silently collapses the layout. `portfolio.js` MUST honour both; the structure verifier asserts them:
+  - **`.wrap > {.identity-card, .print-toc, .section-pane, .footer, .section-grid, #resume-view}`** — every one of these is a DIRECT child of `.wrap`. In particular `renderPanes` appends `.section-pane` nodes DIRECTLY into `.wrap` (there is **no** `#panes-mount` wrapper).
+  - **`.identity-card > {.identity-row, #throughline}`** — `renderIdentity` builds `.identity-row` as a DIRECT child of `.identity-card`, and `#throughline` stays a DIRECT child sibling of it (never nested in an inner wrapper).
+- **The zero-token grep** (no raw color values outside the `:root` token blocks) runs across **ALL files in the folder** — and now **MUST pass over `data.js` AND `portfolio.js`** as well. This is the **#1 risk** of the runtime model: `data.js` carries semantic values only (`category:"programming"`, `level:4`, `confidence.band:"high"`), and `portfolio.js` resolves them to `var(--token)` / `color-mix(…)` / `currentColor` at render. The sole sanctioned exception is the favicon `onerror` Google-favicon `src`.
 
 ## 11. The Throughline
 

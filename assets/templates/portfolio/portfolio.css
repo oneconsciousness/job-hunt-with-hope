@@ -12,6 +12,18 @@
   --accent-amber: #C27D0E; --accent-amber-bg: rgba(194,125,14,0.12); --accent-amber-edge: rgba(194,125,14,0.30);
   --accent-rose: #D43450;
   --accent-slate: #4A6FA5; --accent-slate-bg: rgba(74,111,165,0.10); --accent-slate-edge: rgba(74,111,165,0.30); /* experience — the timeline/app identity color (orange is chrome, never a category) */
+  /* Runtime-renderer tokens (design-tokens.md §3b). data.js carries semantic values
+     (level / category / confidence.band); portfolio.js resolves them to these var()s
+     so zero hex leaks into data.js / portfolio.js. */
+  /* 4 skill-tier tokens — color the 4-bar skill-level visual; seg color = LEVEL tier,
+     never category. Alias accents so light/dark/print already track. */
+  --skill-expert: var(--accent-cyan); --skill-advanced: var(--accent-emerald); --skill-proficient: var(--accent-amber); --skill-beginner: var(--accent-violet);
+  /* 8 skill-category tokens — drive --cat-color (ledge + name only, never segs).
+     css-contract §13 cat palette; dark/print overrides below match the accent pattern. */
+  --cat-programming: var(--accent-cyan); --cat-tools: var(--accent-orange); --cat-languages: var(--accent-violet); --cat-methods: var(--accent-emerald);
+  --cat-analytical: var(--accent-slate); --cat-design: #D43450; --cat-domain: var(--accent-amber); --cat-interpersonal: #6366F1;
+  /* 3 integrity tokens — per-section confidence bars via --conf-color. Alias accents. */
+  --integrity-high: var(--accent-emerald); --integrity-mid: var(--accent-amber); --integrity-low: var(--accent-rose);
   /* App colour code (founder-set) — per-section accent on the nav tiles; an app
      with no code falls back to --app-default (dark gray). overview + social = brand orange. */
   --app-overview: var(--accent-orange); --app-social: var(--accent-orange); --app-experience: #2563EB; --app-skills: #9F1239; --app-education: #0D9488; --app-certifications: #C026D3; --app-projects: #6B7280; --app-default: #6B7280;
@@ -35,6 +47,8 @@
   --accent-amber: #F59E0B; --accent-amber-bg: rgba(245,158,11,0.14); --accent-amber-edge: rgba(245,158,11,0.30);
   --accent-rose: #F43F5E;
   --accent-slate: #7FA3D7; --accent-slate-bg: rgba(127,163,215,0.14); --accent-slate-edge: rgba(127,163,215,0.30);
+  /* cat tokens that alias accents track automatically; only the two non-accent hues need a dark variant. */
+  --cat-design: #F472B6; --cat-interpersonal: #818CF8;
   --border-default: rgba(240,231,213,0.08); --border-subtle: rgba(240,231,213,0.04); --border-hover: rgba(240,231,213,0.20);
   --grid-line: rgba(240,231,213,0.04); --scan-line: rgba(240,231,213,0.02);
 }
@@ -189,6 +203,9 @@ img { display: block; }
     --accent-amber: #555; --accent-amber-bg: transparent; --accent-amber-edge: #c8c8c8;
     --accent-rose: #111;
     --accent-slate: #111; --accent-slate-bg: transparent; --accent-slate-edge: #c8c8c8;
+    /* skill-tier + integrity + 6 cat tokens alias accents already forced monochrome above;
+       only the two non-accent cat hues need an explicit ink override (matches L225 --cat-color: #333). */
+    --cat-design: #333; --cat-interpersonal: #333;
     --border-default: #cfcfcf; --border-subtle: #e4e4e4; --border-hover: #aaa;
     --shadow-sm: none; --shadow-md: none;
     --grid-line: transparent; --scan-line: transparent;

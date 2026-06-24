@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{{name}} — Portfolio{{#target_company}} · {{target_company}}{{/target_company}}</title>
+<title>Ada Example — Portfolio</title>
+<meta name="description" content="Staff engineer who builds the platforms other teams build on — scaled a deploy pipeline to 200+ services and cut CI time in half." />
 <!-- Share target. Empty at generation time; the publish skill rewrites content=""
      to the live GitHub Pages URL (https://<owner>.github.io/<repo>/) before the
      final deploy push, so the Share button copies the canonical published link.
@@ -14,16 +15,17 @@
      ABSOLUTE URLs (SITE_URL and SITE_URL + og-image.png) before the final deploy push.
      The 1200×630 og-image.png is screenshotted from the skill-generated share-card.html. -->
 <meta property="og:type" content="profile" />
-<meta property="og:title" content="{{name}} — {{headline}}" />
-<meta property="og:description" content="{{og_description}}" />
+<meta property="og:title" content="Ada Example — Staff Engineer · Distributed Systems &amp; Developer Tooling" />
+<meta property="og:description" content="Staff engineer who builds the platforms other teams build on — scaled a deploy pipeline to 200+ services and cut CI time in half." />
 <meta property="og:url" content="" />
 <meta property="og:image" content="" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="{{name}} — {{headline}}" />
-<meta name="twitter:description" content="{{og_description}}" />
+<meta name="twitter:title" content="Ada Example — Staff Engineer · Distributed Systems &amp; Developer Tooling" />
+<meta name="twitter:description" content="Staff engineer who builds the platforms other teams build on — scaled a deploy pipeline to 200+ services and cut CI time in half." />
 <meta name="twitter:image" content="" />
+<link rel="canonical" href="" />
 <!-- Provenance (disclosed, not hidden): a standards-based generator tag + a
      schema.org ProfilePage so recruiters/crawlers can read who made this and with what.
      This is the user's file under MIT — see the footer note; it's theirs to keep or remove. -->
@@ -32,8 +34,19 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateCreated": "{{generation_date}}",
-  "about": { "@type": "Person", "name": "{{name}}", "jobTitle": "{{headline}}" },
+  "dateCreated": "2026-06-24",
+  "about": {
+    "@type": "Person",
+    "name": "Ada Example",
+    "jobTitle": "Staff Engineer · Distributed Systems & Developer Tooling",
+    "description": "Staff engineer who builds the platforms other teams build on — scaled a deploy pipeline to 200+ services and cut CI time in half.",
+    "url": "https://example.github.io/portfolio/",
+    "image": "",
+    "sameAs": [
+      "https://linkedin.com/in/example",
+      "https://github.com/example"
+    ]
+  },
   "creator": {
     "@type": "SoftwareApplication",
     "name": "Hope",
@@ -42,16 +55,6 @@
   }
 }
 </script>
-<!--
-  Hope portfolio template · v0.4 · cookbook v1.1 conformant.
-  Renders identical structure to assets/fixtures/persona-jane-doe/sample-portfolio.html.
-  Portfolio skill substitutes:
-    1. {{single_tokens}} — name, headline, contact fields, summary, counts, etc.
-    2. HOPE:loop_name comment-marker blocks — replaces the example item inside with N rendered items.
-    3. {{photo_data_url}} + {{photo_class}} — the headshot, baked in as a data: URL at
-       generation time (set {{photo_class}} to " has-photo" when filled, "" when empty).
-  See skills/portfolio/SKILL.md for the substitution contract.
--->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -74,6 +77,23 @@
 <body>
 <div class="wrap" id="top">
 
+  <!--
+    MOUNT-POINT OWNERSHIP (cross-file contract — canon §10):
+      .seo-fallback        → static stamped; renderIdentity REMOVES it (replaced by .identity-row)
+      #identity-mount      → renderIdentity (builds .identity-row); #throughline is a DIRECT child here
+      #print-toc-links     → renderPrintTOC
+      .section-grid#section-grid-mount → renderSectionGrid (appends .section-btn INTO it; never nests a 2nd .section-grid)
+      <panes are appended DIRECTLY into .wrap by renderPanes — NO wrapper div>
+      #footer-mount        → renderFooter
+      #resume-view         → renderResumeView
+    DIRECT-CHILD-OF-.wrap INVARIANT: .identity-card, .print-toc, every .section-pane,
+      .footer, .section-grid, #resume-view MUST be direct children of .wrap
+      (CSS L241-243 print order, L1069 grid-col-2, L1113 sticky rail).
+    DIRECT-CHILD-OF-.identity-card INVARIANT: .identity-row AND #throughline are
+      direct children (CSS L1098 .identity-card > .identity-row, L1105/1106 :has(> .tl-strip)).
+  -->
+
+  <!-- TOPBAR: static chrome (share/PDF/theme) — IDs/SVGs stay, no content tokens -->
   <div class="topbar materialize">
     <div class="share-wrap">
       <button id="share-btn" class="action-btn" type="button" aria-label="Share this portfolio" aria-haspopup="true" aria-expanded="false">
@@ -98,652 +118,37 @@
     </button>
   </div>
 
-  <!-- IDENTITY ===================================================== -->
-  <div class="identity-card materialize stagger-1">
-    <div class="identity-row">
-      <label class="photo-upload{{photo_class}}" id="photo-upload" for="photo-input">
-        <span class="upload-prompt"><span class="material-symbols-rounded">add_a_photo</span><span>Photo</span></span>
-        <!-- Baked in at generation time as a data: URL (see SKILL.md "Bake the headshot
-             into the file"). Empty when no headshot was found → the upload prompt shows.
-             The file input below stays as a "change your photo" fallback either way. -->
-        <img id="photo-preview" src="{{photo_data_url}}" alt="{{name}}" />
-        <input type="file" accept="image/*" id="photo-input" />
-        <button class="photo-remove" id="photo-remove" type="button" aria-label="Remove photo">
-          <span class="material-symbols-rounded">close</span>
-        </button>
-      </label>
-      <div class="identity-info">
-        <div class="identity-top">
-          <div class="identity-name-block">
-            <h1 class="name">{{name}}</h1>
-            <p class="headline">{{headline}}</p>
-          </div>
-          <span class="live-pill"><span class="dot"></span>LIVE</span>
-        </div>
-        <div class="stats-row">
-          <span><strong>{{skill_count}}</strong> skills</span><span class="sep">//</span>
-          <span><strong>{{role_count}}</strong> roles</span><span class="sep">//</span>
-          <span><strong>{{contribution_count}}</strong> contributions</span>
-        </div>
-        <!-- Contact row — per-item icon slot. Each LINK item leads with a
-             monochrome single-path inline SVG brand mark (Simple-Icons-style,
-             viewBox 0 0 24 24, fill="currentColor"). The GENERATOR inlines the
-             right mark per platform, matched by hostname against the bundled
-             set in assets/icons/brands/ — see the platform→icon table in
-             skills/portfolio/SKILL.md § "Icons for links — bundled first,
-             fetched when missing" (unknown brand → announce + fetch + cache;
-             on failure → globe.svg). currentColor makes each mark inherit its
-             item's color (.linkedin stays --accent-cyan, other items
-             --text-secondary) and theme automatically; sizing comes from the
-             .contact-row .item svg rule. Never full-color logos, never icon
-             fonts, never external <img>/url() icon loads — inline only, so
-             the file stays self-contained. Location and email keep their
-             Material Symbols glyphs. The LinkedIn + site items below are
-             worked examples carrying real inlined linkedin/github marks:
-             render one item per link the user actually has, swap the mark per
-             the table, LABEL each with the APP NAME (LinkedIn, GitHub, Behance…)
-             — never a URL or handle — and drop the site example entirely when
-             there is no such link. (Non-embeddable socials in
-             window.HOPE_DATA.social auto-inject here as app-name pills too, so
-             a profile/link social never needs a hand-authored item here.) (#resume-view never gets icons — real text and worded
-             anchors only, per its ATS rules.) -->
-        <div class="contact-row">
-          <span class="item location"><span class="material-symbols-rounded">location_on</span>{{location}}</span>
-          <a class="item" href="mailto:{{email}}" target="_blank" rel="noopener">
-            <span class="material-symbols-rounded">mail</span>{{email}}
-            <span class="material-symbols-rounded ext">open_in_new</span>
-          </a>
-          <a class="item linkedin" href="{{linkedin_url}}" target="_blank" rel="noopener">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn
-            <span class="material-symbols-rounded ext">open_in_new</span>
-          </a>
-          <a class="item" href="{{site_url}}" target="_blank" rel="noopener">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub
-            <span class="material-symbols-rounded ext">open_in_new</span>
-          </a>
-        </div>
-        <p class="summary">{{summary}}</p>
-      </div>
-    </div>
+  <!-- SEO FALLBACK: static, stamped, indexable. renderIdentity REMOVES this node. -->
+  <div class="seo-fallback">
+    <h1>Ada Example</h1>
+    <p>Staff Engineer · Distributed Systems &amp; Developer Tooling</p>
+    <p>I build the platforms other teams build on. Scaled deploys to 200+ services and halved CI time.</p>
+  </div>
 
-    <!-- THE THROUGHLINE =========================================== -->
-    <!-- Full-width chronological strip at the BOTTOM of the identity card,
-         at every width. An empty shell on purpose: portfolio.js builds the
-         rail — track, year ticks, one hex node per entry, playhead +
-         traveler, hover mini-card — from window.HOPE_DATA.timeline. The
-         authoring contract (entry fields, traveler values) lives in data.js;
-         the visual rules live in portfolio.css's tl-* block — neither is
-         restated here. Empty timeline → the strip keeps [hidden] and the
-         page renders exactly as before.
-         ANCHOR CONTRACT: each timeline entry's `anchor` field is "tl-<id>",
-         and the entry's card below carries that as a stable id="tl-<id>" —
-         the example cards in every loop show the pattern as id="tl-{{tl_id}}"
-         (tl_id = the entry's timeline `id` in data.js). Clicking a node
-         activates the entry's pane through the section-grid's own handler,
-         scrolls to the anchor card, expands it if collapsible, and pulses
-         its outline. -->
+  <!-- IDENTITY CARD: shell only; renderIdentity builds .identity-row, prepended before #throughline -->
+  <div class="identity-card materialize stagger-1" id="identity-mount">
+    <!-- renderIdentity() builds .identity-row (photo + info) as a DIRECT child here -->
     <div id="throughline" class="tl-strip" role="group" aria-label="Career timeline" hidden></div>
   </div>
 
-  <!-- PRINT CONTENTS (print/PDF only) ============================== -->
-  <!-- Never visible on screen — the section tabs do this job interactively.
-       In the PDF the anchors become real link annotations: on the continuous
-       single page they jump down the page; in paginated they land on the
-       section labels. Chips number themselves with a CSS counter
-       (decimal-leading-zero), so the numbering self-adjusts when the
-       conditional Overview entry is stripped — never an 02-first list.
-       Border-styled so they survive viewers that skip background graphics. -->
+  <!-- PRINT TOC: shell; JS rebuilds links from present panes -->
   <nav class="print-toc" aria-hidden="true">
     <div class="print-toc-title">Contents</div>
-    <div class="print-toc-links">
-      {{#show_summary}}
-      <a href="#pane-overview"><span class="toc-chip"></span>Overview</a>
-      {{/show_summary}}
-      <a href="#pane-experience"><span class="toc-chip"></span>Experience</a>
-      <a href="#pane-skills"><span class="toc-chip"></span>Skills</a>
-      <a href="#pane-education"><span class="toc-chip"></span>Education</a>
-      <a href="#pane-certifications"><span class="toc-chip"></span>Certifications</a>
-      <a href="#pane-projects"><span class="toc-chip"></span>Projects</a>
-    </div>
+    <div class="print-toc-links" id="print-toc-links"></div>
   </nav>
 
-  <!-- SECTION TABS ================================================= -->
-  <div class="section-grid materialize stagger-2">
-    {{#show_summary}}
-    <!-- Overview app tile — ships ONLY together with the Overview pane below
-         (same show_summary conditional; both strip with zero residue, leaving
-         the classic 5-tile grid with Experience as the default app).
-         No integrity bar: curated highlights carry no confidence score.
-         The init JS promotes this tile + its pane to active when present —
-         the static "active" on Experience below is the stripped-state fallback. -->
-    <button class="section-btn" data-section="overview" type="button">
-      <span class="icon"><span class="material-symbols-rounded">insights</span></span>
-      <span class="body">
-        <span class="label">Overview</span>
-        <span class="meta">
-          <span class="count">{{stat_count}} highlights</span>
-        </span>
-      </span>
-    </button>
-    {{/show_summary}}
-    <button class="section-btn active" data-section="experience" style="--conf-color: {{experience_conf_color}}" type="button">
-      <span class="icon"><span class="material-symbols-rounded">work</span></span>
-      <span class="body">
-        <span class="label">Experience</span>
-        <span class="meta">
-          <span class="count">{{role_count}} roles</span>
-          <span class="integrity">
-            <span class="bar-track"><span class="bar-fill" style="width: {{experience_pct}}%"></span></span>
-            <span class="pct">{{experience_pct}}%</span>
-          </span>
-        </span>
-      </span>
-    </button>
-    <button class="section-btn" data-section="skills" style="--conf-color: {{skills_conf_color}}" type="button">
-      <span class="icon"><span class="material-symbols-rounded">hub</span></span>
-      <span class="body">
-        <span class="label">Skills</span>
-        <span class="meta">
-          <span class="count">{{skill_count}} skills</span>
-          <span class="integrity">
-            <span class="bar-track"><span class="bar-fill" style="width: {{skills_pct}}%"></span></span>
-            <span class="pct">{{skills_pct}}%</span>
-          </span>
-        </span>
-      </span>
-    </button>
-    <button class="section-btn" data-section="education" style="--conf-color: {{education_conf_color}}" type="button">
-      <span class="icon"><span class="material-symbols-rounded">school</span></span>
-      <span class="body">
-        <span class="label">Education</span>
-        <span class="meta">
-          <span class="count">{{education_count}} {{education_count_word}}</span>
-          <span class="integrity">
-            <span class="bar-track"><span class="bar-fill" style="width: {{education_pct}}%"></span></span>
-            <span class="pct">{{education_pct}}%</span>
-          </span>
-        </span>
-      </span>
-    </button>
-    <button class="section-btn" data-section="certifications" style="--conf-color: {{certifications_conf_color}}" type="button">
-      <span class="icon"><span class="material-symbols-rounded">verified</span></span>
-      <span class="body">
-        <span class="label">Certifications</span>
-        <span class="meta">
-          <span class="count">{{certification_count}} {{certification_count_word}}</span>
-          <span class="integrity">
-            <span class="bar-track"><span class="bar-fill" style="width: {{certifications_pct}}%"></span></span>
-            <span class="pct">{{certifications_pct}}%</span>
-          </span>
-        </span>
-      </span>
-    </button>
-    <button class="section-btn" data-section="projects" style="--conf-color: {{projects_conf_color}}" type="button">
-      <span class="icon"><span class="material-symbols-rounded">rocket_launch</span></span>
-      <span class="body">
-        <span class="label">Projects</span>
-        <span class="meta">
-          <span class="count">{{project_count}} {{project_count_word}}</span>
-          <span class="integrity">
-            <span class="bar-track"><span class="bar-fill" style="width: {{projects_pct}}%"></span></span>
-            <span class="pct">{{projects_pct}}%</span>
-          </span>
-        </span>
-      </span>
-    </button>
-    {{#show_social}}
-    <!-- Social Feed tile — ships ONLY together with the Social pane below
-         (same show_social conditional; both strip with zero residue). No
-         integrity bar: a curated feed carries no confidence score. -->
-    <button class="section-btn" data-section="social" type="button">
-      <span class="icon"><span class="material-symbols-rounded">rss_feed</span></span>
-      <span class="body">
-        <span class="label">Social</span>
-        <span class="meta">
-          <span class="count">{{social_count}} {{social_count_word}}</span>
-        </span>
-      </span>
-    </button>
-    {{/show_social}}
-  </div>
+  <!-- SECTION GRID: the grid itself; renderSectionGrid appends .section-btn children INTO it -->
+  <div class="section-grid materialize stagger-2" id="section-grid-mount"></div>
 
-  <!-- OVERVIEW PANE (opt-in, default-open) ========================= -->
-  {{#show_summary}}
-  <!-- Renders ONLY when the user opted in (CuratedPortfolio.show_summary == true).
-       Opted out / nothing captured → the portfolio skill strips this whole
-       conditional block (markers included) plus the Overview tile and the TOC
-       entry above (same conditional), zero placeholder residue — the page
-       renders exactly as it does without the Overview app.
-       Placed FIRST among the panes so it prints first (print walks DOM order);
-       on screen the init JS promotes it to the default-open app.
-       Portfolio skill substitutes:
-         stat_count             — number of curated hero stats (feeds the tile's
-                                  "{{stat_count}} highlights" meta line).
-         summary_stats_loop     — up to 4 curated hero stats (Person.headline_stats,
-                                  human-curated, never auto-summed): stat_icon is a
-                                  Material Symbols name (e.g. rocket_launch / payments /
-                                  groups / public), stat_value e.g. "$2M+", stat_label
-                                  e.g. "client pipeline".
-         summary_interests_loop — up to 6 genuinely personal interests
-                                  (Person.interests, e.g. typography, trail running),
-                                  one neutral chip per interest.
-       Omit a whole row (.summary-stats or .summary-interests) when its source
-       list is empty — never render an eyebrow over nothing. -->
-  <div class="section-pane" data-pane="overview" id="pane-overview">
-    <section class="summary-band metrics-band">
-      <div class="summary-stats">
-        <span class="overview-strip-title summary-stats-title">Impact</span>
-        <!-- HOPE:summary_stats_loop -->
-        <div class="summary-stat hex-kpi">
-          <span class="hex"><span class="material-symbols-rounded">{{stat_icon}}</span></span>
-          <span class="stat-text">
-            <span class="stat-value">{{stat_value}}</span>
-            <span class="stat-label">{{stat_label}}</span>
-          </span>
-        </div>
-        <!-- /HOPE:summary_stats_loop -->
-      </div>
-    </section>
-    <section class="summary-band feed-band">
-      <!-- Featured board (opt-in, JS-rendered). "Latest from" = up to 2 pinned
-           socials (post.pinned in data.js); "Highlights" = featured work items
-           (entry.featured in the timeline). Each wrap stays hidden until
-           portfolio.js fills it, so an empty board leaves zero residue. -->
-      <div class="overview-featured">
-        <div class="overview-strip" id="ov-latest-wrap" hidden>
-          <div class="overview-strip-head"><span class="overview-strip-title">Latest from</span><a class="overview-seeall" href="#spotlight=social">See all<span class="material-symbols-rounded">arrow_forward</span></a></div>
-          <div class="overview-latest" id="overview-latest"></div>
-        </div>
-        <div class="overview-strip" id="ov-highlights-wrap" hidden>
-          <div class="overview-strip-head"><span class="overview-strip-title">Highlights</span></div>
-          <div class="overview-highlights" id="overview-highlights"></div>
-        </div>
-      </div>
-      <div class="summary-interests">
-        <span class="interests-eyebrow">Interests</span>
-        <!-- HOPE:summary_interests_loop -->
-        <span class="skill-chip">{{interest}}</span>
-        <!-- /HOPE:summary_interests_loop -->
-      </div>
-    </section>
-    <a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>
-  </div>
-  {{/show_summary}}
+  <!-- PANES: renderPanes appends .section-pane nodes DIRECTLY into .wrap here (no wrapper). -->
 
-  <!-- EXPERIENCE PANE ============================================== -->
-  <div class="section-pane active" data-pane="experience" id="pane-experience">
-    <!-- HOPE:experience_loop_start
-         For each Experience (sort: is_current first, then start_date desc), render:
-         - Add "is-current" class on cards where is_current==true
-         - All entries ship COLLAPSED by default (no "expanded" class) — the reader
-           expands what they want; a timeline-node jump auto-expands its target card
-         - org-logo: <img src="https://www.google.com/s2/favicons?domain={{company_domain}}&sz=128"
-                         onerror="this.outerHTML='<span class=\"org-fallback\">{{first_letter}}</span>';">
-         - hex KPIs: person→count(individual), groups→count(leadership), monitoring→count(c.metric != null)
-         - For contributions: split by type (individual vs leadership), render each group with header + numbered cards
-         - id="tl-{{tl_id}}": the stable Throughline anchor — tl_id is this entry's
-           timeline `id` in data.js (its `anchor` field equals "tl-<id>"; see the
-           strip comment in the identity card)
-    -->
-    <div class="item-card{{is_current_class}}" data-expand id="tl-{{tl_id}}">
-      <span class="accent-bar"></span>
-      <div class="item-head">
-        <img class="org-logo" src="https://www.google.com/s2/favicons?domain={{company_domain}}&sz=128"
-             alt="{{company}}" width="44" height="44"
-             onerror="this.outerHTML='&lt;span class=\'org-fallback\'&gt;{{company_initial}}&lt;/span&gt;';">
-        <div class="item-info">
-          <div class="title-row">
-            <span class="role-title">{{role_title}}</span>
-            {{#is_current}}<span class="active-pill">Active</span>{{/is_current}}
-          </div>
-          <span class="role-company">{{company}}</span>
-          <span class="role-dates">{{role_dates}}</span>
-        </div>
-        <div class="item-meta">
-          <span class="contrib-pill">{{contribution_count}} contribution{{plural_s}}</span>
-          <span class="hex-kpi" title="Individual contributions"><span class="hex"><span class="material-symbols-rounded">person</span></span><span class="num">{{ic_count}}</span></span>
-          <span class="hex-kpi" title="Leadership contributions"><span class="hex"><span class="material-symbols-rounded">groups</span></span><span class="num">{{lead_count}}</span></span>
-          <span class="hex-kpi" title="Quantified outcomes"><span class="hex"><span class="material-symbols-rounded">monitoring</span></span><span class="num">{{metric_count}}</span></span>
-          <span class="chevron"><span class="material-symbols-rounded">expand_more</span></span>
-        </div>
-      </div>
-      <div class="item-body">
-        <div class="item-body-inner">
-          <div class="item-divider"></div>
-          <!-- HOPE:contrib_groups_start
-               Render at most 2 groups per role: IC first if any, Leadership second if any.
-               group_class is "ic" or "lead"; group_icon is "person" or "groups";
-               group_title is "Individual Contributions" or "Leadership Contributions".
-               contrib_class matches group_class. contrib_icon matches group_icon.
-               metric_direction_class: "" for increase/decrease (default emerald), "achieved" for ✓.
-               metric_arrow: "↑" increase, "↓" decrease, "✓" achieved.
-          -->
-          <div class="contrib-group">
-            <div class="group-header {{group_class}}">
-              <span class="material-symbols-rounded">{{group_icon}}</span>
-              <span class="title">{{group_title}}</span>
-              <span class="bar"></span>
-            </div>
-            <article class="contrib {{contrib_class}}">
-              <div class="contrib-head">
-                <span class="contrib-num">{{contrib_num}}</span>
-                <span class="material-symbols-rounded type-icon">{{contrib_icon}}</span>
-                {{#domain}}<span class="contrib-domain">{{domain}}</span>{{/domain}}
-                {{#scope}}<span class="scope-badge">{{scope}}</span>{{/scope}}
-                {{#metric}}
-                <span class="metric-badge {{metric_direction_class}}">
-                  <span class="val">{{metric_value}}</span>
-                  <span class="arrow">{{metric_arrow}}</span>
-                  <span class="subj">{{metric_subject}}</span>
-                </span>
-                {{/metric}}
-              </div>
-              <p class="contrib-action">{{action}}</p>
-              {{#impact}}
-              <div class="contrib-impact">
-                <span class="material-symbols-rounded">arrow_forward</span>
-                <p>{{impact}}</p>
-              </div>
-              {{/impact}}
-              {{#has_skills}}
-              <div class="contrib-skills">
-                <!-- HOPE:skills_loop -->
-                <span class="skill-chip" data-cat="{{skill_category}}">{{skill_name}}</span>
-                <!-- /HOPE:skills_loop -->
-              </div>
-              {{/has_skills}}
-              {{#has_competencies}}
-              <div class="contrib-competencies">
-                <!-- HOPE:competencies_loop -->
-                <span class="competency">{{competency_name}}</span>
-                <!-- /HOPE:competencies_loop -->
-              </div>
-              {{/has_competencies}}
-            </article>
-          </div>
-          <!-- HOPE:contrib_groups_end -->
-        </div>
-      </div>
-    </div>
-    <!-- HOPE:experience_loop_end -->
-    <a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>
-  </div>
+  <!-- FOOTER: JS fills date/company -->
+  <div class="footer" id="footer-mount"></div>
 
-  <!-- SKILLS PANE ================================================== -->
-  <div class="section-pane" data-pane="skills" id="pane-skills">
-    <div class="skills-hud">
-      <!-- HOPE:skill_categories_loop_start
-           For each category in DEFAULT_CATEGORY_ORDER (then unknowns):
-           cat_color from SKILL_CATEGORY_ACCENT (cookbook §4):
-             tools=#38BDF8, programming=#34D399, languages=#A78BFA, methods/methodology=#F472B6,
-             domain=#818CF8, interpersonal/soft=#FBBF24, analytical=#FB923C, creative/design=#22D3EE.
-           For each skill in category, render a skill-cell with 4-segment level bar.
-           Level colors: expert=#22D3EE (4 lit), advanced=#16A34A (3 lit), proficient=#F59E0B (2 lit), beginner=#A78BFA (1 lit).
-           Lit segments: full color. Unlit: same color at 0.20 alpha.
-      -->
-      <div class="skill-cat" style="--cat-color: {{cat_color}}">
-        <div class="skill-cat-header">
-          <span class="ledge"></span>
-          <span class="name">{{cat_display_name}}</span>
-          <span class="count">[{{cat_count}}]</span>
-        </div>
-        <div class="skill-grid">
-          <!-- HOPE:skill_cells_loop -->
-          <div class="skill-cell">
-            <span class="level-bar">
-              <span class="seg" style="height:6px;background:{{seg1_color}}"></span>
-              <span class="seg" style="height:8px;background:{{seg2_color}}"></span>
-              <span class="seg" style="height:10px;background:{{seg3_color}}"></span>
-              <span class="seg" style="height:12px;background:{{seg4_color}}"></span>
-            </span>
-            <span class="name">{{skill_name}}</span>
-            <span class="years">{{years}}y</span>
-          </div>
-          <!-- /HOPE:skill_cells_loop -->
-        </div>
-      </div>
-      <!-- HOPE:skill_categories_loop_end -->
-    </div>
-    <a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>
-  </div>
+  <!-- RESUME VIEW: empty shell; renderResumeView() fills -->
+  <div id="resume-view" hidden></div>
 
-  <!-- EDUCATION PANE =============================================== -->
-  <div class="section-pane" data-pane="education" id="pane-education">
-    <div class="edu-list">
-      <!-- HOPE:education_loop_start
-           - id="tl-{{tl_id}}": the stable Throughline anchor (matches the entry's
-             `anchor` in the data.js timeline — see the strip comment in the
-             identity card)
-      -->
-      <div class="edu-card" id="tl-{{tl_id}}">
-        <img class="org-logo" src="https://www.google.com/s2/favicons?domain={{institution_domain}}&sz=128"
-             alt="{{institution}}" width="44" height="44"
-             onerror="this.outerHTML='&lt;span class=\'org-fallback\'&gt;{{institution_initial}}&lt;/span&gt;';">
-        <div class="info">
-          <div class="title-line">{{degree_line}}</div>
-          <div class="sub-line">{{institution}}</div>
-          <div class="date-line">{{edu_dates}}</div>
-        </div>
-      </div>
-      <!-- HOPE:education_loop_end -->
-    </div>
-    <a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>
-  </div>
-
-  <!-- CERTIFICATIONS PANE ========================================== -->
-  <div class="section-pane" data-pane="certifications" id="pane-certifications">
-    <div class="edu-list">
-      <!-- HOPE:certifications_loop_start
-           When issue_date is null/empty, replace .date-line with: <span class="no-date">No date</span>
-           - id="tl-{{tl_id}}": the stable Throughline anchor (matches the entry's
-             `anchor` in the data.js timeline — see the strip comment in the
-             identity card)
-      -->
-      <div class="edu-card" id="tl-{{tl_id}}">
-        <img class="org-logo" src="https://www.google.com/s2/favicons?domain={{issuer_domain}}&sz=128"
-             alt="{{issuer}}" width="44" height="44"
-             onerror="this.outerHTML='&lt;span class=\'org-fallback\'&gt;{{issuer_initial}}&lt;/span&gt;';">
-        <div class="info">
-          <div class="title-line">{{cert_name}}</div>
-          <div class="sub-line">{{issuer}}</div>
-          <div class="date-line">{{cert_date_or_no_date}}</div>
-        </div>
-      </div>
-      <!-- HOPE:certifications_loop_end -->
-    </div>
-    <a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>
-  </div>
-
-  <!-- PROJECTS PANE — expandable Experience-style cards ============= -->
-  <!-- Projects render with the SAME collapsible .item-card structure as the
-       Experience pane, so a project's full story (description, impact, the
-       skills it applied) is shown rather than thrown away. The card-expand JS
-       (.item-card[data-expand] .item-head click → .expanded) and the section-grid
-       filter both work here unchanged because the classes are identical. -->
-  <div class="section-pane" data-pane="projects" id="pane-projects">
-    <!-- HOPE:projects_loop_start
-         For each Project (sort: is_current/active first, then start_date desc), render:
-         - All entries ship COLLAPSED by default (no "expanded" class) — the reader
-           expands what they want; a timeline-node jump auto-expands its target card
-         - org-logo: if the project has a link/host domain, use the favicon
-               <img class="org-logo" src="https://www.google.com/s2/favicons?domain={{project_domain}}&sz=128"
-                    onerror="this.outerHTML='<span class=\"org-fallback\">{{project_initial}}</span>';">
-           otherwise just render the lettermark: <span class="org-fallback">{{project_initial}}</span>
-         - role-title  = project name
-         - role-company = tagline (or tech summary if no tagline)
-         - role-dates  = project_dates (omit the <span> entirely if the project carries no dates)
-         - {{#is_active}}…{{/is_active}} active pill for in-progress / ongoing projects
-         - hex KPIs (optional): reuse person/groups/monitoring counts where the project has them;
-           omit any hex-kpi whose count is absent.
-         - Body: one .contrib block carrying the description, the impact line, and the
-           skills_applied chips. skill_category drives the chip color (same map as Experience).
-         - id="tl-{{tl_id}}": the stable Throughline anchor — tl_id is this entry's
-           timeline `id` in data.js (its `anchor` field equals "tl-<id>"; see the
-           strip comment in the identity card)
-    -->
-    <div class="item-card project" data-expand id="tl-{{tl_id}}">
-      <span class="accent-bar"></span>
-      <div class="item-head">
-        <img class="org-logo" src="https://www.google.com/s2/favicons?domain={{project_domain}}&sz=128"
-             alt="{{project_name}}" width="44" height="44"
-             onerror="this.outerHTML='&lt;span class=\'org-fallback\'&gt;{{project_initial}}&lt;/span&gt;';">
-        <div class="item-info">
-          <div class="title-row">
-            <span class="role-title">{{project_name}}</span>
-            {{#is_active}}<span class="active-pill">Active</span>{{/is_active}}
-          </div>
-          <span class="role-company">{{project_tagline}}</span>
-          {{#project_dates}}<span class="role-dates">{{project_dates}}</span>{{/project_dates}}
-        </div>
-        <div class="item-meta">
-          {{#best_metric}}<span class="contrib-pill">{{best_metric}}</span>{{/best_metric}}
-          <span class="chevron"><span class="material-symbols-rounded">expand_more</span></span>
-        </div>
-      </div>
-      <div class="item-body">
-        <div class="item-body-inner">
-          <div class="item-divider"></div>
-          <article class="contrib ic" style="background: transparent; border: 0; border-left: 0; padding: 0;">
-            <p class="contrib-action">{{project_description}}</p>
-            {{#impact}}
-            <div class="contrib-impact">
-              <span class="material-symbols-rounded">arrow_forward</span>
-              <p>{{impact}}</p>
-            </div>
-            {{/impact}}
-            {{#has_skills}}
-            <div class="contrib-skills">
-              <!-- HOPE:project_skills_loop -->
-              <span class="skill-chip" data-cat="{{skill_category}}">{{skill_name}}</span>
-              <!-- /HOPE:project_skills_loop -->
-            </div>
-            {{/has_skills}}
-            {{#link}}
-            <div class="project-link-row">
-              <a class="project-link" href="{{link}}" target="_blank" rel="noopener">
-                <span class="material-symbols-rounded">link</span>{{link_label}}
-                <span class="material-symbols-rounded ext">open_in_new</span>
-              </a>
-            </div>
-            {{/link}}
-          </article>
-        </div>
-      </div>
-    </div>
-    <!-- HOPE:projects_loop_end -->
-    <a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>
-  </div>
-
-  {{#show_social}}
-  <!-- SOCIAL FEED PANE (opt-in) ==================================== -->
-  <!-- Renders ONLY when the user added the Social Feed app
-       (CuratedPortfolio.show_social == true). Cards are JS-RENDERED by
-       portfolio.js from window.HOPE_DATA.social — this pane ships as an empty
-       #social-grid; the skill writes the `social` array into data.js, never
-       hand-authored card HTML here. Posts are not career events: no tl- id, no
-       Throughline node. Opted out → the skill strips this whole block + the
-       Social tile (same conditional), zero residue.
-       NOTE: the Social Feed is the one app that loads third-party embed
-       scripts/iframes. It needs the published https link + a connection and
-       will NOT render when the file is opened offline; every post falls back to
-       a clickable "View on …" link. Disclosed to the user at generation time. -->
-  <div class="section-pane" data-pane="social" id="pane-social">
-    <div class="social-grid" id="social-grid"></div>
-    <a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>
-  </div>
-  {{/show_social}}
-
-  <!-- RESUME VIEW (print-only) ===================================== -->
-  <!-- Always hidden on screen (#resume-view{display:none}); shown ONLY when
-       printing with body.print-doc-resume, set by the export chooser. The
-       markup is deliberately ATS-parseable: real <h1>/<h2>/<ul><li>, standard
-       section names, no tables, no text-in-images, no icon fonts, no
-       letter-spaced text. LINK RULE everywhere in this view: links are WORDED
-       anchors whose visible text is a real word — <a href="...">LinkedIn</a>,
-       <a href="...">GitHub</a>, <a href="...">Demo</a>, a project name —
-       never a visible raw URL. Anchor text is real text, so ATS extraction
-       keeps the words; raw URLs are the thing we drop. The mailto:/https:
-       hrefs become clickable annotations in Chrome's print-to-PDF.
-       Portfolio skill substitutes:
-         {{resume_contact_line}} — one link-bearing line: location · email ·
-                                   phone · worded links. Email is shown AS THE
-                                   ADDRESS and mailto-linked (the address itself
-                                   is the datum — ATS parsers need it as text).
-                                   Phone is plain text. LinkedIn / GitHub /
-                                   Portfolio / personal site are worded anchors
-                                   (<a href="...">LinkedIn</a>), never visible
-                                   URLs. Where the portfolio is published,
-                                   include <a href="{SITE}">Portfolio</a>.
-         {{resume_summary}}      — 2-3 sentence professional summary
-         resume_experience loop  — role, company, dates, 2-4 metric-led bullets,
-                                   each carrying ONE bolded key sub-phrase (see
-                                   the loop comment below)
-         resume_education loop   — degree, institution, dates
-         HOPE:resume_skills_line — replaced with the comma-joined skill names -->
-  <div id="resume-view" hidden>
-    <header class="resume-header">
-      <h1>{{name}}</h1>
-      <p class="resume-headline">{{headline}}</p>
-      <p class="resume-contact">{{resume_contact_line}}</p>
-    </header>
-    <section class="resume-section">
-      <h2>Summary</h2>
-      <p class="resume-summary">{{resume_summary}}</p>
-    </section>
-    <section class="resume-section">
-      <h2>Experience</h2>
-      <!-- HOPE:resume_experience_loop_start
-           For each Experience (sort: is_current first, then start_date desc),
-           render the entry below. 2-4 bullets per role; lead each bullet with
-           the quantified achievement where the graph carries a metric.
-           BOLD RULE: each bullet MAY carry exactly ONE inline <strong> around
-           its load-bearing sub-phrase — the metric + object, the "what moved":
-           "Cut onboarding <strong>from 3 weeks to 1</strong> by pairing every
-           hire with a design buddy." 2-6 words inside the strong, never the
-           whole bullet, never two strongs (bold soup kills skimmability
-           instead of helping it).
-           LINKS in bullets and entry headers are allowed as worded anchors —
-           a project name (<a href="...">Typebook</a>), <a href="...">Demo</a>,
-           <a href="...">GitHub</a> — never bare URLs. -->
-      <article class="resume-entry">
-        <div class="resume-entry-head">
-          <h3>{{role_title}}</h3>
-          <span class="resume-dates">{{role_dates}}</span>
-        </div>
-        <p class="resume-org">{{company}}</p>
-        <ul>
-          <!-- HOPE:resume_bullets_loop -->
-          <li>{{resume_bullet}}</li>
-          <!-- /HOPE:resume_bullets_loop -->
-        </ul>
-      </article>
-      <!-- HOPE:resume_experience_loop_end -->
-    </section>
-    <section class="resume-section">
-      <h2>Education</h2>
-      <!-- HOPE:resume_education_loop_start -->
-      <article class="resume-entry">
-        <div class="resume-entry-head">
-          <h3>{{degree_line}}</h3>
-          <span class="resume-dates">{{edu_dates}}</span>
-        </div>
-        <p class="resume-org">{{institution}}</p>
-      </article>
-      <!-- HOPE:resume_education_loop_end -->
-    </section>
-    <section class="resume-section">
-      <h2>Skills</h2>
-      <p class="resume-skills">
-        <!-- HOPE:resume_skills_line -->
-      </p>
-    </section>
-  </div>
-
-  <!-- Made with Hope, and given to you freely. If it helped you find work, please keep this
-       credit so the next person finds Hope too. It's your file under MIT, so the choice is
-       yours — but we hope you'll leave it. Pay it forward. -->
-  <div class="footer">Generated with <a href="https://github.com/oneconsciousness/job-hunt-with-hope" target="_blank" rel="noopener">Hope</a> · {{generation_date}}{{#target_company}} · For {{target_company}}{{/target_company}}</div>
-</div>
+</div><!-- /.wrap -->
 
 <!-- EXPORT CHOOSER (modal) ========================================= -->
 <!-- Opened by #pdf-btn. THIS RELEASE it is the "Save résumé as PDF" dialog:

@@ -41,10 +41,10 @@ cat "$PLUGIN_ROOT/references/milestones.md"
 
 A **portfolio folder** at `career-graph/documents/portfolios/portfolio-<slug>-<date>/` containing exactly four named files —
 
-- `index.html` — skeleton + all content markup. Also home to everything that gets stamped or stripped: the JSON-LD block, the OG metas, the `hope:share-url` meta, and the `{{#show_summary}}` conditional structure (stamping + strip semantics unchanged).
-- `portfolio.css` — the full stylesheet; the design tokens (`:root`) live here and nowhere else.
-- `portfolio.js` — the full script.
-- `data.js` — a classic script defining one global, `window.HOPE_DATA = {…}`: the chronological dataset the Throughline reads, plus the traveler choice — see "The Throughline — timeline data contract" below.
+- `index.html` — a **static SEO-stamped shell**: the `<head>` (title/description/OG/Twitter/enriched-JSON-LD/canonical/`hope:share-url`), the inline theme-init, a static `.seo-fallback` body block (name/headline/summary, removed at hydration), the static topbar + export modal, and **empty mount points**. There is **no content markup** here — the visible body is rendered at runtime by `portfolio.js` from `window.HOPE_DATA`. This is the file the head SEO values and the `hope:share-url` meta get stamped into.
+- `portfolio.css` — the full stylesheet; the design tokens (`:root`) live here and nowhere else (including the 15 seg-tier / cat / integrity tokens — see the design-tokens canon).
+- `portfolio.js` — the full behavior script **and the full runtime renderer** — it builds the entire visible `<body>` from `window.HOPE_DATA`.
+- `data.js` — a classic script defining one global, `window.HOPE_DATA = {…}`: **the complete dataset for the entire page** (meta + confidence map, identity, overview, experience, projects, skills, education, certifications, resume, timeline, traveler, social), in **semantic values only — NO hex**, with the photo baked in as a `data:` URL. The template's `data.js` carries the full field-by-field authoring contract (the `window.HOPE_DATA` schema) — read it before emitting, and treat it as the source of truth for field types and optionality.
 
 — plus two **share-card pages** (`share-card.html` and `share-card-square.html`) in the same folder — see "Share cards & link-preview meta" below.
 
@@ -54,7 +54,7 @@ A **portfolio folder** at `career-graph/documents/portfolios/portfolio-<slug>-<d
 
 - **Identity card** — photo, name, headline, stats row, contact row, and summary, over a 32×32 grid texture, with the LIVE pill top-right.
 - **The Throughline** — the animated career-timeline strip at the bottom of the identity card (`id="throughline"`): one hex node per included experience / education / project / certification, a playhead riding the rail, hover mini-cards, click-to-navigate to each entry's card. The strip's look and motion are template-owned; **your job is the dataset and the card anchors** — see "The Throughline — timeline data contract" below.
-- **Overview app (opt-in)** — a section-grid tab, not a standalone band: a grid tile (`data-section="overview"`, labeled "Overview", icon `insights`, meta-count "`{{stat_count}} highlights`") plus a pane (`id="pane-overview"`) that sits first among the panes and opens by default when present. Inside: up to 4 curated hero stats as large hex badges plus a quiet interests line. Renders **only** when the user opted in (`CuratedPortfolio.show_summary` is true) and `Person.headline_stats` exist — see "Overview app — substitution contract" below.
+- **Overview app (opt-in)** — a section-grid tab, not a standalone band: a grid tile (`data-section="overview"`, labeled "Overview", icon `insights`, meta-count "`{n} highlights`") plus a pane (`id="pane-overview"`) that sits first among the panes and opens by default when present. Inside: up to 4 curated hero stats as large hex badges plus a quiet interests line. Renders **only** when `overview.show` is true and `overview.headline_stats` is non-empty — see "Overview app — field mapping" below.
 - **Summary** — 2–4 sentences in Hope's voice. Specific, not generic. Hints at tension before resolution.
 - **Selected experience** — 3 to 5 most relevant Experiences as cards, each with: title, company, dates, a 1-sentence framing, the strongest contribution (STAR with a metric), and the skills demonstrated.
 - **Selected projects** — same shape as experience, for portfolio-worthy projects outside formal employment.
@@ -62,7 +62,7 @@ A **portfolio folder** at `career-graph/documents/portfolios/portfolio-<slug>-<d
 - **Education / Certifications** — short, factual. When an entry carries **honors or an achievement worth showing** that lives in the career file (a scholarship, award, distinction, notable thesis), render it as a **rich card** — see "Rich education & certification cards" below. Otherwise a basic `.edu-card`. Never invent honors; render only what's there.
 - **Contact** — email and LinkedIn, nothing more. Optional.
 - **Theme toggle** — sun/moon button in the top-right; switches light/dark, layout unchanged.
-- **Hidden résumé view** — `#resume-view`, invisible on screen, populated at generation time for the résumé print path (see "Resume view — substitution contract" below).
+- **Hidden résumé view** — `#resume-view`, invisible on screen, rendered at runtime from `resume` for the résumé print path (see "Resume view — field mapping" below).
 - **Export & share controls** — the template's **Save as PDF** button exports the **résumé**: a chooser (`#export-modal`) for style + font + fit, with a **hard readability floor — body text never drops below 10pt**. The portfolio-PDF chooser is **gated for the next release** — the live page IS the portfolio, and Cmd+P still prints it natively. **Share** opens a Copy link / LinkedIn / X / WhatsApp / Email menu (`#share-menu`). These ship in the template; your job is the content they depend on (resume view, OG meta, share cards).
 
 ## How to choose what goes in
@@ -114,11 +114,29 @@ Use the bundled template as the starting structure — it's a **folder mirroring
 
 ```bash
 ls "$PLUGIN_ROOT/assets/templates/portfolio/"          # index.html · portfolio.css · portfolio.js · data.js
-cat "$PLUGIN_ROOT/assets/templates/portfolio/index.html"
-cat "$PLUGIN_ROOT/assets/templates/portfolio/data.js"  # carries the authoring contract + the {{timeline_data_json}} slot
+cat "$PLUGIN_ROOT/assets/templates/portfolio/index.html"  # the static shell: SEO-stamped head, .seo-fallback, empty mounts
+cat "$PLUGIN_ROOT/assets/templates/portfolio/data.js"     # carries the window.HOPE_DATA authoring contract
 ```
 
-Copy `portfolio.css` and `portfolio.js` into the output folder **verbatim** — every substitution targets `index.html` and `data.js` only. Replace placeholders with content from the graph. **Do not deviate from the design tokens** in `$PLUGIN_ROOT/references/design-tokens.md` (loaded above).
+### Build contract (runtime data-driven)
+
+The portfolio is **not** built by substituting tokens into static markup. The agent emits **one** structured dataset and the shipped `portfolio.js` renders the entire visible `<body>` from it at runtime. There are no `{{…}}` content tokens and no `<!-- HOPE:*_loop -->` markers in the new template — they have been replaced by `window.HOPE_DATA`. Follow these steps in order:
+
+1. **Curate from the graph** (per "How to choose what goes in" below): identity, overview, experience (IC/Leadership grouped, role-progression shape), projects, skills (by category, level 1–4 + years), education, certifications, resume (bullets with an appended `tag`; Education = degrees only), timeline, social, and a per-section `confidence` map.
+2. **Emit `data.js`** = `window.HOPE_DATA = {…}` — ONE global, the complete dataset for the whole page (the template's `data.js` authoring contract is the `window.HOPE_DATA` schema). **Semantic values only — NO hex** (`category:"programming"`, `level:4`, `confidence.band:"high"` — `portfolio.js` resolves these to `var(--token)` at render). The **photo is baked** in as a `data:` URL in `identity.photo`.
+3. **Copy `portfolio.css` and `portfolio.js` into the output folder verbatim.** `portfolio.css` already carries the 15 seg-tier / cat / integrity tokens the renderer resolves to; `portfolio.js` is the runtime renderer. Neither is ever edited per-portfolio. **Do not deviate from the design tokens** in `$PLUGIN_ROOT/references/design-tokens.md` (loaded above).
+4. **Stamp the shell `index.html`** from the same `meta` you put in `data.js`, in one pass — `data.js` is the single source of truth and the head/body are stamped FROM it:
+   - **Head:** `name`/`headline`/`og_description` → `<title>` + `description` + `og:*`/`twitter:*`; `share_url` → `hope:share-url` + `<link rel="canonical">`; `generation_date` + the enriched ProfilePage JSON-LD (`description`/`url`/`image`/`sameAs`); `target_company` → title suffix.
+   - **Body:** the static `.seo-fallback` block — `name` / `headline` / `summary_short`.
+   - **Leave `og:url` / `og:image` / `twitter:image` empty** (`content=""`) for the publish skill to stamp. No `{{…}}` left anywhere.
+5. **Generate both share-card pages** (`share-card.html`, `share-card-square.html`) from the same `meta` / `identity` / `overview.headline_stats` — see "Share cards & link-preview meta" below.
+6. **Strip the template-authoring comments**, then grep **zero** `{{` and **zero** `<!-- HOPE:` across every file.
+7. **Grep zero raw hex** across ALL four files — including `data.js` and `portfolio.js`. The whole point of semantic-only data is that color lives in `var(--token)`; a hex literal anywhere is a token-purity bug.
+8. **Grep zero external icon URLs** (the favicon `onerror` Google-favicon `src` is the one sanctioned exception — see "Icons for links" below).
+9. **Verify anchor pairing:** every `timeline[].anchor` resolves to a card the renderer will produce — `id="tl-{id}"` derivable from the array whose name matches `timeline[].pane`.
+10. **Run the verifiers:** `verify_portfolio_structure.py` (headless-render mode) + `verify_portfolio_pdf.py --modes resume-classic` (see "Before saving" below).
+
+The per-section contracts below are **field-mapping references** — they name which `window.HOPE_DATA` field drives which DOM, deferring to the template's `data.js` authoring contract (the `window.HOPE_DATA` schema) for field types and optionality. They are not substitution tables: you author data, not markup.
 
 **Reuse shipped patterns — grep `portfolio.css` before you write any new CSS or markup.** Search for the pattern that already exists and reuse it: responsive grids (`grep -nE 'auto-fit|auto-fill|grid-template' portfolio.css`), card shells (`.item-card`, `.edu-card`), chips (`.skill-chip`), pills, hex KPIs. Because `portfolio.css` ships **verbatim** and custom CSS has nowhere clean to live, a hand-rolled rule — e.g. a fixed `grid-template-columns: 1fr 1fr` that never collapses on a phone — is a **bug, not a shortcut**. The shipped patterns are the only way to stay consistent and responsive: treat "reuse the existing pattern" as a required pre-flight, not a preference.
 
@@ -162,24 +180,26 @@ A degree or certification with **honors or an achievement that's actually in the
 
 Rules: the `HONORS` pill appears **only** when the entry is genuinely an honor (scholarship, distinction, award) — omit it otherwise. Achievement bullets come straight from the entry's `notes`/achievements in the career file; bold the one phrase that carries the weight. Skill chips only for skills the entry actually evidenced, with `data-cat` matching the Skills section's categories. When an entry has nothing beyond credential/school/date, the basic card is correct — don't pad it.
 
-### Projects loop — substitution contract (item-cards, not tiles)
+### Projects — field mapping (item-cards, not tiles)
 
-The Projects pane uses the **same collapsible `.item-card` structure as Experience** — projects carry real content (`description`, `tagline`, `impact`, a full `skills_applied` list), and a tile would throw all of it away. The `<!-- HOPE:projects_loop_start … projects_loop_end -->` block in the template renders **one `.item-card.project` per project**. For each project, substitute:
+The Projects pane uses the **same collapsible `.item-card` structure as Experience** — projects carry real content (`description`, `tagline`, `impact`, a full `skills` list), and a tile would throw all of it away. `portfolio.js`'s `renderProjects` builds **one `.item-card.project` per entry in the `projects` array**; you author the array (per the `projects[]` shape in the template's `data.js` authoring contract), not the markup.
 
-| Field | Goes into | Notes |
+What each `projects[]` field drives — see the `data.js` authoring contract for types, optionality, and the full DOM contract:
+
+| `projects[]` field | Drives | Notes |
 |---|---|---|
-| `{{project_name}}` | `.role-title` (and `img alt`) | The project's name — the card title. |
-| `{{project_tagline}}` | `.role-company` | One-line framing of the project; fall back to a short tech/role summary if the project has no tagline. |
-| `{{project_dates}}` | `.role-dates` | Optional — **omit the whole `<span class="role-dates">` when the project has no dates** (don't emit an empty span). |
-| `{{#is_active}}…{{/is_active}}` | `.active-pill` | Render the "Active" pill for in-progress / ongoing projects; drop it otherwise. |
-| `{{project_domain}}` / `{{project_initial}}` | `.org-logo` favicon + `.org-fallback` | If the project has a link/host, use the Google favicon with the lettermark fallback; with no domain, render just `<span class="org-fallback">{{project_initial}}</span>`. |
-| `{{best_metric}}` | `.contrib-pill` | Optional headline metric (e.g. `1.2k stars`, `2,400 sold`); omit the pill if there's none. |
-| `{{project_description}}` | `.contrib-action` | The project's full description / what it is — the body's lead paragraph. |
-| `{{#impact}}…{{/impact}}` | `.contrib-impact` | The impact / outcome line; omit the block when absent. |
-| `{{skill_category}}` / `{{skill_name}}` | `.skill-chip` (in the `HOPE:project_skills_loop`) | One chip per entry in `skills_applied`; `skill_category` drives chip color via the same category map as Experience. Wrap in `{{#has_skills}}…{{/has_skills}}`. |
-| `{{link}}` / `{{link_label}}` | trailing `<a class="item linkedin">` | Optional external link (repo, live site, writeup); omit the block when the project has no link. |
+| `name` | `.role-title` (and `img alt`) | The project's name — the card title. |
+| `tagline` | `.role-company` | One-line framing of the project. |
+| `dates` | `.role-dates` | Optional — the renderer **omits the whole `<span class="role-dates">` when absent** (no empty span). |
+| `is_active` | `.active-pill` | "Active" pill for in-progress / ongoing projects; dropped otherwise. |
+| `domain` / `initial` | `.org-logo` favicon + `.org-fallback` | With a host, the Google favicon + lettermark fallback; with no domain, a bare `.org-fallback` letter. |
+| `best_metric` | `.contrib-pill` | Optional headline metric (e.g. `1.2k stars`); pill omitted when absent. |
+| `description` | `.contrib-action` | The project's full description — the body's lead paragraph. |
+| `impact` | `.contrib-impact` | The impact / outcome line; block omitted when absent. |
+| `skills[]` (`{name, category}`) | `.contrib-skills` `.skill-chip`s | One chip per `SkillRef`; `category` → `data-cat` (CSS owns the color, same category map as Experience). `[]` → block omitted. |
+| `link` (`{url, label}`) | `.project-link-row` → `.project-link` | Optional external link; row omitted when absent. |
 
-Leave **every** project card **collapsed** by default (no `expanded` class) — the same as Experience. The reader expands what they want, and a timeline-node jump auto-expands its target card. The card reuses Experience's `.item-card[data-expand] .item-head` markup verbatim, so the card-expand JS and the section-grid "Projects" filter work on project cards with no extra wiring. There is **no** project tile, hero gradient, or metric tag — those were removed.
+The renderer leaves **every** project card **collapsed** by default and reuses Experience's `.item-card[data-expand] .item-head` markup, so card-expand and the "Projects" section filter work with no extra wiring. **Projects carry NO competencies, scope, metric-badge, or contrib-num** (the `.project` class drives the cyan accent via CSS — don't port those Experience-only fields). There is no project tile, hero gradient, or metric tag.
 
 ### Promotion / tenure within one company
 
@@ -190,36 +210,35 @@ A role progression at one employer — "Associate Analyst → Business Analyst a
 
 Either way, don't invent ad-hoc "Promoted" pills or bespoke markup — use the shipped `.item-card` structure and let date order carry the story.
 
-### Overview app — substitution contract (opt-in, zero residue)
+### Overview app — field mapping (opt-in, zero residue)
 
-The old standalone `#summary-band` between the identity card and the section grid is **gone** — its content (the hex-stat row + interests row) now lives in an **Overview app** inside the section grid. The template carries two pieces, **both** wrapped in `{{#show_summary}} … {{/show_summary}}` conditional markers (same conditional style as `{{#target_company}}`):
+The old standalone `#summary-band` between the identity card and the section grid is **gone** — its content (the hex-stat row + interests row) now lives in an **Overview app** inside the section grid, built by `portfolio.js`'s `renderOverview` from the `overview` object. The renderer produces two pieces:
 
-- **Tile** — `<button class="section-btn" data-section="overview">`, labeled "Overview", Material Symbols icon `insights`, meta-count line "`{{stat_count}} highlights`".
-- **Pane** — `<div class="section-pane" data-pane="overview" id="pane-overview">`, placed **first** among the panes. Inside it the band's content classes are unchanged — `.summary-stats` / `.summary-stat` / `.stat-value` / `.stat-label` / `.summary-interests` — so the premium styling carries over (a KPI row of up to 4 large hex badges, a quiet interests line of neutral pill chips), and the pane's inner panel keeps the 32×32 grid texture.
+- **Tile** — `<button class="section-btn" data-section="overview">`, labeled "Overview", Material Symbols icon `insights`, meta-count line "`{n} highlights`" (`n` = `overview.headline_stats.length`).
+- **Pane** — `<div class="section-pane" data-pane="overview" id="pane-overview">`, placed **first** among the panes. Inside, the band's content classes are unchanged — `.summary-stats` / `.summary-stat` / `.stat-value` / `.stat-label` / `.summary-interests` — so the premium styling carries over (a KPI row of up to 4 large hex badges, a quiet interests line of neutral pill chips), and the pane's inner panel keeps the 32×32 grid texture.
 
-The look is template-owned and token-driven — your job is the content.
+The look is template-owned and token-driven — your job is the `overview` data.
 
-**Render gate:** the app renders **only** when `CuratedPortfolio.show_summary` is `true` AND `Person.headline_stats` is non-empty. In every other case — `show_summary` false or absent, or no stats captured — **strip every `{{#show_summary}}…{{/show_summary}}` block (tile AND pane) from the output. Zero residue:** no empty tile, no empty pane, no leftover loop comments, no stray tokens. When stripped, the section grid is the old 5 tiles and Experience stays the default app.
+**Render gate:** `overview.show` is the **sole master gate** (it replaces the old `show_summary`). When `overview.show` is `true`, `overview.headline_stats` MUST be non-empty (an empty stats list with `show:true` is invalid — set `show:false` instead). When `overview.show` is `false`/absent, the renderer emits **no Overview tile, no pane, no TOC entry** — zero residue — and the default-open app falls back to Experience.
 
-**Default-open:** on load, the active app is **Overview when the pane exists, else Experience**. The template's init JS handles this — it promotes Overview (activating both pane and tile classes) at/before first paint; the markup may keep Experience's static `active` as the fallback the JS overrides. Don't strip or fight that JS during substitution.
+**Default-open:** on load, the active app is **Overview when the pane exists, else Experience** — `portfolio.js` sets the first present pane active deterministically as it builds (no static `active` fallback in the shell). Don't fight that init logic.
 
-When rendering, substitute:
+What each `overview` field drives — see the `data.js` authoring contract for types and limits:
 
-| Loop / token | Source | Notes |
+| `overview` field | Drives | Notes |
 |---|---|---|
-| `{{stat_count}}` | count of rendered `headline_stats` | The tile's meta-count line, e.g. `4 highlights` — a number, nothing else. |
-| `<!-- HOPE:summary_stats_loop --> … <!-- /HOPE:summary_stats_loop -->` | `Person.headline_stats` (optional field, max **4**) | One hex badge + stacked value/label per stat. These are **curated by the human — never auto-summed**: metrics are heterogeneous, so don't invent, aggregate, or derive them from other graph nodes. |
-| `{{stat_icon}}` | `headline_stats[].icon` | Material Symbols name, e.g. `rocket_launch`, `payments`, `groups`, `public`. |
-| `{{stat_value}}` | `headline_stats[].value` | The hero number, e.g. `$2M+` — renders bold sans over the label. |
-| `{{stat_label}}` | `headline_stats[].label` | Short, e.g. `client pipeline` — renders mono uppercase, muted. |
-| `<!-- HOPE:summary_interests_loop --> … <!-- /HOPE:summary_interests_loop -->` | `Person.interests` (optional field, max **6**) | One neutral pill chip per interest — no category colors. If `interests` is empty but stats exist, drop the interests row entirely and keep the KPI row. |
-| `{{interest}}` | `interests[]` | Genuinely personal (typography, trail running) — not skill keywords. |
+| `headline_stats[].icon` | `.summary-stat.hex-kpi` icon | Material Symbols name, e.g. `rocket_launch`, `payments`, `groups`, `public`. |
+| `headline_stats[].value` | `.stat-value` | The hero number, e.g. `$2M+` — bold sans over the label. Max **4** stats. |
+| `headline_stats[].label` | `.stat-label` | Short, e.g. `client pipeline` — mono uppercase, muted. |
+| `interests[]` | `.summary-interests` neutral `.skill-chip`s | Genuinely personal (typography, trail running), not skill keywords. Max **6**. **When `interests` is `[]` the renderer omits `.summary-interests` entirely** (CSS `:has()` auto-hide needs the element absent — never emit it empty). |
 
-**Print behavior is template-owned, but don't break it:** the Overview pane prints **first** among the panes (DOM order), and the print TOC carries a **conditional Overview entry** — the TOC chips' numbers are CSS counters, not the old static 01–05, so numbering self-adjusts when Overview is absent (no "02-first" lists). Every **résumé** print mode still hides all of it. The ink/showcase print rules that used to reference `#summary-band` now point at the pane — don't reintroduce the old id or leave selectors dangling. Never duplicate stats or interests into `#resume-view`.
+Stats are **curated by the human — never auto-summed**: metrics are heterogeneous, so don't invent, aggregate, or derive them from other graph nodes.
 
-### The Throughline — timeline data contract (`{{timeline_data_json}}`)
+**Print behavior is template-owned, but don't break it:** the Overview pane prints **first** among the panes (DOM order), and the print TOC carries a **conditional Overview entry** — the TOC chips' numbers are CSS counters, not static 01–05, so numbering self-adjusts when Overview is absent. Every **résumé** print mode still hides all of it. Never duplicate stats or interests into `#resume-view`.
 
-The Throughline strip itself — rail, hex nodes, playhead, pause/hover/click/print behavior — is template-owned (`portfolio.css` + `portfolio.js`, token-styled per canon). **You generate what it reads**: the template's `data.js` carries the authoring contract and a `{{timeline_data_json}}` substitution slot — fill it from the graph so the shipped `data.js` defines `window.HOPE_DATA` with two keys, `timeline` and `traveler`.
+### The Throughline — timeline data contract
+
+The Throughline strip itself — rail, hex nodes, playhead, pause/hover/click/print behavior — is template-owned (`portfolio.css` + `portfolio.js`, token-styled per canon). **You generate what it reads**: the `timeline` and `traveler` keys of `window.HOPE_DATA` in `data.js`. These keys keep their exact prior contract — they are a subset of the unified dataset, unchanged by the runtime rearchitecture. The only relationship change is that their `anchor`/`id` now point at cards `portfolio.js` itself renders (still `id="tl-{id}"`).
 
 **`timeline`** — an **ordered, chronological array**, one entry per Experience, Education, Project, and Certification included in the portfolio:
 
@@ -234,9 +253,9 @@ The Throughline strip itself — rail, hex nodes, playhead, pause/hover/click/pr
 | `metric` | ONE short line — the entry's strongest number — or `null`. |
 | `skills` | ≤4 strings; the hover mini-card renders them as `.skill-chip`s. |
 | `pane` | `"experience"` \| `"education"` \| `"projects"` \| `"certifications"` — the section-grid pane a click activates. |
-| `anchor` | The DOM id of the entry's card in `index.html` — see anchors, next. |
+| `anchor` | The DOM id of the entry's card — `tl-{id}` — that the renderer will produce. |
 
-**Anchors — every item-card gets one at generation.** Give each rendered item-card a stable `id="tl-<id>"` matching its timeline entry's `id` (the template's example cards carry the pattern). Click-to-navigate activates the pane, scrolls to this anchor, and highlights the card — an anchor without a card is a dead click. Verify the pairing before saving (see the verification checklist below).
+**Anchors — the renderer derives every card id from your data.** `portfolio.js` gives each card it builds a stable `id="tl-{id}"` taken from the matching section-array entry's `id` (the experience/projects/education/certifications entry whose `id` equals the timeline entry's `id`). Your job is **consistency across arrays**: each `timeline[]` entry's `id` and `pane` must match exactly one entry in the array named by `pane` (the join key is `pane`, plural — `experience`/`projects`/`education`/`certifications` — not `type`, singular). Click-to-navigate activates the pane, scrolls to the anchor, and highlights the card — a timeline `anchor` with no matching array entry is a dead click. Verify the pairing before saving (see the verification checklist below).
 
 **Label rules** — labels float above the playhead in small type and must scan in under a second:
 
@@ -245,18 +264,18 @@ The Throughline strip itself — rail, hex nodes, playhead, pause/hover/click/pr
 
 **`traveler`** — the playhead glyph the user chose (see the traveler picker in "What to ask the user before generating"): `"dot"` (the default soft-orange glow dot) · `"<slug>"` for one of the bundled travelers in `$PLUGIN_ROOT/assets/icons/travelers/` (`paper-plane`, `car`, `train`, `sailboat`, `bicycle`, `rocket`, `footprints`) · `{"inline": "<svg…>"}` for a found or hand-made glyph, which **you inline at generation**. **No picker UI ships in the artifact** — choosing happens in chat; the artifact just renders the choice.
 
-### Social Feed app — substitution contract (opt-in, live embeds)
+### Social Feed app — field mapping (opt-in, live embeds)
 
-The Social Feed is an **optional app** (offered via the app catalog — see "What to ask the user before generating"). Like the Overview app it ships as two conditional pieces, both wrapped in `{{#show_social}} … {{/show_social}}`:
+The Social Feed is an **optional app** (offered via the app catalog — see "What to ask the user before generating"). Like every section now, it is **entirely runtime-driven** — `portfolio.js`'s `renderSocial` builds both pieces from the `social` array:
 
-- **Tile** — `<button class="section-btn" data-section="social">`, labeled "Social", Material Symbols icon `rss_feed`, meta-count line "`{{social_count}} {{social_count_word}}`" (e.g. `5 posts` / `1 post`). No integrity bar — a curated feed carries no confidence score.
-- **Pane** — `<div class="section-pane" data-pane="social" id="pane-social">`, placed **after** the Projects pane (before `#resume-view`). It ships **empty**: just `<div class="social-grid" id="social-grid"></div>`. Unlike every other pane, **you do not author card HTML here** — `portfolio.js` renders the cards from `window.HOPE_DATA.social` at runtime, exactly as it renders the Throughline from `window.HOPE_DATA.timeline`.
+- **Tile** — `<button class="section-btn" data-section="social">`, labeled "Social", Material Symbols icon `rss_feed`, meta-count line "`{n} posts`" / "`1 post`" (renderer pluralizes from `social.length`). No integrity bar — a curated feed carries no confidence score.
+- **Pane** — `<div class="section-pane" data-pane="social" id="pane-social">`, placed **after** the Projects pane (before `#resume-view`), containing an empty `<div class="social-grid" id="social-grid"></div>`. The existing social engine then fills the cards from `window.HOPE_DATA.social`, exactly as it renders the Throughline from `window.HOPE_DATA.timeline`.
 
-**Render gate:** renders only when `CuratedPortfolio.show_social` is `true` AND `window.HOPE_DATA.social` is a non-empty array. Otherwise **strip every `{{#show_social}}…{{/show_social}}` block (tile AND pane) with zero residue** and leave `social` as `[]` (or omit the key) in `data.js`.
+**Render gate:** the gate is **`Array.isArray(social) && social.length > 0`** (it replaces the old `show_social` flag — derived at render, no separate boolean). When the user didn't add the Social Feed, leave `social` as `[]` or omit the key entirely; the renderer emits **no Social tile, no pane** — zero residue.
 
 **Posts are not career events** — they carry **no `tl-` id** and never appear on the Throughline (the structural gate `verify_portfolio_structure.py` only checks tl- carded cards, so the social pane is correctly outside its scope).
 
-**What you write:** fill `data.js`'s `{{social_data_json}}` slot so `window.HOPE_DATA.social` is an array of posts (the field-by-field authoring contract is stated once in the template's `data.js` comment). Per post:
+**What you write:** the `social` array in `data.js` — one object per post (this keeps its exact prior contract; the field-by-field authoring shape is stated once in the template's `data.js` comment). Per post:
 
 | Field | Contract |
 |---|---|
@@ -297,20 +316,20 @@ Record the picks on the CuratedPortfolio so they're remembered and not re-asked 
 
 **Compose to fill — no gaping holes** (a design rule, not a layout hack; this is the agent being smart, guided by these instructions + the design tokens). "Latest from" is **embeds-only** now — the renderer routes every profile/link social to the headline — so the tall-embed-beside-short-link gap can't occur by construction. The instinct still carries across the **whole** Overview: balance the strips, fill the space, leave no orphaned empty area. The recruiter should never land on a hole.
 
-### Resume view — substitution contract
+### Resume view — field mapping
 
-The template carries `<div id="resume-view" hidden>` as a **sibling of the portfolio content inside `.wrap`**. On screen it never renders (`#resume-view{display:none}`); it exists solely for the print path — when the user picks **Resume** in the export chooser, `body.print-doc-resume` hides the portfolio panes and shows this view instead. **Populate it on every generation.** An empty resume view passes a visual check (it's hidden) but silently prints a blank résumé.
+The shell carries an empty `<div id="resume-view" hidden>` as a **direct child of `.wrap`**. On screen it never renders (`#resume-view{display:none}`); it exists solely for the print path — when the user picks **Resume** in the export chooser, `body.print-doc-resume` hides the portfolio panes and shows this view instead. `portfolio.js`'s `renderResumeView` populates it synchronously at runtime from the `resume` object — but a blank `resume` block in `data.js` silently prints a blank résumé, so **author the `resume` data on every generation.**
 
-Substitute, from the graph:
+What each `resume` field drives — see the `data.js` authoring contract for the full shape:
 
-| Placeholder | Content |
-|---|---|
-| `{{name}}` / `{{headline}}` | Same values as the identity card. |
-| `{{resume_contact_line}}` | One link-bearing line, joined with ` · `, only the fields the user actually has. **Email shown as the address itself**, mailto-linked — the address is the datum recruiters and parsers need. Phone as plain text. **LinkedIn / GitHub / Portfolio / personal site as worded anchors** (`<a href="…">LinkedIn</a>`) — never a visible raw URL. When the portfolio is published, include `<a href="{SITE}">Portfolio</a>`. No links-as-icons. |
-| `{{resume_summary}}` | 2–3 tight sentences from the graph. Résumé register — factual and scannable, not Hope's designerly portfolio voice. |
-| `<!-- HOPE:resume_experience_loop_start/end -->` | One block per role: title, company, dates, and **2–4 achievement bullets led by metrics** pulled from the role's contributions ("Cut onboarding from 3 weeks to 1 by …" — number first, mechanism second). Bullets use the inner loop `<!-- HOPE:resume_bullets_loop --> … <!-- /HOPE:resume_bullets_loop -->`, one `<li>{{resume_bullet}}</li>` per achievement. **Each bullet carries exactly ONE `<strong>` around its load-bearing sub-phrase** — the metric + object, 2–6 words ("Cut onboarding <strong>from 3 weeks to 1</strong> by …") — never the whole bullet, never two strongs. Links inside bullets are **worded anchors** (a project name, `Demo`, `GitHub`) — never bare URLs. |
-| `<!-- HOPE:resume_education_loop_start/end -->` | One block per education/certification entry: institution, credential, year. |
-| `<!-- HOPE:resume_skills_line -->` | Top **10–14 skills, comma-joined**, strongest-evidenced and most market-demanded first. |
+| `resume` field | Drives | Notes |
+|---|---|---|
+| `meta.name` / `meta.headline` | `.resume-header` h1 / `.resume-headline` | Same values as the identity card. |
+| `contact_line_parts` | `.resume-contact` line | The renderer joins with ` · `, only the fields present: location (text), **email as the address itself, mailto-linked**, phone (plain text), links (**worded anchors** like `<a href="…">LinkedIn</a>`, never raw URLs), and a **Portfolio anchor injected from the stamped head `share_url`** when published (NOT from `meta.site_url`). No links-as-icons. |
+| `summary` | `.resume-summary` | 2–3 tight sentences in résumé register — factual and scannable, not Hope's designerly portfolio voice. |
+| `experience[]` (`{role_title, company, dates, bullets:[{text, tag}]}`) | one `.resume-entry` per role | **2–4 bullets per role**, metric-led. Each bullet renders `<li>{esc(text)} <strong>{esc(tag)}</strong></li>` — the `tag` is a **short metric chip APPENDED at the end of the bullet**, escaped separately and concatenated, **not** an in-text substring wrapped in place. Exactly ONE `<strong>` per `<li>` (ATS rule). A missing `tag` logs a WARNING and the renderer emits an unbolded `<li>`. |
+| `education[]` (`{degree_line, institution, dates}`) | one `.resume-entry` per **degree** | **Degrees only — certifications are NOT folded into resume Education.** |
+| `skills_line` | `.resume-skills` | Top **10–14 skills, comma-joined**, strongest-evidenced and most market-demanded first. |
 
 **ATS rules — non-negotiable inside `#resume-view`:** real text only, standard section headings (Experience, Education, Skills), semantic markup — real `<h1>`/`<h2>` and `<ul><li>` — **no tables, no images or icons, no icon fonts, no text rendered as graphics.** Recruiters' parsers must be able to read every word.
 
@@ -335,11 +354,11 @@ Contact-row and share-menu links carry **monochrome single-path inline SVG** bra
 
 **Unknown platform → announce, fetch, cache, inline.** When a link's hostname is a recognizable brand with no bundled icon (e.g. `gitlab.com`, `mastodon.social`), announce one line — "grabbing the <site> icon" — and fetch the monochrome SVG from `https://cdn.simpleicons.org/<slug>` (slug = the brand name, lowercase). On success, **cache a copy** to the project's `career-graph/assets/icons/` AND inline it into the HTML. On failure, fall back to `globe.svg` silently. Either way the fetch happens at generation time only — **the generated folder never references a network icon URL.**
 
-**Resume view is excluded.** `#resume-view` never gets icons — real text and worded anchors only, per the ATS rules in "Resume view — substitution contract" above.
+**Resume view is excluded.** `#resume-view` never gets icons — real text and worded anchors only, per the ATS rules in "Resume view — field mapping" above. (The renderer's `brandSvg(kind)` emits the contact-row brand marks at runtime from each `identity.links[].kind`; bundled/fetched SVGs are inlined into `portfolio.js`'s registry, never referenced as network URLs.)
 
 ## Bake the headshot into the file (do this at generation time)
 
-The published portfolio must **already contain the user's photo**. The template still ships a client-side upload widget, but that only lives in *this* browser's `localStorage` — it never reaches the published file, so a published site with no baked-in photo shows an empty upload box to recruiters. Fix that by embedding the photo as a `data:` URL when you generate `index.html`.
+The published portfolio must **already contain the user's photo**. The template still ships a client-side upload widget, but that only lives in *this* browser's `localStorage` — it never reaches the published file, so a published site with no baked-in photo shows an empty upload box to recruiters. Fix that by baking the photo as a `data:` URL into `identity.photo` in `data.js` when you generate — `renderIdentity` reads it at runtime and adds `.has-photo` only when it's present.
 
 **1 — Find a headshot in the user's project folder.** Look for the obvious names first, then any image the user points you at:
 
@@ -373,35 +392,34 @@ PY
 printf 'data:image/jpeg;base64,%s' "$(base64 < "$OUT" | tr -d '\n')"
 ```
 
-**3 — Substitute it into the template.** The template's photo `<img>` carries a `{{photo_data_url}}` placeholder and the identity card carries a `{{photo_class}}` hook:
-- Put the `data:image/jpeg;base64,…` string into `{{photo_data_url}}`.
-- Set `{{photo_class}}` to ` has-photo` (note the leading space) so the photo renders and the "add a photo" prompt is hidden.
+**3 — Bake it into `data.js`.** Set `identity.photo` to the `data:image/jpeg;base64,…` string. At runtime `renderIdentity` renders `.photo-upload.has-photo` with the baked image in `#photo-preview` and hides the "add a photo" prompt. The same `data:` URL also feeds the share cards (reuse it — don't re-encode).
 
-**4 — No photo found? Leave the upload prompt intact.** If there's no headshot and the user doesn't point you at one, substitute `{{photo_data_url}}` with an empty string and `{{photo_class}}` with an empty string. The card then shows the dashed "Photo" upload box exactly as before — the no-photo case must not break. When you then invite a photo at hand-over, the ask is a plain yes/no ("want your photo in before this goes out?") and you point instead of describing: hand `<preview-url>#spotlight=photo` — "the glowing box is where your photo goes; drop an image in this folder and I'll bake it in."
+**4 — No photo found? Omit it.** If there's no headshot and the user doesn't point you at one, leave `identity.photo` absent/`null`. `renderIdentity` then shows the dashed "Photo" upload box (no `.has-photo`) exactly as before — the no-photo case must not break. When you then invite a photo at hand-over, the ask is a plain yes/no ("want your photo in before this goes out?") and you point instead of describing: hand `<preview-url>#spotlight=photo` — "the glowing box is where your photo goes; drop an image in this folder and I'll bake it in."
 
 Either way the localStorage "change your photo" widget stays in the file as a fallback the user can use after publishing.
 
 **Before saving the user's files, clean and verify the output:**
-- **Strip the template-authoring comments** — the `<!-- Hope portfolio template · … See skills/portfolio/SKILL.md for the substitution contract -->` block in `index.html` AND the authoring-contract comment in `data.js` (it documents the timeline shape and names `{{timeline_data_json}}` literally, which fails the "no unsubstituted tokens" check). They document the template for *you*; they must not ship in the user's portfolio. Keep the disclosed provenance comments (share-url, generator) — those are intentional.
-- **"Generated" means all of it** — the full folder per "What this skill outputs": `index.html` with a **populated `#resume-view`**, `portfolio.css` and `portfolio.js` carried over verbatim, `data.js` with the **timeline dataset and traveler substituted**, plus **`share-card.html` and `share-card-square.html`** (see "Share cards & link-preview meta"). A run that produces only `index.html` is incomplete.
-- **Verify zero unsubstituted placeholders remain** — grep **every file in the generated folder** (all four named files AND both share cards) for `{{` and `<!-- HOPE:`. This explicitly includes the newer tokens — `{{og_description}}`, `{{resume_contact_line}}`, `{{resume_summary}}`, the contact-row site tokens `{{site_url}}`/`{{site_handle}}` (drop that item entirely when the user has no site link), the `resume_*` loop blocks, the Overview-app tokens: `{{#show_summary}}`/`{{/show_summary}}`, `{{stat_count}}`, `{{stat_icon}}`, `{{stat_value}}`, `{{stat_label}}`, `{{interest}}`, and the `summary_stats_loop` / `summary_interests_loop` comments, the **Social Feed tokens** `{{#show_social}}`/`{{/show_social}}`, `{{social_count}}`, `{{social_count_word}}` and `{{social_data_json}}` in `data.js` (all strip with zero residue when the user didn't add the Social Feed; when they did, `{{social_data_json}}` becomes the `social` array), AND `{{timeline_data_json}}` in `data.js` — because an unpopulated resume view is invisible on screen and only fails when the user prints a résumé, a half-stripped Overview app (a stray tile with no pane, or vice versa) only fails for users who opted out, and an unsubstituted `data.js` leaves the `{{timeline_data_json}}` slot in place — the template ships it inside a comment so the file still parses, but the Throughline renders empty and the traveler choice is lost. If any survive, the substitution is incomplete; fix before saving. Never hand the user files with raw template tokens.
-- **Verify the anchor pairing** — every `anchor` in the timeline dataset must resolve to an `id="tl-<id>"` on a card in `index.html`, and every included item-card must carry its `tl-` id (per "The Throughline — timeline data contract"). Compare `grep -o 'id="tl-[^"]*"' index.html` against the dataset's `anchor` values — a dataset anchor with no card is a dead click on the rail; fix both directions before saving.
-- **Verify structure — order, placement, agreement.** `data.js` and the pane cards are **two views of one chronology** and must not drift: the timeline array is chronological (ascending — left→right on the rail), the cards in each pane run **reverse-chronological (newest first)**, and both must reference the same items. **Derive both from one date-sorted dataset — never hand-order the cards independently** (that second, hand-made ordering is exactly how a promotion ends up shown oldest-first). When `python3` is available, assert all three automatically: `python3 "$PLUGIN_ROOT/scripts/verify_portfolio_structure.py" <portfolio-folder>/` — it checks **agreement** (every timeline entry ↔ its `tl-` card), **containment** (each card sits inside its declared pane — no experience card nested in the projects pane), and **order** (each pane newest-first). Read the PASS/FAIL table and fix every FAIL before saving — these are placement and sequence bugs the token/anchor checks above cannot see. If `python3` isn't available, do the same by eye: read each pane top-to-bottom and confirm the dates descend, and that no card sits in the wrong pane.
-- **Verify zero external icon URLs** — grep **every file in the saved folder** for `simpleicons` and `cdn.simpleicons.org` (e.g. `grep -rnE 'simpleicons|cdn\.simpleicons\.org' <portfolio-folder>/`) and require **zero matches**. Per "Icons for links — bundled first, fetched when missing", any CDN fetch happens at generation time and the SVG lands inline; a surviving network icon URL means an icon was referenced instead of inlined — fix before saving.
-- **Verify the PDF export — produce and inspect, don't assume.** After generating, print one résumé PDF and check it. When `python3` is available, run the bundled checker against the generated folder — it accepts the folder (or its `index.html`) and stages its /tmp copies folder-aware, all siblings included: `python3 "$PLUGIN_ROOT/scripts/verify_portfolio_pdf.py" <portfolio-folder>/ --modes resume-classic`. Read its PASS/FAIL table and fix any FAIL before handing the folder over. If `python3` isn't available, say so plainly instead of claiming the export was verified.
+- **Strip the template-authoring comments** — the template doc-comment block in `index.html` (it points at this SKILL's build contract) AND the `window.HOPE_DATA` authoring-contract comment in `data.js`. They document the template for *you*; they must not ship in the user's portfolio. Keep the disclosed provenance comments (share-url, generator) and the head theme-init / JSON-LD — those are intentional.
+- **"Generated" means all of it** — the full folder per "What this skill outputs": the static SEO-stamped shell `index.html` (head + `.seo-fallback` with real `name`/`headline`/`summary_short`, no content markup), `portfolio.css` and `portfolio.js` carried over **verbatim**, `data.js` with the **complete `window.HOPE_DATA`** (meta+confidence, identity with baked photo, overview, experience, projects, skills, education, certifications, resume, timeline, traveler, social), plus **`share-card.html` and `share-card-square.html`** (see "Share cards & link-preview meta"). A run that produces only `index.html`, or a `data.js` missing any section the user curated, is incomplete.
+- **Verify zero tokens remain** — grep **every file in the generated folder** (all four named files AND both share cards) for `{{` and `<!-- HOPE:`; require **zero matches**. The new template has no content tokens or loop markers — these greps should come back empty by construction, so any hit means a stray template comment survived or you hand-edited markup you shouldn't have. Also confirm the shell `index.html` carries the `.seo-fallback` block with **real** `name`/`headline` (not a placeholder) and that the head SEO metas (canonical, description, og:*, twitter:*, JSON-LD with description/url/sameAs) carry real values.
+- **Verify zero raw hex across ALL four files** — including `data.js` and `portfolio.js`. `data.js` carries semantic values only (`category`, `level`, `confidence.band`); `portfolio.js` resolves every color to `var(--token)` / `color-mix(… 20% transparent)` / `currentColor`. A hex literal anywhere is a token-purity bug — fix before saving. This is the #1 risk of the runtime model.
+- **Verify the anchor pairing** — every `timeline[].anchor` must resolve to a card the renderer will produce: an `id="tl-{id}"` derived from the entry in the array named by that timeline entry's `pane` (`experience`/`projects`/`education`/`certifications`). The join key is `pane` (plural), never `type` (singular). A timeline anchor with no matching array entry is a dead click on the rail — fix both directions before saving.
+- **Verify structure — order, placement, agreement (headless render).** `data.js` and the rendered pane cards are **two views of one chronology** and must not drift: the timeline array is chronological (ascending — left→right on the rail), the cards in each pane run **reverse-chronological (newest first)**, and both must reference the same items. **Derive both from one date-sorted dataset — never hand-order independently** (that's how a promotion ends up shown oldest-first). When `python3` is available, run `python3 "$PLUGIN_ROOT/scripts/verify_portfolio_structure.py" <portfolio-folder>/` — it loads shell + `data.js` + `portfolio.js` in **headless Chrome**, dumps the RENDERED DOM, and asserts **agreement** (every timeline entry ↔ its rendered `tl-` card), **containment** (each card in its declared pane), **order** (each pane newest-first), the `overview.show`/`social.length` ⇔ pane-presence gates, the direct-child invariants, and **head↔data SEO parity**. Read the PASS/FAIL table and fix every FAIL before saving — a regex-on-raw-HTML check would now PASS vacuously (the shell body is empty until `portfolio.js` runs), so the headless render is what actually validates the page. If `python3`/Chrome isn't available, do it by eye: open the page, read each pane top-to-bottom, confirm dates descend and no card sits in the wrong pane.
+- **Verify zero external icon URLs** — grep **every file in the saved folder** for `simpleicons` and `cdn.simpleicons.org` (e.g. `grep -rnE 'simpleicons|cdn\.simpleicons\.org' <portfolio-folder>/`) and require **zero matches**. Per "Icons for links", any CDN fetch happens at generation time and the SVG lands inline in `portfolio.js`'s registry; the only sanctioned network reference is the favicon `onerror` Google-favicon `src`.
+- **Verify the PDF export — produce and inspect, don't assume.** After generating, print one résumé PDF and check it. When `python3` is available, run the bundled checker — it drives headless Chrome (so `portfolio.js` runs and `renderResumeView` populates `#resume-view`), and asserts `#resume-view` has `.resume-entry` children before printing: `python3 "$PLUGIN_ROOT/scripts/verify_portfolio_pdf.py" <portfolio-folder>/ --modes resume-classic`. Read its PASS/FAIL table and fix any FAIL before handing the folder over. If `python3` isn't available, say so plainly instead of claiming the export was verified.
 
 ## Share cards & link-preview meta (generate alongside the portfolio)
 
 A bare URL pasted into LinkedIn/X/WhatsApp unfurls as a rich card only when the page's OG meta points at a real image. **You make the content and the image sources; the publish skill stamps URLs and takes the screenshots.** Division of labor:
 
-**1 — `{{og_description}}`.** `index.html`'s `og:description` / `twitter:description` carry this token. Write a **1–2 sentence third-person hook** distilled from the summary — recruiter-facing, specific, no hype. ("Product designer who unified Figma's design system across twelve teams" — not "Visionary design leader passionate about impact.") Also substitute the OG/Twitter title tokens (`{{name}} — {{headline}}`). **Leave `og:url`, `og:image`, and `twitter:image` with `content=""` exactly as the template ships them** — the publish skill stamps absolute URLs once it knows `SITE_URL`.
+**1 — `meta.og_description`.** `index.html`'s `og:description` / `twitter:description` are **stamped from `meta.og_description`** into the static SEO shell's `<head>` (no `{{tokens}}` — see "What this skill outputs", the `index.html` row). Write a **1–2 sentence third-person hook** distilled from the summary — recruiter-facing, specific, no hype. ("Product designer who unified Figma's design system across twelve teams" — not "Visionary design leader passionate about impact.") The OG/Twitter title is stamped `{name} — {headline}` from `meta.name` / `meta.headline`. **Leave `og:url`, `og:image`, and `twitter:image` with `content=""` exactly as the template ships them** — the publish skill stamps absolute URLs once it knows `SITE_URL`.
 
 **2 — Generate two share-card pages in the portfolio folder, next to `index.html`** (exactly these names — the publish skill looks for them):
 
 - `share-card.html` — fixed **1200×630** (the OG link-preview size).
 - `share-card-square.html` — fixed **1080×1080** (IG / WhatsApp avatar variant).
 
-Both are self-contained HTML styled with **Hope's design tokens**, containing: the **baked headshot** if you have one (reuse the same `data:` URL as the portfolio), the user's **name**, **headline**, up to **3 hero metric badges** (the strongest numbers from the graph), and the **live URL in mono at the bottom**. The real URL is stamped at publish time — showing the expected URL is fine. The body is locked to the pixel size with `overflow: hidden` and **no scrollbars**: the publish skill screenshots these pages 1:1 with headless Chrome into `og-image.png` / `og-image-square.png`, so a stray scrollbar or overflowing element ships straight into the recruiter's link preview.
+Both are **build-time-stamped, NOT runtime data-driven** — fixed-pixel, single-shot, never interactive, so they take **no dependency on `portfolio.js` / `data.js` load timing** inside a headless screenshot. Stamp them from the **same `meta` / `identity` / `overview.headline_stats` source as `data.js`**, in the same render pass: the **baked headshot** if you have one (`identity.photo` — the same `data:` URL as the portfolio), the user's **name** (`meta.name`), **headline** (`meta.headline`), up to **3 hero metric badges** (the first three of `overview.headline_stats`, each as `value` + `label`), and the **live URL in mono at the bottom** (the real URL is stamped at publish time — showing the expected URL is fine). No `{{tokens}}` left and **no raw hex**: reuse the same `var(--token)` colors the portfolio uses, **or** an inlined fixed-pixel `<style>` — these pages are screenshotted, so an inline `<style>` is acceptable and **isolated from the four-file portfolio law** (they never ship in the published site; the four-file allowlist + 2 PNGs is unchanged). The body is locked to the pixel size with `overflow: hidden` and **no scrollbars**: the publish skill screenshots these pages 1:1 with headless Chrome into `og-image.png` / `og-image-square.png`, so a stray scrollbar or overflowing element ships straight into the recruiter's link preview.
 
 You do **not** take the screenshots — that's the publish skill's step (it needs `SITE_URL` first, and it degrades gracefully if Chrome is missing). Your job ends at two pixel-exact HTML files that render correctly at their fixed sizes.
 
@@ -410,7 +428,7 @@ You do **not** take the screenshots — that's the publish skill's step (it need
 Every Hope portfolio carries one **visible** credit — never hidden, never enforced:
 
 - A **"Generated with Hope"** footer linking to the project.
-- A `<meta name="generator">` tag and a schema.org **ProfilePage** JSON-LD block in `<head>` — machine-readable so recruiters, ATS, and search can read the portfolio (this serves the user's discoverability, not Hope). Escape `{{name}}` / `{{headline}}` for valid JSON; keep `{{generation_date}}` as an ISO date.
+- A `<meta name="generator">` tag and an **enriched** schema.org **ProfilePage** JSON-LD block in `<head>` — machine-readable so recruiters, ATS, and search can read the portfolio (this serves the user's discoverability, not Hope). Stamp it from `meta` in the same pass that writes `data.js`: the `Person` carries `name`, `jobTitle` (← `headline`), `description` (← `og_description`), `url` (← `share_url`/canonical), `sameAs` (← `identity.links[].url`), `image` (← published og-image, publish-stamped), and `dateCreated` (← `generation_date`, kept as an ISO date). Escape `name` / `headline` / `description` for valid JSON.
 
 There is **no hidden marker, no signature, no telemetry, nothing that phones home** — Hope is a free gift, given in good faith. The footer is the whole attribution story. Because it's the user's file under MIT, they *can* remove it — but the template asks them, warmly, to keep it so the next person finds Hope too. If a user asks to remove it, help them; don't lecture. Trust is the point.
 
@@ -457,8 +475,8 @@ Offer **Overview** only if `Person.headline_stats` is non-empty; offer **Social 
 
 Record each pick on the CuratedPortfolio node — `"show_summary": true|false` and `"show_social": true|false` — per-portfolio presentation choices: don't re-ask while iterating on the same portfolio, and honor an existing decision on regeneration (see "Updating an existing portfolio" below).
 
-- **If Overview is picked** — render per the Overview app contract above: the gate is `show_summary === true` AND non-empty `headline_stats`; stats are human-curated (never auto-summed); strip every `{{#show_summary}}…{{/show_summary}}` block with zero residue when off. With no `headline_stats` and no `interests`, the app isn't offered and `show_summary` stays absent.
-- **If Social Feed is picked** — gather the posts (next), write them to `data.js` as `window.HOPE_DATA.social` per the Social Feed app contract, and strip every `{{#show_social}}…{{/show_social}}` block with zero residue when off.
+- **If Overview is picked** — render per the Overview app field-mapping above: set `overview.show: true` in `data.js` (the recorded `CuratedPortfolio.show_summary` decision maps to it) with non-empty `overview.headline_stats`; stats are human-curated (never auto-summed). When off, set `overview.show: false` (or omit the object) — the renderer emits no Overview tile/pane, zero residue. With no `headline_stats` and no `interests`, the app isn't offered and `overview.show` stays false.
+- **If Social Feed is picked** — gather the posts (next) and write them to `data.js` as `window.HOPE_DATA.social` per the Social Feed field-mapping. When off, leave `social` as `[]` or omit the key — the `social.length > 0` gate keeps the tile and pane out, zero residue.
 
 Show before asking when there's a viewable copy: hand `<preview-url>#spotlight=highlights` (Overview) or `#spotlight=social` (Social Feed) first — "the part glowing is the app I mean" — then the menu. First-ever portfolio: the plain words carry it alone.
 
@@ -471,7 +489,7 @@ Show before asking when there's a viewable copy: hand `<preview-url>#spotlight=h
 >
 > Or tell me in your own words.
 
-**Browser pull (option 2) is read-only, on user-named URLs only** — the same guardrail as onboarding's LinkedIn-via-browser (see `references/computer-use-guardrails.md`): visit only the profile/handle URLs the user gives, read public posts, extract permalinks; never log in as them or act on their behalf. No browser available → fall back to paste. This "offer to fetch, don't make them hunt" pattern is general: any app that needs live external content can reuse it (GitHub pins, a personal site, …). Keep the feed **curated — 4–8 strong posts beat a wall** — and write each as `{ platform, url, title?, caption?, pinned? }` (platform list + how the renderer turns a url into an embed: the Social Feed app contract).
+**Browser pull (option 2) is read-only, on user-named URLs only** — the same guardrail as onboarding's LinkedIn-via-browser (see `references/computer-use-guardrails.md`): visit only the profile/handle URLs the user gives, read public posts, extract permalinks; never log in as them or act on their behalf. No browser available → fall back to paste. This "offer to fetch, don't make them hunt" pattern is general: any app that needs live external content can reuse it (GitHub pins, a personal site, …). Keep the feed **curated — 4–8 strong posts beat a wall** — and write each as `{ platform, url, title?, caption?, pinned? }` (platform list + how the renderer turns a url into an embed: the Social Feed field-mapping).
 
 **Disclose the trade-off in plain words before shipping a Social Feed** (it's the one app that isn't fully self-contained): "One thing about the Social Feed — it shows live posts from those sites, so it needs your published link and a connection to display them. Opened offline, or if a post is later deleted, each one falls back to a clickable link — your page never breaks, it just shows the link instead of the live post." Never expose the words "embed", "iframe", "oEmbed", or "script" to the user.
 

@@ -41,7 +41,7 @@ Also read `user-story.md` in the project folder if it exists (per `$PLUGIN_ROOT/
 ## HARD GUARDRAILS (these protect the user — never bypass)
 
 1. **One simple confirm before going public.** Never run a deploy / `gh repo create` until the user has said yes to a plain-English "this will be public, ok?" (step 5). Public is irreversible in spirit — recruiters and crawlers cache it instantly. This is the one question you always ask.
-2. **Publish an allowlist, never a whole directory.** The allowlist is **exactly four files**, copied from the portfolio folder to a clean staging dir — `index.html`, `portfolio.css`, `portfolio.js`, `data.js` — plus, in step 6c, **exactly two** generated share images (`og-image.png`, `og-image-square.png`). `career.json`, `user-story.md`, notes, drafts, the `share-card*.html` sources, and the rest of the job-hunt folder **never** leave the machine.
+2. **Publish an allowlist, never a whole directory.** The allowlist is **exactly four files**, copied from the portfolio folder to a clean staging dir — `index.html`, `portfolio.css`, `portfolio.js`, `data.js` — plus, in step 6c, **exactly two** generated share images (`og-image.png`, `og-image-square.png`). The `share-card.html` / `share-card-square.html` files are **build-only artifacts** — publish screenshots them into the two OG PNGs, but the HTML pages themselves **are NOT shipped in the published site.** `career.json`, `user-story.md`, notes, drafts, the `share-card*.html` sources, and the rest of the job-hunt folder **never** leave the machine.
 3. **Scan before you push.** Grep the staging dir for secret shapes before any deploy. Contact info in a portfolio is intentional — don't block on it.
 4. **Set up *with* them, never *as* them.** If GitHub isn't ready, guide them through it warmly — they click the browser login; you can't and don't run `gh auth login` for them. Never silently auto-install global tools. And never cold-halt with a wall of commands — walk them through it like a patient friend, one step at a time.
 
@@ -109,7 +109,7 @@ That's the whole gate. No repo jargon, no file list unless they ask.
 
 ### 6. Stamp the live URL + build the share images (all of this *before* any push)
 
-Every stamping sed in this step targets `site/index.html` **only** — `portfolio.css`, `portfolio.js`, and `data.js` ship verbatim, never sed-touched.
+Every stamping sed in this step targets `site/index.html` **only**. `portfolio.css`, `portfolio.js`, and **`data.js` ship verbatim — never sed-touched.** This is load-bearing under the runtime data-driven model: `data.js` carries the full `window.HOPE_DATA` (including `meta.share_url` / `meta.site_url`), but those are **advisory only** — the published page's **Share** button and the resume Portfolio anchor read the canonical URL from the stamped head meta (`hope:share-url`) / `window.location`, **not** from `data.js`. So there is no second sed target: stamp the head, leave `data.js` alone.
 
 **a) The share link.** The portfolio's `index.html` carries an empty placeholder in its `<head>` (note it's self-closing):
 ```html
