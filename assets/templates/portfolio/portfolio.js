@@ -1333,6 +1333,18 @@
                       : '<span class="social-letter">' + esc((name || '?').charAt(0)) + '</span>';
       return '<span class="social-chip" style="background:' + b.c + '">' + glyph + '</span>';
     }
+    // Platforms whose LIVE embed self-brands (shows its own logo + author/source
+    // inside the embed), making our top .social-head chip redundant — so once the
+    // embed paints we hide the head (.social-selfbrand.social-embed-ok, CSS). The
+    // exceptions whose embeds DON'T reliably self-brand keep the chip: youtube,
+    // medium, dribbble, behance, figma, loom — as do ALL static/profile cards and
+    // the failed-embed fallback (the head is their only platform + caption).
+    // Verdict from per-platform embed research (current 2026).
+    var SELF_BRAND = {
+      linkedin: 1, instagram: 1, x: 1, tiktok: 1, vimeo: 1, spotify: 1,
+      soundcloud: 1, applemusic: 1, threads: 1, bluesky: 1, pinterest: 1,
+      codepen: 1, substack: 1, flickr: 1, gist: 1
+    };
     function brandColor(key) { return (B[key] || B.link).c; }
     var POST_RE = {
       tiktok: /\/video\/\d+/, instagram: /\/(p|reel|reels|tv)\//,
@@ -1392,7 +1404,7 @@
       var viewLink = '<a class="social-link" href="' + esc(url) + '" target="_blank" rel="noopener">'
         + esc(post.title || ('View on ' + name)) + '<span class="material-symbols-rounded ext">open_in_new</span></a>';
       if (embedHTML != null && EMBEDS_OK) {
-        card.className = 'social-card social-' + key + ' social-cls-embed';
+        card.className = 'social-card social-' + key + ' social-cls-embed' + (SELF_BRAND[key] ? ' social-selfbrand' : '');
         card.innerHTML = head + '<div class="social-embed" data-embed-pending style="min-height:' + embedH + 'px"><div class="embed-loader" aria-hidden="true"><span></span><span></span><span></span><span></span></div></div>' + viewLink;
         var holder = card.querySelector('.social-embed');
         lazyEmbed(holder, function () {
@@ -1404,7 +1416,7 @@
             if (settled) return; settled = true;
             if (mo) mo.disconnect(); if (poll) clearInterval(poll);
             holder.removeAttribute('data-embed-pending');
-            if (ok) { if (loader && loader.parentNode) loader.parentNode.removeChild(loader); }
+            if (ok) { card.classList.add('social-embed-ok'); if (loader && loader.parentNode) loader.parentNode.removeChild(loader); }
             else {
               // Embed never painted (the routine case for tokenless Instagram/X
               // widgets). Clear the reserved height so the card collapses to its

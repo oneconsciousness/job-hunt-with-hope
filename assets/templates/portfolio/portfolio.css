@@ -665,6 +665,13 @@ h1.name { margin: 0 0 2px; font-size: 22px; font-weight: 700; letter-spacing: -0
 .social-embed-static { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 92px; padding: 18px; text-decoration: none; color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--surface-2); border-top: 1px solid var(--border-default); transition: color 0.15s, background 0.15s; }
 .social-embed-static:hover { color: var(--accent-orange); background: var(--accent-orange-bg); }
 .social-embed-static .material-symbols-rounded { font-size: 18px; }
+/* Self-branding live embeds (LinkedIn, Instagram, X, TikTok, players, …) already
+   show the platform + author INSIDE the embed, so once the embed paints the top
+   .social-head chip is pure redundancy — hide it. Static / profile cards and the
+   failed-embed fallback (.social-cls-failed, no .social-embed-ok) keep the head;
+   so do the weak-branding exceptions (youtube/medium/dribbble/behance/figma/loom,
+   never flagged .social-selfbrand). */
+.social-selfbrand.social-embed-ok .social-head { display: none; }
 /* FAILED-EMBED fallback — when an embed never paints (routine for tokenless
    Instagram/X widgets) JS clears the reserved min-height and flags the card
    .social-cls-failed, so it collapses to this brand-tinted link tile instead
