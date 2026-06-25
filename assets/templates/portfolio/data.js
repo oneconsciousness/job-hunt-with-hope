@@ -185,6 +185,26 @@
        "analytical"|"design"|"domain"|"interpersonal"
        (renderer maps to --cat-* tokens; unknown → var(--accent-cyan) fallback).
 
+     radar: RadarAxis[]? (opt) — a spider/radar chart of broad market-domain
+       competency axes, rendered ABOVE the level-bar HUD. OMIT entirely when
+       there is no clear market-axis story → the section degrades to the HUD
+       alone (back-compat). The renderer needs >= 3 valid axes or it draws
+       nothing. These axes are DIFFERENT from the category buckets above: they
+       are 5-8 broad competency DOMAINS named in the person's own field
+       vocabulary (see SKILL.md "Skills section — radar axes" for how to choose
+       and name them). NO hex — semantic values only.
+
+       RadarAxis:  { axis, score, source?, inDemand? }
+         axis:     string (req) — the domain label, e.g. "Drain, Waste & Vent".
+                   Title Case, <= 4 words. Recruiter-legible in THIS field.
+         score:    1|2|3|4 (req) — same 1-4 scale as level (clamped at render).
+                   Drives the vertex radius. NEVER a percentage, never a verdict.
+         source:   string? (opt) — provenance (the framework the axis is named
+                   from, e.g. "ACF" / "SFIA 9"). Not rendered in v1; kept for
+                   future tooltips + auditability.
+         inDemand: boolean? (opt) — currently in-demand for this field; renders
+                   the vertex + label in the accent color. NON-blocking signal.
+
    ── A.8  education[] / certifications[]  (both → .edu-card, newest-first) ─────
      education[]:  { id, degree_line, institution, institution_domain?,
                      institution_initial, dates }

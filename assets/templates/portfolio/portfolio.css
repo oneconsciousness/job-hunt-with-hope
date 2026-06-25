@@ -240,6 +240,10 @@ img { display: block; }
   body.print-doc-portfolio.print-style-ink .level-bar .seg { background: #555 !important; }
   body.print-doc-portfolio.print-style-ink .skill-cat-header .ledge { box-shadow: none; }
   body.print-doc-portfolio.print-style-ink .skill-cat { --cat-color: #333 !important; }
+  /* Radar in ink: crisp mono outline, no tint fill; the web rings follow
+     --border-default (#cfcfcf) so the chart still reads on white. */
+  body.print-doc-portfolio.print-style-ink .skill-radar-poly { fill: transparent !important; stroke: #111 !important; }
+  body.print-doc-portfolio.print-style-ink .skill-radar-dot { fill: #111 !important; }
   /* Hardcoded rgba contrib type-icon accents bypass the token swap — force monochrome. */
   body.print-doc-portfolio.print-style-ink .contrib-head .type-icon { color: #555 !important; }
 
@@ -631,6 +635,21 @@ h1.name { margin: 0 0 2px; font-size: 22px; font-weight: 700; letter-spacing: -0
 .skill-cat-header .name { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--cat-color, var(--accent-cyan)); opacity: 0.92; }
 .skill-cat-header .count { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-dim); }
 .skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; }
+
+/* ── Skills radar — optional spider chart above the level-bar HUD ─────────
+   Inline SVG built by renderSkillRadar(); EVERY color is a token so light /
+   dark / ink track automatically (the radar carries no hex). Static (no
+   animation) → inherits the pane's .materialize entrance, so prefers-reduced-
+   motion is already honored. */
+.skill-radar-wrap { display: flex; justify-content: center; margin: 4px 0 24px; }
+.skill-radar { width: 100%; max-width: 440px; height: auto; overflow: visible; }
+.skill-radar-web { fill: none; stroke: var(--border-default); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.skill-radar-axis { fill: none; stroke: var(--border-subtle); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.skill-radar-poly { fill: color-mix(in srgb, var(--accent-orange) 14%, transparent); stroke: var(--accent-orange); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.skill-radar-dot { fill: var(--accent-orange); }
+.skill-radar-dot.is-hot { stroke: var(--card-bg); stroke-width: 1.5; }
+.skill-radar-label { font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; fill: var(--text-secondary); }
+.skill-radar-label.is-hot { fill: var(--accent-orange); }
 
 /* ── Social Feed (optional app) ─── cards JS-rendered by portfolio.js into
    #social-grid. Two templates: EMBED cards (live media) + branded PROFILE

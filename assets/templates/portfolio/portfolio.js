@@ -503,8 +503,80 @@
     return frag(html);
   }
 
+  // radarLabel — one axis label, wrapped to 2 lines when long (split near the
+  // middle on a word break) so names like "Emergency Stabilization" don't run
+  // off the chart. anchor = start|middle|end (set from the vertex angle).
+  function radarLabel(text, x, anchor, yOne, yTop, hot) {
+    var cls = 'skill-radar-label' + (hot ? ' is-hot' : '');
+    var xs = x.toFixed(1);
+    var l1 = text, l2 = '';
+    if (text.length > 16 && text.indexOf(' ') > -1) {
+      var words = text.split(' '), a = '', b = '', half = text.length / 2;
+      for (var w = 0; w < words.length; w++) {
+        if (!a || a.length < half) a += (a ? ' ' : '') + words[w];
+        else b += (b ? ' ' : '') + words[w];
+      }
+      l1 = a; l2 = b;
+    }
+    var s = '<text class="' + cls + '" text-anchor="' + anchor + '" y="' +
+      (l2 ? yTop : yOne).toFixed(1) + '"><tspan x="' + xs + '">' + l1 + '</tspan>';
+    if (l2) s += '<tspan x="' + xs + '" dy="10.5">' + l2 + '</tspan>';
+    return s + '</text>';
+  }
+
+  // renderSkillRadar — OPTIONAL spider/radar of market-domain competency axes
+  // (skills.radar: [{axis, score 1-4, source?, inDemand?}]). Sits ABOVE the
+  // level-bar HUD. Returns '' when absent or < 3 valid axes, so older data.js
+  // (no radar key) renders the HUD alone — back-compat. Pure inline SVG; every
+  // color via var(--token)/color-mix (zero hex — §C.1). Static, so it inherits
+  // the pane's .materialize entrance and needs no reduced-motion handling.
+  function renderSkillRadar(d) {
+    var sk = d.skills || {};
+    var raw = Array.isArray(sk.radar) ? sk.radar : [];
+    var axes = raw.filter(function (a) {
+      return a && typeof a.axis === 'string' && a.axis.replace(/\s/g, '') &&
+        typeof a.score === 'number' && isFinite(a.score);
+    });
+    if (axes.length < 3) return '';              // a polygon needs >= 3 axes
+    if (axes.length > 8) axes = axes.slice(0, 8); // legibility ceiling
+
+    var N = axes.length, CX = 170, CY = 130, R = 80, RINGS = 4, LR = R + 14;
+    function ang(i) { return (-90 + i * 360 / N) * Math.PI / 180; }
+    function fx(i, r) { return (CX + r * Math.cos(ang(i))).toFixed(2); }
+    function fy(i, r) { return (CY + r * Math.sin(ang(i))).toFixed(2); }
+
+    var web = '';
+    for (var ring = 1; ring <= RINGS; ring++) {
+      var rr = R * ring / RINGS, pts = '';
+      for (var i = 0; i < N; i++) pts += (i ? ' ' : '') + fx(i, rr) + ',' + fy(i, rr);
+      web += '<polygon class="skill-radar-web" points="' + pts + '"/>';
+    }
+    var spokes = '', dots = '', labels = '', poly = '';
+    for (var j = 0; j < N; j++) {
+      spokes += '<line class="skill-radar-axis" x1="' + CX + '" y1="' + CY +
+        '" x2="' + fx(j, R) + '" y2="' + fy(j, R) + '"/>';
+      var sc = Math.max(1, Math.min(4, axes[j].score)), dr = R * sc / 4;
+      poly += (j ? ' ' : '') + fx(j, dr) + ',' + fy(j, dr);
+      var hot = !!axes[j].inDemand;
+      dots += '<circle class="skill-radar-dot' + (hot ? ' is-hot' : '') +
+        '" cx="' + fx(j, dr) + '" cy="' + fy(j, dr) + '" r="2.6"/>';
+      var c = Math.cos(ang(j)), ly = +fy(j, LR);
+      var anchor = c > 0.34 ? 'start' : (c < -0.34 ? 'end' : 'middle');
+      labels += radarLabel(esc(axes[j].axis), +fx(j, LR), anchor, ly + 3, ly - 2, hot);
+    }
+
+    var svg = '<svg class="skill-radar" viewBox="0 0 340 264" ' +
+      'preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Competency radar across ' + N + ' domains">' +
+      web + spokes +
+      '<polygon class="skill-radar-poly" points="' + poly + '"/>' +
+      dots + labels +
+    '</svg>';
+    return '<div class="skill-radar-wrap">' + svg + '</div>';
+  }
+
   // renderSkills — grouped by category in skills.order. Seg color = LEVEL tier;
-  // --cat-color colors ONLY the ledge + name.
+  // --cat-color colors ONLY the ledge + name. A radar (skills.radar) sits above.
   function renderSkills(d) {
     var sk = d.skills || {};
     var order = Array.isArray(sk.order) ? sk.order : [];
@@ -540,6 +612,7 @@
     if (!blocks.replace(/\s/g, '')) return null; // no categories → no pane
 
     var html = '<div class="section-pane" data-pane="skills" id="pane-skills">' +
+      renderSkillRadar(d) +
       '<div class="skills-hud">' + blocks + '</div>' +
       '<a class="backtotop" href="#top" aria-hidden="true">↑ Contents</a>' +
     '</div>';

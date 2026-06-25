@@ -201,6 +201,23 @@ What each `projects[]` field drives — see the `data.js` authoring contract for
 
 The renderer leaves **every** project card **collapsed** by default and reuses Experience's `.item-card[data-expand] .item-head` markup, so card-expand and the "Projects" section filter work with no extra wiring. **Projects carry NO competencies, scope, metric-badge, or contrib-num** (the `.project` class drives the cyan accent via CSS — don't port those Experience-only fields). There is no project tile, hero gradient, or metric tag.
 
+### Skills section — radar axes (optional)
+
+Above the by-category level-bar list, the Skills pane can open with a **competency radar** — a spider chart of **5–8 broad competency DOMAINS** of the person's own craft (a chef's *Modernist Cuisine · Garde Manger · Menu Development · Kitchen Leadership · Cost Control*; an AI engineer's *Machine Learning · Software Development · Data Engineering*). It's the at-a-glance **shape** of who they are; the category list below stays as the detail. You author it as `skills.radar` (see the `data.js` authoring contract). **Omit it when there's no clear domain story** — the section degrades to the list alone, and a radar needs ≥ 3 axes to draw.
+
+**This works for EVERY profession** — chef, nurse, electrician, teacher, founder — because every serious field has a recognized competency framework a hiring manager already trusts. Your job is to **find that field's vocabulary, never invent one.**
+
+Run this each time:
+
+1. **Infer the field + seniority** from the person's experiences and skills (e.g. "ICU charge nurse"; "residential plumber / shop owner"; "AI-leaning product lead").
+2. **Web-search that field's recognized competency framework** and name the axes from it. If a field isn't listed below, search `"{profession}" competency framework OR certification exam domains {current year}`. Anchors:
+   - Chef → **ACF** (Master/Executive Chef domains) · Physician → **ACGME** six core competencies + specialty milestones · Nurse → **AACN Essentials / QSEN** · Skilled trades (plumber, electrician) → **NCCER** / DOL apprenticeship / licensing-exam domains · Teacher → **InTASC / Danielson / NGSS** · Software → **SFIA** · Product → **SVPG** · Design → recognized UX/visual-design competency models · Nonprofit → **CNP / CFRE** · Public sector → **OECD DGPF / UK DDaT**.
+3. **Pick 5–8 axes at a single altitude** — broad competency AREAS of that craft, **not** micro-skills ("knife sharpening", "Python") and **not** vague traits ("hard-working"). **Title Case, ≤ 4 words**, instantly legible to a hiring manager **in that field**. **Never let tech/office vocabulary leak onto a non-tech person** — a plumber's radar reads like a plumbing supervisor wrote it.
+4. **Score each 1–4** (`level`'s scale: 1 foundational … 4 master), from the person's evidence. **Calibrate for shape (T-shape):** 1–2 *deep* core-craft axes at 4, the rest at 2–3. **Never ship an all-4s radar** — a filled blob carries no signal; even a master has relative strengths. Require **≥ 2 pieces of evidence** before an axis qualifies; if fewer than 5 clear that bar, **ship 4 clean axes — never pad or invent.**
+5. **Tag what's in demand (optional, non-blocking):** web-search `LinkedIn "Skills on the Rise" {current year}` (use the **actual current year** — the list is re-published annually) and set `inDemand: true` on matching axes. This only adds an accent; **never rename or drop a core axis just because it isn't trending.**
+
+`score` is a 1–4 shape input, **never a percentage and never surfaced as a verdict**. Semantic values only — **no hex, no color** in `data.js`.
+
 ### Promotion / tenure within one company
 
 A role progression at one employer — "Associate Analyst → Business Analyst at Nova Healthcare" — is common; render it **natively**, not as a hand-patched one-off. Two shapes, pick by the work:
