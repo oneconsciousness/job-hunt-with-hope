@@ -1405,7 +1405,20 @@
             if (mo) mo.disconnect(); if (poll) clearInterval(poll);
             holder.removeAttribute('data-embed-pending');
             if (ok) { if (loader && loader.parentNode) loader.parentNode.removeChild(loader); }
-            else { holder.innerHTML = '<a class="social-embed-static" href="' + esc(url) + '" target="_blank" rel="noopener"><span class="material-symbols-rounded">open_in_new</span>View on ' + esc(name) + '</a>'; }
+            else {
+              // Embed never painted (the routine case for tokenless Instagram/X
+              // widgets). Clear the reserved height so the card collapses to its
+              // natural size — without this the holder stays embed-tall and the
+              // CSS columns / Overview 2-up strip can't reflow (dead space). The
+              // .social-cls-failed class restyles the card as an intentional,
+              // richer brand fallback: chip + caption (already in head) + link.
+              holder.style.minHeight = '';
+              card.classList.add('social-cls-failed');
+              holder.innerHTML = '<a class="social-embed-fallback" href="' + esc(url) + '" target="_blank" rel="noopener"'
+                + ' style="--brand:' + brandColor(key) + '"><span class="social-embed-fallback-cta">'
+                + '<span class="material-symbols-rounded">open_in_new</span>View on ' + esc(name) + '</span>'
+                + '<span class="social-go material-symbols-rounded">arrow_outward</span></a>';
+            }
           }
           function check() { var f = holder.querySelector('iframe'); if (f && f.clientHeight > 40) finish(true); }
           function onload() { setTimeout(check, 250); }
