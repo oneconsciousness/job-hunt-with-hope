@@ -264,6 +264,8 @@ The Throughline strip itself — rail, hex nodes, playhead, pause/hover/click/pr
 
 **`traveler`** — the playhead glyph the user chose (see the traveler picker in "What to ask the user before generating"): `"dot"` (the default soft-orange glow dot) · `"<slug>"` for one of the bundled travelers in `$PLUGIN_ROOT/assets/icons/travelers/` (`paper-plane`, `car`, `train`, `sailboat`, `bicycle`, `rocket`, `footprints`) · `{"inline": "<svg…>"}` for a found or hand-made glyph, which **you inline at generation**. **No picker UI ships in the artifact** — choosing happens in chat; the artifact just renders the choice.
 
+**`timeline_ridge` (opt-in, default off)** — a top-level boolean sibling of `timeline`. **Leave it out for the default flat Throughline** — nodes ride one clean baseline, which reads cleanest for most careers. Set `timeline_ridge: true` to draw the **density "mountain ridge"** silhouette as a **static backdrop behind the flat nodes**: busy eras rise, quiet stretches stay near the baseline. The nodes do **not** move — the ridge sits behind them, token-styled per canon (no hex). Best for careers with visibly clustered seasons; a single-thread career renders near-flat even when enabled, so omit it there. Omitting the key (or setting `false`) is byte-identical to today's flat output.
+
 ### Social Feed app — field mapping (opt-in, live embeds)
 
 The Social Feed is an **optional app** (offered via the app catalog — see "What to ask the user before generating"). Like every section now, it is **entirely runtime-driven** — `portfolio.js`'s `renderSocial` builds both pieces from the `social` array:

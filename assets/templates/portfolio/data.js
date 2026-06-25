@@ -47,6 +47,8 @@
      certifications: object[] (req, may be []) — cert cards, newest-first.
      resume:      object  (req) — #resume-view source of truth.
      timeline:    object[] (req, may be []) — Throughline entries.
+     timeline_ridge: boolean? (opt, default false) — opt-in density ridge backdrop
+                  behind the flat Throughline (see A.10). Omit/false = flat default.
      social:      object[] (OPTIONAL — omit the key entirely when no Social app).
      traveler:    string | {inline:"<svg>"}  — Throughline playhead glyph.
    }
@@ -242,6 +244,15 @@
      traveler:  "dot" (default soft-orange glow) | "<slug>" (one of
                 assets/icons/travelers/: paper-plane, car, train, sailboat,
                 bicycle, rocket, footprints) | { inline: "<svg…>" } (custom).
+
+     timeline_ridge: boolean? (opt, default false) — top-level sibling of
+                timeline[]. When true, draws the density "mountain ridge"
+                silhouette as a STATIC BACKDROP behind the flat Throughline:
+                busy eras rise, quiet stretches stay near the baseline. Nodes
+                do NOT move — they stay on the single flat baseline; the ridge
+                sits behind them (z-index 0). Omit or set false for the flat
+                default (byte-identical to no key). Single-thread careers render
+                near-flat even when enabled.
 
      social[]:  OPTIONAL key — present ONLY when the Social Feed app is added;
                 omit the key entirely otherwise. One entry per featured post:

@@ -1617,13 +1617,18 @@
     }
     var dMin = Infinity, dMax = -Infinity;
     density.forEach(function (v) { if (v < dMin) dMin = v; if (v > dMax) dMax = v; });
-    // STRICT LEFT→RIGHT: the timeline is now ONE clean flat line. The density
-    // "ridge" silhouette and the per-node "lift" both displaced things off the
-    // baseline (the ridge waved above the line, the lift floated nodes up the
-    // curve) — that vertical wobble fought the horizontal read, so both are
-    // OFF. Nodes + traveler ride a single baseline (lift = 0); the ridge SVG is
-    // not drawn (hasRidge = false), so .tl-rail keeps its compact base margins.
-    var hasRidge = false;
+    // STRICT LEFT→RIGHT: the timeline is ONE clean flat line by default. The
+    // per-node "lift" floated nodes up the density curve — that vertical wobble
+    // fought the horizontal read, so it is permanently OFF (lift = 0): nodes +
+    // traveler always ride a single baseline.
+    //
+    // OPT-IN RIDGE (issue #8): the density silhouette is drawn ONLY as a static
+    // BACKDROP behind the flat nodes when the author sets
+    // HOPE_DATA.timeline_ridge = true. Nodes never move — they stay on the flat
+    // baseline. Default OFF: when timeline_ridge is absent/false, hasRidge is
+    // false, the ridge SVG is not drawn, and .tl-rail keeps its compact base
+    // margins (byte-identical to the flat default).
+    var hasRidge = !!hopeData.timeline_ridge;
     entries.forEach(function (e) { e.lift = 0; });
 
     var rail = document.createElement('div');
