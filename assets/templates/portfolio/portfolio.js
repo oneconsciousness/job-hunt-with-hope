@@ -1154,7 +1154,18 @@
   var railPhoto = document.getElementById('photo-upload');
   var railPhotoHome = railPhoto ? railPhoto.parentNode : null; // .identity-row
   var railPhotoNext = railPhoto ? railPhoto.nextSibling : null;
+  // The About bio (.summary) lives inside .identity-info at narrow widths. At
+  // wide (≥1440px) it is lifted OUT of the identity rail entirely and parked at
+  // the TOP of the RIGHT column, above the apps grid — so the left rail stays
+  // identity-only. Capture its home slot so unmountRails restores it exactly.
+  var railSummary = railInfo ? railInfo.querySelector('.summary') : null;
+  var railSummaryHome = railSummary ? railSummary.parentNode : null; // .identity-info
+  var railSummaryNext = railSummary ? railSummary.nextSibling : null;
+  var railSectionGrid = document.getElementById('section-grid-mount');
+  var railSectionGridHome = railSectionGrid ? railSectionGrid.parentNode : null; // .wrap
+  var railSectionGridNext = railSectionGrid ? railSectionGrid.nextSibling : null;
   var railAside = null;
+  var railAbout = null; // the RIGHT-column aside: About bio above the apps grid
   function mountEyebrows() {
     var strip = document.querySelector('.identity-card > .tl-strip');
     if (!strip) return;
@@ -1172,24 +1183,40 @@
   }
   function mountRails() {
     if (!railInfo || !railInfoHome) return;
+    var wrap = document.querySelector('.wrap');
     if (!railAside) {
       railAside = document.createElement('aside');
       railAside.className = 'summary-rail';
       railAside.setAttribute('aria-label', 'Profile');
     }
-    if (!railAside.parentNode) {
-      var wrap = document.querySelector('.wrap');
-      if (wrap) wrap.appendChild(railAside);
-    }
+    if (!railAside.parentNode && wrap) wrap.appendChild(railAside);
     if (railPhoto && railPhoto.parentNode !== railAside) railAside.appendChild(railPhoto);
     if (railInfo.parentNode !== railAside) railAside.appendChild(railInfo);
+    // RIGHT column: lift the About bio out of the identity rail and stack it
+    // ABOVE the apps grid. The .about-rail aside holds the bio then the
+    // section-grid so both share grid-column 3 and read top→bottom.
+    if (railSummary && railSectionGrid) {
+      if (!railAbout) {
+        railAbout = document.createElement('aside');
+        railAbout.className = 'about-rail';
+        railAbout.setAttribute('aria-label', 'About');
+      }
+      if (!railAbout.parentNode && wrap) wrap.appendChild(railAbout);
+      if (railSummary.parentNode !== railAbout) railAbout.appendChild(railSummary);
+      if (railSectionGrid.parentNode !== railAbout) railAbout.appendChild(railSectionGrid);
+    }
     mountEyebrows();
   }
   function unmountRails() {
     if (railInfo && railInfoHome && railInfo.parentNode !== railInfoHome) railInfoHome.insertBefore(railInfo, railInfoNext);
     if (railPhoto && railPhotoHome && railPhoto.parentNode !== railPhotoHome) railPhotoHome.insertBefore(railPhoto, railPhotoNext);
+    // Restore the apps grid as a direct .wrap child, then drop the About bio
+    // back inside .identity-info at its exact original slot.
+    if (railSectionGrid && railSectionGridHome && railSectionGrid.parentNode !== railSectionGridHome) railSectionGridHome.insertBefore(railSectionGrid, railSectionGridNext);
+    if (railSummary && railSummaryHome && railSummary.parentNode !== railSummaryHome) railSummaryHome.insertBefore(railSummary, railSummaryNext);
     unmountEyebrows();
     if (railAside && railAside.parentNode) railAside.parentNode.removeChild(railAside);
+    if (railAbout && railAbout.parentNode) railAbout.parentNode.removeChild(railAbout);
   }
   function syncRails() {
     if (railsMql && railsMql.matches) mountRails(); else unmountRails();
@@ -1590,15 +1617,14 @@
     }
     var dMin = Infinity, dMax = -Infinity;
     density.forEach(function (v) { if (v < dMin) dMin = v; if (v > dMax) dMax = v; });
-    var hasRidge = (dMax - dMin) >= 0.25;
-    function liftAt(pct) {
-      if (!hasRidge) return 0;
-      var f = pct / 100 * SAMPLES;
-      var i0 = Math.floor(f), i1 = Math.min(SAMPLES, i0 + 1), t = f - i0;
-      var v = density[i0] * (1 - t) + density[i1] * t;
-      return (v - dMin) / (dMax - dMin) * RIDGE_H;
-    }
-    entries.forEach(function (e) { e.lift = liftAt(e.pct); });
+    // STRICT LEFT→RIGHT: the timeline is now ONE clean flat line. The density
+    // "ridge" silhouette and the per-node "lift" both displaced things off the
+    // baseline (the ridge waved above the line, the lift floated nodes up the
+    // curve) — that vertical wobble fought the horizontal read, so both are
+    // OFF. Nodes + traveler ride a single baseline (lift = 0); the ridge SVG is
+    // not drawn (hasRidge = false), so .tl-rail keeps its compact base margins.
+    var hasRidge = false;
+    entries.forEach(function (e) { e.lift = 0; });
 
     var rail = document.createElement('div');
     rail.className = 'tl-rail';
@@ -1651,12 +1677,17 @@
     entries.forEach(function (e, i) {
       var node = document.createElement('button');
       node.type = 'button';
+      // STRICT LEFT→RIGHT: on SCREEN nodes sit on ONE baseline (only the active
+      // node shows a label, so there is no overlap and the eye flows
+      // horizontally). The former tl-below / tl-far tiers bounced labels
+      // above/below + near/far the line — that zig-zag is removed. For PRINT /
+      // continuous export EVERY label renders at once, so a single BELOW-only
+      // 2-row stagger (tl-stagger on alternate nodes, CSS-gated to print) clears
+      // dense clusters without ever lifting a label above the line.
       node.className = 'tl-node tl-' + e.type +
         (e.endM === null ? ' tl-ongoing' : '') +
-        (i % 2 ? ' tl-below' : '') +
-        (i % 4 >= 2 ? ' tl-far' : '');
+        (i % 2 ? ' tl-stagger' : '');
       node.style.left = e.pct + '%';
-      if (e.lift) node.style.top = 'calc(50% - ' + e.lift.toFixed(1) + 'px)';
       node.setAttribute('aria-label', e.label + ', ' + e.dateText);
       var hex = document.createElement('span');
       hex.className = 'tl-hex';

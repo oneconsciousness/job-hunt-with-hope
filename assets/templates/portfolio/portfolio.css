@@ -1034,50 +1034,48 @@ body.print-continuous .item-meta { flex-wrap: nowrap; gap: 10px; }
 
 /* ─── THE THROUGHLINE — print (T8) ──────────────────────────────────────
    Static rail in EVERY portfolio print style: playhead + tooltip hidden, ALL
-   node labels rendered. Two-row above/below alternation alone is NOT enough
-   at real entry densities (~15 nodes on a ~644px printed rail put same-row
-   neighbors as close as 26px while nowrap labels run 150-200px wide — pure
-   overprint). So labels print WRAPPED and narrow (max-width 80px, 8.5px/1.15
-   text, 7.5px date) on FOUR tiers: .tl-below (every 2nd node, JS-set) flips
-   under the rail, .tl-far (3rd+4th of each quartet, JS-set) pushes to an
-   outer row above/below — same-tier neighbors are 4 entries apart, which
-   clears the densest clusters. Below rows clear the year ticks; rail margins
-   reserve the tier depth. Colors ride the tokens, so ink's monochrome token
-   override covers hexes/labels/ticks for free; showcase inherits this block
-   unchanged. Resume modes never print the strip — it rides the existing
-   identity-card hide (body.print-doc-resume). */
+   node labels rendered. On screen only the ACTIVE node shows a label, so the
+   line reads cleanly left→right; but in print every label prints at once. To
+   keep the strict left→right read (no labels ever bounce ABOVE the line) while
+   still clearing dense clusters (~12 nodes on a ~644px rail put neighbors as
+   close as ~26px), labels print WRAPPED and narrow (max-width 78px, 8.5px/1.15
+   text, 7.5px date) and sit in TWO rows that BOTH hang BELOW the rail:
+   alternate nodes (.tl-stagger, JS-set on every 2nd node) drop to the lower
+   row, so same-row neighbors are 2 entries apart — enough horizontal clearance
+   for the narrow wrapped labels. Single horizontal stagger only, no vertical
+   zig-zag. Colors ride the tokens, so ink's monochrome token override covers
+   hexes/labels/ticks for free; showcase inherits this block unchanged. Resume
+   modes never print the strip — it rides the existing identity-card hide. */
 @media print {
   .tl-playhead, .tl-tooltip { display: none !important; }
-  .tl-rail { margin: 132px 10px 140px; }
-  .tl-rail.tl-has-ridge { margin-top: 160px; } /* + RIDGE_H of label headroom over lifted nodes */
+  .tl-rail { margin: 34px 10px 116px; }
+  .tl-rail.tl-has-ridge { margin-top: 60px; }
   .tl-node .tl-hex, .tl-node.tl-ongoing::before { transform: none !important; }
-  .tl-node-label { opacity: 1 !important; transform: translate(-50%, 0) !important; max-width: 80px; white-space: normal; text-align: center; }
+  /* All labels hang BELOW the rail — strict left→right, never above the line. */
+  .tl-node-label { opacity: 1 !important; bottom: auto; top: calc(100% + 14px); transform: translate(-50%, 0) !important; max-width: 78px; white-space: normal; text-align: center; }
   .tl-node-text { font-size: 8.5px; line-height: 1.15; }
   .tl-node-date { font-size: 7.5px; line-height: 1.2; }
   .tl-node.tl-clamp-start .tl-node-label, .tl-node.tl-clamp-end .tl-node-label { transform: translate(0, 0) !important; }
   .tl-node.tl-clamp-start .tl-node-label { text-align: left; }
   .tl-node.tl-clamp-end .tl-node-label { text-align: right; }
-  .tl-node.tl-far .tl-node-label { bottom: calc(100% + 70px); }
-  .tl-node.tl-below .tl-node-label { bottom: auto; top: calc(100% + 18px); }
-  .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% + 78px); }
+  /* Lower row for alternate nodes — single horizontal stagger, still below. */
+  .tl-node.tl-stagger .tl-node-label { top: calc(100% + 62px); }
 }
 
 /* THE THROUGHLINE on the continuous canvas — mirror of the print block above
    (the continuous height is measured ON SCREEN, so the measured layout must
    BE the printed layout — same doctrine as the rest of this section). */
 body.print-continuous .tl-playhead, body.print-continuous .tl-tooltip { display: none !important; }
-body.print-continuous .tl-rail { margin: 132px 10px 140px; }
-body.print-continuous .tl-rail.tl-has-ridge { margin-top: 160px; }
+body.print-continuous .tl-rail { margin: 34px 10px 116px; }
+body.print-continuous .tl-rail.tl-has-ridge { margin-top: 60px; }
 body.print-continuous .tl-node .tl-hex, body.print-continuous .tl-node.tl-ongoing::before { transform: none !important; }
-body.print-continuous .tl-node-label { opacity: 1 !important; transform: translate(-50%, 0) !important; max-width: 80px; white-space: normal; text-align: center; }
+body.print-continuous .tl-node-label { opacity: 1 !important; bottom: auto; top: calc(100% + 14px); transform: translate(-50%, 0) !important; max-width: 78px; white-space: normal; text-align: center; }
 body.print-continuous .tl-node-text { font-size: 8.5px; line-height: 1.15; }
 body.print-continuous .tl-node-date { font-size: 7.5px; line-height: 1.2; }
 body.print-continuous .tl-node.tl-clamp-start .tl-node-label, body.print-continuous .tl-node.tl-clamp-end .tl-node-label { transform: translate(0, 0) !important; }
 body.print-continuous .tl-node.tl-clamp-start .tl-node-label { text-align: left; }
 body.print-continuous .tl-node.tl-clamp-end .tl-node-label { text-align: right; }
-body.print-continuous .tl-node.tl-far .tl-node-label { bottom: calc(100% + 70px); }
-body.print-continuous .tl-node.tl-below .tl-node-label { bottom: auto; top: calc(100% + 18px); }
-body.print-continuous .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% + 78px); }
+body.print-continuous .tl-node.tl-stagger .tl-node-label { top: calc(100% + 62px); }
 
 /* ─── H1 · Wide-screen rails (≥1440px) ──────────────────────────────────
    THE RAILS CONTRACT: at wide viewports the summary floats in a quiet LEFT
@@ -1112,10 +1110,13 @@ body.print-continuous .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% +
    rendering stays byte-identical to the single-column layout. */
 @media (min-width: 1440px) {
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .wrap {
-    max-width: 1488px; /* 832 center + 2×280 rail + 2×24 gap + 48 padding */
+    max-width: 1560px; /* center + identity rail + wider right column + gaps + padding */
     display: grid;
-    grid-template-columns: minmax(250px, 1fr) minmax(0, 832px) minmax(250px, 1fr);
-    column-gap: 24px;
+    /* REBALANCED: left rail is now identity-ONLY (compact), so it narrows; the
+       RIGHT column widens to give the relocated About bio a premium, readable
+       measure above the apps tiles (not a cramped sliver). */
+    grid-template-columns: minmax(232px, 0.82fr) minmax(0, 760px) minmax(330px, 1.18fr);
+    column-gap: 32px;
   }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .wrap > * { grid-column: 2; min-width: 0; }
   /* LEFT rail — the relocated summary, top-aligned with the identity card
@@ -1126,11 +1127,9 @@ body.print-continuous .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% +
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .wrap > .summary-rail { grid-column: 1; grid-row: 2 / span 24; align-self: start; }
   /* Photo rides at the TOP of the rail: full rail width, forced square (img covers). */
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .photo-upload { width: 100%; height: auto; aspect-ratio: 1 / 1; margin: 0 0 16px; }
-  /* "About" eyebrow lives ON the summary now (not the aside) so the photo sits ABOVE the header. */
-  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .summary::before { content: "About"; display: block; width: max-content; border-top: 2px solid var(--accent-orange); padding-top: 7px; margin-bottom: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--text-muted); }
-  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .summary { margin: 20px 0 0; max-width: none; font-size: 13px; }
-  /* The full identity now rides into the rail. Give the moved .identity-info room
-     under the square photo; contact pills stack full-width so long links wrap. */
+  /* LEFT rail is identity-ONLY now — the About bio has moved to the RIGHT
+     column. Give the identity-info room under the square photo; contact pills
+     stack full-width so long links wrap. */
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .identity-info { flex: none; }
   /* PREMIUM STATS — drop the code-y "//" strip for a 2x2 metric grid that echoes
      the overview KPIs (.summary-stat): big Inter numeral over a mono micro-label. */
@@ -1142,9 +1141,8 @@ body.print-continuous .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% +
      icons in accent for a branded, editorial feel. Long links wrap in place. */
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row { flex-direction: column; align-items: stretch; gap: 0; margin-top: 20px; border-top: 1px solid var(--border-subtle); }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item { width: 100%; justify-content: flex-start; align-items: center; gap: 11px; padding: 10px 2px; border: none; border-bottom: 1px solid var(--border-subtle); border-radius: 0; background: transparent; color: var(--text-secondary); font-size: 12px; word-break: break-word; }
-  /* Last contact link drops its hairline — the "About" ledge below is the
-     sole divider, so identity → about reads as one continuous rail (no
-     stacked double-rule that made the bio feel detached). */
+  /* Last contact link drops its hairline — it's the final element of the
+     identity-only left rail, so a trailing rule would dangle. */
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item:last-child { border-bottom: none; }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row a.item:hover { background: transparent; color: var(--text-primary); border-color: var(--border-subtle); }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item .material-symbols-rounded { font-size: 16px; color: var(--accent-orange); }
@@ -1159,11 +1157,19 @@ body.print-continuous .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% +
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .tl-rail-eyebrow { display: none; }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .identity-card:has(> .tl-strip:not([hidden])) .tl-rail-eyebrow { display: block; margin: 0 0 9px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-orange); }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .identity-card:has(> .tl-strip:not([hidden])) > #throughline { border-top: none; margin-top: 4px; }
-  /* RIGHT rail — the section-grid itself (never moved, never duplicated):
-     tiles stack single-column, same anatomy and behavior, and the rail
-     rides sticky so app navigation stays in reach while the center column
-     scrolls. align-self:start is load-bearing — a default-stretched grid
-     item fills its whole area and leaves sticky no room to travel. top
-     offset matches the .wrap top padding. */
-  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .wrap > .section-grid { grid-column: 3; grid-row: 2 / span 24; align-self: start; position: sticky; top: 24px; grid-template-columns: 1fr; margin-bottom: 0; }
+  /* RIGHT column — the .about-rail aside (JS-built at wide): the About bio at
+     the TOP, then the apps grid (.section-grid, moved INTO the aside by JS so
+     both share column 3 and read top→bottom). The whole column rides sticky so
+     About + app navigation stay in reach while the center column scrolls.
+     align-self:start is load-bearing — a default-stretched grid item fills its
+     whole area and leaves sticky no room to travel. top offset matches the
+     .wrap top padding. */
+  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .wrap > .about-rail { grid-column: 3; grid-row: 2 / span 24; align-self: start; position: sticky; top: 24px; }
+  /* The About bio — premium editorial block at the top of the right column:
+     a thin orange ledge over a mono ABOUT eyebrow, then a generous, readable
+     measure (the widened column lets it breathe — no cramped sliver). */
+  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .about-rail .summary::before { content: "About"; display: block; width: max-content; border-top: 2px solid var(--accent-orange); padding-top: 7px; margin-bottom: 11px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-orange); }
+  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .about-rail .summary { margin: 0 0 22px; max-width: none; font-size: 14px; line-height: 1.72; color: var(--text-secondary); }
+  /* Apps grid below the bio — single-column tiles, same anatomy and behavior. */
+  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .about-rail > .section-grid { grid-template-columns: 1fr; margin-bottom: 0; }
 }
