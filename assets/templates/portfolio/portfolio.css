@@ -694,6 +694,10 @@ h1.name { margin: 0 0 2px; font-size: 22px; font-weight: 700; letter-spacing: -0
 .overview-latest { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
 .overview-latest .social-card { display: flex; flex-direction: column; }
 .overview-latest .social-cls-profile .social-profile { flex: 1; }
+/* Failed embed (issue #7): release the reserved height so the card collapses to
+   its link instead of leaving dead space, and don't stretch it in the 2-up strip. */
+.social-cls-failed .social-embed { min-height: 0; }
+.overview-latest .social-card.social-cls-failed { align-self: start; }
 .overview-highlights { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
 .feature-card { display: flex; align-items: center; gap: 11px; padding: 12px 13px; background: var(--card-bg); border: 1px solid var(--border-default); border-left: 3px solid var(--accent); border-radius: var(--radius-card); text-decoration: none; transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.25s; }
 .feature-card:hover { background: var(--card-bg-hover); transform: translateY(-1px); }

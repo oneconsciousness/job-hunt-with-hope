@@ -1405,7 +1405,7 @@
             if (mo) mo.disconnect(); if (poll) clearInterval(poll);
             holder.removeAttribute('data-embed-pending');
             if (ok) { if (loader && loader.parentNode) loader.parentNode.removeChild(loader); }
-            else { holder.innerHTML = '<a class="social-embed-static" href="' + esc(url) + '" target="_blank" rel="noopener"><span class="material-symbols-rounded">open_in_new</span>View on ' + esc(name) + '</a>'; }
+            else { holder.style.minHeight = '0'; card.classList.add('social-cls-failed'); holder.innerHTML = '<a class="social-embed-static" href="' + esc(url) + '" target="_blank" rel="noopener"><span class="material-symbols-rounded">open_in_new</span>View on ' + esc(name) + '</a>'; }
           }
           function check() { var f = holder.querySelector('iframe'); if (f && f.clientHeight > 40) finish(true); }
           function onload() { setTimeout(check, 250); }
@@ -1617,13 +1617,15 @@
     }
     var dMin = Infinity, dMax = -Infinity;
     density.forEach(function (v) { if (v < dMin) dMin = v; if (v > dMax) dMax = v; });
-    // STRICT LEFT→RIGHT: the timeline is now ONE clean flat line. The density
-    // "ridge" silhouette and the per-node "lift" both displaced things off the
-    // baseline (the ridge waved above the line, the lift floated nodes up the
-    // curve) — that vertical wobble fought the horizontal read, so both are
-    // OFF. Nodes + traveler ride a single baseline (lift = 0); the ridge SVG is
-    // not drawn (hasRidge = false), so .tl-rail keeps its compact base margins.
-    var hasRidge = false;
+    // STRICT LEFT→RIGHT baseline: the per-node "lift" stays OFF (lift = 0) so
+    // nodes + traveler ride one flat line — no zig-zag (PR #6's win, kept).
+    // The density "ridge" is DECOUPLED from the lift (issue #8): it is a pure
+    // z-index:0 backdrop silhouette (portfolio.css .tl-ridge) that never
+    // displaces nodes, so it can return as a concentration cue without the
+    // wobble. Opt-in per portfolio via window.HOPE_DATA.timeline_ridge (default
+    // off preserves PR #6's flat default); when on, .tl-has-ridge adds the
+    // label headroom the backdrop needs.
+    var hasRidge = !!(window.HOPE_DATA && window.HOPE_DATA.timeline_ridge);
     entries.forEach(function (e) { e.lift = 0; });
 
     var rail = document.createElement('div');
