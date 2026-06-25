@@ -494,8 +494,8 @@ h1.name { margin: 0 0 2px; font-size: 22px; font-weight: 700; letter-spacing: -0
 /* Neutral chips — skill-chip bones, no category colors. */
 .summary-interests .skill-chip { background: var(--surface-2); color: var(--text-secondary); border-color: var(--border-default); }
 
-.section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-.section-btn { background: var(--card-bg); border: 1px solid var(--border-default); border-radius: var(--radius-button); padding: 12px 14px; display: flex; align-items: center; gap: 12px; text-align: left; font-family: inherit; box-shadow: var(--shadow-sm); transition: all 0.2s ease; }
+.section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 16px; }
+.section-btn { background: var(--card-bg); border: 1px solid var(--border-default); border-radius: var(--radius-button); padding: 9px 12px; display: flex; align-items: center; gap: 11px; text-align: left; font-family: inherit; box-shadow: var(--shadow-sm); transition: all 0.2s ease; }
 /* App identity colors — the timeline's type palette threads into each app's
    tile and content borders (color = navigation: the slate hex on the
    timeline leads to the slate-edged app). Fill stays BRAND orange on the
@@ -513,11 +513,11 @@ h1.name { margin: 0 0 2px; font-size: 22px; font-weight: 700; letter-spacing: -0
 .section-btn[data-section="social"] { --app: var(--app-social); }
 .section-btn:hover { background: var(--card-bg-hover); border-color: var(--border-hover); transform: translateY(-1px); }
 .section-btn.active { background: var(--accent-orange); border-color: var(--accent-orange); box-shadow: var(--accent-orange-glow); }
-.section-btn .icon { width: 32px; height: 32px; border-radius: var(--radius-button); background: var(--surface-2); background: color-mix(in srgb, var(--app) 14%, transparent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--app); transition: all 0.2s; }
+.section-btn .icon { width: 28px; height: 28px; border-radius: var(--radius-button); background: var(--surface-2); background: color-mix(in srgb, var(--app) 14%, transparent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--app); transition: all 0.2s; }
 .section-btn.active .icon { background: rgba(255,255,255,0.22); color: white; }
-.section-btn .icon .material-symbols-rounded { font-size: 20px; }
-.section-btn .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
-.section-btn .label { font-size: 13.5px; font-weight: 700; letter-spacing: -0.005em; color: var(--text-primary); }
+.section-btn .icon .material-symbols-rounded { font-size: 18px; }
+.section-btn .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.section-btn .label { font-size: 13px; font-weight: 700; letter-spacing: -0.005em; color: var(--text-primary); }
 .section-btn.active .label { color: white; }
 .section-btn .meta { display: flex; align-items: center; gap: 8px; }
 .section-btn .count { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.04em; flex-shrink: 0; }
@@ -1128,7 +1128,7 @@ body.print-continuous .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% +
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .photo-upload { width: 100%; height: auto; aspect-ratio: 1 / 1; margin: 0 0 16px; }
   /* "About" eyebrow lives ON the summary now (not the aside) so the photo sits ABOVE the header. */
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .summary::before { content: "About"; display: block; width: max-content; border-top: 2px solid var(--accent-orange); padding-top: 7px; margin-bottom: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: var(--text-muted); }
-  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .summary { margin: 26px 0 0; max-width: none; font-size: 13px; }
+  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .summary { margin: 20px 0 0; max-width: none; font-size: 13px; }
   /* The full identity now rides into the rail. Give the moved .identity-info room
      under the square photo; contact pills stack full-width so long links wrap. */
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .identity-info { flex: none; }
@@ -1141,7 +1141,11 @@ body.print-continuous .tl-node.tl-below.tl-far .tl-node-label { top: calc(100% +
   /* PREMIUM CONTACT — hairline-divided list (not boxy full-width pills), with the
      icons in accent for a branded, editorial feel. Long links wrap in place. */
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row { flex-direction: column; align-items: stretch; gap: 0; margin-top: 20px; border-top: 1px solid var(--border-subtle); }
-  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item { width: 100%; justify-content: flex-start; align-items: center; gap: 11px; padding: 11px 2px; border: none; border-bottom: 1px solid var(--border-subtle); border-radius: 0; background: transparent; color: var(--text-secondary); font-size: 12px; word-break: break-word; }
+  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item { width: 100%; justify-content: flex-start; align-items: center; gap: 11px; padding: 10px 2px; border: none; border-bottom: 1px solid var(--border-subtle); border-radius: 0; background: transparent; color: var(--text-secondary); font-size: 12px; word-break: break-word; }
+  /* Last contact link drops its hairline — the "About" ledge below is the
+     sole divider, so identity → about reads as one continuous rail (no
+     stacked double-rule that made the bio feel detached). */
+  body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item:last-child { border-bottom: none; }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row a.item:hover { background: transparent; color: var(--text-primary); border-color: var(--border-subtle); }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item .material-symbols-rounded { font-size: 16px; color: var(--accent-orange); }
   body:not(.print-continuous):not(.print-doc-resume):not(.print-doc-portfolio) .summary-rail .contact-row .item svg { width: 15px; height: 15px; color: var(--accent-orange); }
