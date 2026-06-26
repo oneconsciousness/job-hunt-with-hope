@@ -1464,8 +1464,13 @@
       var embedHTML = null, embedScript = null, embedH = cfg.h || 240;
       if (cfg.cls === 'iframe') {
         var src = null; try { src = cfg.src(url); } catch (e) { src = null; }
+        // scrolling="auto" (not "no"): a post taller than embedH (a LinkedIn
+        // post with a re-share + image, a long Substack) overflows the fixed
+        // height — without scroll the tail is clipped and unreachable. auto adds
+        // a scrollbar ONLY when content overflows, so fixed-size players (YouTube/
+        // Vimeo/Spotify) stay clean while text posts become fully readable.
         if (src) embedHTML = '<iframe src="' + esc(src) + '" height="' + embedH
-          + '" loading="lazy" frameborder="0" scrolling="no" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="' + esc(name) + ' embed"></iframe>';
+          + '" loading="lazy" frameborder="0" scrolling="auto" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="' + esc(name) + ' embed"></iframe>';
       } else if (cfg.cls === 'script' && (!POST_RE[key] || POST_RE[key].test(url))) {
         try { embedHTML = cfg.block(url); } catch (e) { embedHTML = null; }
         if (embedHTML) embedScript = cfg.script;
