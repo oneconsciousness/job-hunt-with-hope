@@ -213,6 +213,19 @@ When **porting between iterations** (a v0.1 schema → v0.2, an old template →
 
 Templates live in `assets/templates/` and are **self-contained HTML** — inline CSS that references design tokens, inline SVG, **no external dependencies** (Mermaid is the one allowed CDN). They are visible to every user, so the bar for changes is high.
 
+**Two kinds of visual work — know which you're doing:**
+
+- **The Signature template** (the default look) — its layout, texture, and tokens
+  are the locked brand identity (hard-invariant #3). The rules in this section
+  govern it; a *theme* here swaps **only accent tokens** — never layout, type, or
+  texture.
+- **An alternate template** (a contributed design — Editorial, Terminal, Executive…)
+  — a *distinct look* over the **same data contract**. Alternate templates are
+  **free to define their own layout, type, and texture**, but are bound to the
+  data-driven `HOPE_DATA` v2 contract, the self-contained/offline law, and the
+  functional requirements. Contributing one is governed by
+  **[`CONTRIBUTING-portfolio-designs.md`](CONTRIBUTING-portfolio-designs.md)** — read it first.
+
 **`references/design-tokens.md` is the locked canon.** Read it before generating or editing any visual output. Key rules it encodes:
 
 - **Identity is structural** — the layout, the interactive section grid, the textures (scanline + 32×32 grid + subtle glows) are the brand. **Color is themeable.**
