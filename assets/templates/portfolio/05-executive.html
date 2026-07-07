@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--bg:#FFFFFF;--ink:#15202E;--ink2:#475569;--ink3:#5F6E86;--navy:#16263D;--navy2:#22344F;--line:#E4E8ED;--line2:#EEF1F4;--gold:#B0894F;--gold2:#8A6A3A;--blue:#1E4E8C;--soft:#F6F8FA;--serif:"Source Serif 4",Georgia,serif;--sans:"Libre Franklin",system-ui,sans-serif}
+/* ── Dark theme (deep navy/graphite — preserves Executive character; managed by switcher.js) ── */
+[data-theme="dark"]{--bg:#161E29;--ink:#EAEFF4;--ink2:#AEBCCB;--ink3:#8493A3;--navy:#9FB4CD;--navy2:#1B2836;--line:#28323F;--line2:#1E2732;--gold:#CDA363;--gold2:#DCB87C;--blue:#86B4EA;--soft:#0F151D}
+[data-theme="dark"] .ex{box-shadow:0 1px 40px -16px rgba(0,0,0,.6)}
+[data-theme="dark"] .band{background:#1B2C42}
+[data-theme="dark"] .foot{background:#152233}
+[data-theme="dark"] .chip{background:rgba(134,180,234,.14)}
+[data-theme="dark"] .live,[data-theme="dark"] .soc-pinned{color:#0F151D}
+[data-theme="dark"] .foot-gen{color:#98ABBF}
+*{box-sizing:border-box}body{margin:0;background:var(--soft);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.6}
+.ex{max-width:1040px;margin:0 auto;background:var(--bg);box-shadow:0 1px 40px -16px rgba(21,32,46,.25)}
+.band{background:var(--navy);color:#fff;padding:42px 48px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.name{font-family:var(--serif);font-size:clamp(30px,7vw,48px);font-weight:600;letter-spacing:-.01em;line-height:1;margin:12px 0 0;color:#fff;overflow-wrap:anywhere}
+.headline{font-size:16px;color:#C5D2E0;margin:12px 0 0;max-width:560px;line-height:1.45}
+.contact{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:20px;font-size:12px;color:#9FB2C7}
+.contact .g{color:var(--gold);font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:10px;margin-right:6px}
+.contact a{color:#C5D2E0;text-decoration:none}
+.contact .link-icon{display:inline-flex;align-items:center;gap:5px}
+.contact .link-icon svg{width:12px;height:12px;fill:currentColor;vertical-align:middle}
+.photo{width:128px;height:128px;border-radius:50%;object-fit:cover;border:3px solid var(--gold)}
+.body{display:grid;grid-template-columns:1fr 320px}
+.main{padding:40px 40px 48px;border-right:1px solid var(--line)}
+.side{padding:40px 32px 48px;background:var(--soft)}
+.lede{font-family:var(--serif);font-size:20px;line-height:1.55;color:var(--ink);margin:0 0 8px}
+.lede b{color:var(--gold2);font-weight:600}
+.sh{display:flex;align-items:center;gap:12px;margin:40px 0 18px}
+.sh h2{font-family:var(--serif);font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin:0;color:var(--navy)}
+.sh .ln{flex:1;height:2px;background:var(--navy);opacity:.12}
+.sh.first{margin-top:8px}
+.role{padding:0 0 26px;margin-bottom:26px;border-bottom:1px solid var(--line2);position:relative}
+.role:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+.rh{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.rt{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.1}
+.rco{color:var(--gold2);font-weight:600}
+.rd{font-size:11.5px;color:var(--ink3);white-space:nowrap;font-weight:500}
+.rkpi{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:10.5px;letter-spacing:.02em;color:var(--ink3);margin-top:6px}
+.rkpi .sep{opacity:.5;margin:0 6px}
+.live{display:inline-block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--gold2);border-radius:3px;padding:2px 8px;margin-left:8px;vertical-align:middle;font-weight:600}
+.contribs{display:flex;flex-direction:column;gap:16px;margin-top:14px}
+.contrib{border-left:3px solid var(--line);padding-left:16px}
+.contrib.hasm{border-left-color:var(--gold)}
+.cmrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.cmetric{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold2);line-height:1}
+.csubject{font-size:12.5px;color:var(--ink2);font-weight:500;line-height:1.4}
+.cdomain{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.cimpact{font-size:14px;font-weight:500;line-height:1.5;margin-top:6px}
+.caction{font-size:13px;color:var(--ink2);line-height:1.6;margin-top:6px}
+.cs{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-size:10.5px;color:var(--blue);background:rgba(30,78,140,.07);border-radius:4px;padding:2px 9px;font-weight:500;white-space:nowrap}
+.tl{margin-top:4px}
+.tlrow{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line2)}
+.tlrow:last-child{border-bottom:0}
+.tldate{font-size:11px;color:var(--ink3);font-weight:500}
+.tllabel{font-family:var(--serif);font-size:15px;font-weight:600}
+.tldot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:9px;vertical-align:middle}
+.tldot.edu{background:var(--navy);opacity:.45}
+.tlorg{color:var(--ink2);font-weight:400;font-family:var(--sans);font-size:12.5px}
+.tlmetric{font-size:11px;color:var(--ink3);margin-top:2px}
+.sideh{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);font-weight:700;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--gold)}
+.sideblk{margin-bottom:32px}.sideblk:last-child{margin-bottom:0}
+.kpi{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.kpi:last-child{border-bottom:0}
+.kpi .v{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--navy);white-space:nowrap;min-width:78px}
+.kpi .k{font-size:11px;color:var(--ink2);line-height:1.35}
+.skcat{margin-bottom:16px}
+.skcat h4{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px;font-weight:600}
+.sk{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:3px 0}
+.sk .nm{font-size:12.5px}
+.dots{display:flex;gap:3px}
+.dt{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dt.on{background:var(--navy)}
+.edu{padding:10px 0;border-bottom:1px solid var(--line)}.edu:last-child{border-bottom:0}
+.edu .d{font-family:var(--serif);font-size:14px;font-weight:600;line-height:1.25}
+.edu .i{color:var(--ink2);font-size:12px}
+.edu .y{font-size:10.5px;color:var(--ink3);margin-top:2px}
+.interests{font-size:12.5px;color:var(--ink2);line-height:1.7}
+.foot{background:var(--navy);color:#9FB2C7;text-align:center;padding:16px;font-size:11px;letter-spacing:.04em}
+.foot b{color:var(--gold);font-weight:600}
+
+/* ── Identity Stats row ───────────────────────────────────────────────────── */
+.id-stats{display:flex;gap:24px;margin-top:16px}
+.id-stat{display:flex;align-items:baseline;gap:6px;font-size:12px;color:#9FB2C7}
+.id-stat .sv{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--gold)}
+.id-stat .sl{font-size:11px}
+
+/* ── Projects section ─────────────────────────────────────────────────────── */
+.proj{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:20px 22px;margin-bottom:16px}
+.proj:last-child{margin-bottom:0}
+.projhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.projname{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--navy)}
+.projname .live{font-size:9px}
+.projdate{font-size:11px;color:var(--ink3);font-weight:500;white-space:nowrap}
+.projtag{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.5}
+.projmetric{display:inline-block;font-family:var(--serif);font-size:13px;font-weight:700;color:var(--gold2);margin-left:8px}
+.projdesc{font-size:13px;color:var(--ink2);line-height:1.6;margin:8px 0 0}
+.projimpact{font-size:13px;font-weight:500;color:var(--ink);line-height:1.5;margin:8px 0 0}
+.cskills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.projlink{margin-top:10px}
+.projlink a{font-size:12px;font-weight:600;color:var(--gold2);text-decoration:none}
+.projlink a:hover{text-decoration:underline}
+
+/* ── Resume ATS section ───────────────────────────────────────────────────── */
+.resume-wrap{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:32px 36px;margin-top:8px}
+.resume-view{font-family:var(--sans);font-size:13.5px;line-height:1.65;color:var(--ink)}
+.resume-view h2{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--navy);margin:0 0 4px}
+.resume-headline{font-size:14px;color:var(--ink2);margin:0 0 6px}
+.resume-contact{font-size:12px;color:var(--ink3);margin-bottom:18px}
+.resume-contact a{color:var(--blue);text-decoration:none}
+.resume-view h3{font-family:var(--serif);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:4px;margin:22px 0 12px}
+.resume-summary{margin:0 0 12px}
+.rentry{margin-bottom:14px}
+.rentryhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.rtitle{font-weight:600;color:var(--ink)}
+.rdates{font-size:11.5px;color:var(--ink3);white-space:nowrap}
+.rorg{color:var(--ink2);font-size:12.5px}
+.resume-view ul{margin:6px 0 0;padding-left:20px}
+.resume-view li{margin-bottom:4px;font-size:13px}
+.resume-skills{margin:0;color:var(--ink2)}
+
+/* ── Social section ───────────────────────────────────────────────────────── */
+.soc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:8px}
+.soc-card{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:18px 20px}
+.soc-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.soc-head svg{width:18px;height:18px;fill:var(--navy)}
+.soc-platform{font-size:12px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.04em}
+.soc-pinned{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--gold2);border-radius:3px;padding:2px 7px;font-weight:600;margin-left:auto}
+.soc-caption{font-size:13px;color:var(--ink2);line-height:1.55;margin-bottom:10px}
+.soc-link{font-size:12px;font-weight:600;color:var(--gold2);text-decoration:none}
+.soc-link:hover{text-decoration:underline}
+
+/* ── Footer generation line ───────────────────────────────────────────────── */
+.foot-gen{background:var(--navy2);color:#9EB0C5;text-align:center;padding:12px 16px;font-size:10.5px;letter-spacing:.03em}
+.foot-gen a{color:var(--gold);text-decoration:none;font-weight:600}
+.foot-gen a:hover{text-decoration:underline}
+
+@media(max-width:860px){.band{grid-template-columns:1fr;padding:30px 24px}.photo{width:96px;height:96px}.body{grid-template-columns:1fr}.main{border-right:0;padding:30px 22px}.side{padding:30px 22px}.soc-grid{grid-template-columns:1fr}.resume-wrap{padding:22px 18px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="data.js"></script>
+<script src="template-utils.js"></script>
+<script>
+(function () {
+  var D = window.HOPE_DATA;
+  if (!D) { document.getElementById('app').textContent = 'No data loaded.'; return; }
+
+  var id   = D.identity || {};
+  var meta = D.meta || {};
+  var ov   = D.overview || {};
+
+  /* ── Flatten experience ─────────────────────────────────────────────────── */
+  var roles = flattenContribs(D.experience);
+
+  /* ── Skill groups with dots ─────────────────────────────────────────────── */
+  var skillGroups = (D.skills && D.skills.order || []).map(function (name) {
+    var cat = (D.skills.categories[name] || { items: [] });
+    return {
+      name: name,
+      items: (cat.items || []).map(function (it) {
+        return { name: it.name, level: it.level, dots: bars(it.level, 'dt on', 'dt') };
+      })
+    };
+  });
+
+  /* ── Timeline ───────────────────────────────────────────────────────────── */
+  var timeline = (D.timeline || []).map(function (t) {
+    return {
+      period: fmtPeriod(t.date_start, t.date_end),
+      label:  String(t.label||'').split(' @ ')[0],
+      org:    t.org,
+      metric: t.metric || '',
+      dotCls: (t.type === 'education' || t.type === 'certification') ? 'tldot edu' : 'tldot'
+    };
+  });
+
+  /* ── Stats (overview headline_stats) ────────────────────────────────────── */
+  var stats = (ov.headline_stats || []).map(function (s) {
+    return { value: s.value, label: s.label };
+  });
+
+  /* ── Scalar values ──────────────────────────────────────────────────────── */
+  var pName     = meta.name || id.name || '';
+  var pHeadline = meta.headline || '';
+  var pLocation = id.location || '';
+  var pEmail    = id.email || '';
+  var pPhone    = id.phone || '';
+  var pGenDate  = meta.generation_date || '';
+  var pPhoto    = id.photo || '';
+  var pSummary  = id.summary || '';
+  var pInterests= (ov.interests || []).join(' \u00B7 ');
+  var links     = id.links || [];
+  var idStats   = id.stats || {};
+
+  var education      = (D.education || []);
+  var certifications = (D.certifications || []);
+  var projects       = D.projects || [];
+  var resume         = D.resume || null;
+  var social         = D.social || [];
+
+  /* ── Helper: photo with fallback ────────────────────────────────────────── */
+  var photoHtml = pPhoto
+    ? '<img class="photo" src="' + esc(pPhoto) + '" alt="' + esc(pName) + '">'
+    : '<div class="photo" style="display:flex;align-items:center;justify-content:center;background:var(--navy2);color:var(--gold);font-family:var(--serif);font-size:48px;font-weight:700">' + esc(pName.charAt(0)) + '</div>';
+
+  /* ── Links row (ALL identity.links[]) ───────────────────────────────────── */
+  var linksHtml = links.map(function (lnk) {
+    if (!lnk || !lnk.url) return '';
+    return '<span><span class="link-icon">' + brandSvg(lnk.kind) +
+      ' <a href="' + esc(lnk.url) + '" target="_blank" rel="noopener">' + esc(lnk.label) + '</a></span></span>';
+  }).join('');
+
+  /* ── Identity stats row ─────────────────────────────────────────────────── */
+  var idStatsHtml = '';
+  if (idStats.skills || idStats.roles || idStats.contributions) {
+    var bits = [];
+    if (idStats.skills)        bits.push('<span class="id-stat"><span class="sv">' + esc(idStats.skills) + '</span><span class="sl">Skills</span></span>');
+    if (idStats.roles)         bits.push('<span class="id-stat"><span class="sv">' + esc(idStats.roles) + '</span><span class="sl">Roles</span></span>');
+    if (idStats.contributions) bits.push('<span class="id-stat"><span class="sv">' + esc(idStats.contributions) + '</span><span class="sl">Contributions</span></span>');
+    idStatsHtml = '<div class="id-stats">' + bits.join('') + '</div>';
+  }
+
+  /* ── Band (header) ──────────────────────────────────────────────────────── */
+  var bandHtml =
+    '<div class="band"><div>' +
+      '<div class="eyebrow">Executive Portfolio' + (pGenDate ? ' \u00B7 ' + esc(pGenDate) : '') + '</div>' +
+      '<h1 class="name">' + esc(pName) + '</h1>' +
+      '<div class="headline">' + esc(pHeadline) + '</div>' +
+      '<div class="contact">' +
+        (pLocation ? '<span><span class="g">Loc</span>' + esc(pLocation) + '</span>' : '') +
+        (pEmail    ? '<span><span class="g">Email</span>' + esc(pEmail) + '</span>' : '') +
+        (pPhone    ? '<span><span class="g">Tel</span>' + esc(pPhone) + '</span>' : '') +
+        linksHtml +
+      '</div>' +
+      idStatsHtml +
+    '</div>' + photoHtml + '</div>';
+
+  /* ── Roles (experience) ─────────────────────────────────────────────────── */
+  var rolesHtml = roles.map(function (r) {
+    var contribsHtml = r.items.map(function (c) {
+      var cls = c.metric ? 'contrib hasm' : 'contrib';
+      var chipsHtml = c.skills.map(function (sk) {
+        return '<span class="chip">' + esc(sk) + '</span>';
+      }).join('');
+      var arrow = c.metric ? metricArrow(c.metricDir) : '';
+      var metricHtml = c.metric
+        ? '<span class="cmetric">' + (arrow ? esc(arrow) + ' ' : '') + esc(c.metric) + '</span>' +
+          (c.metricSubject ? '<span class="csubject">' + esc(c.metricSubject) + '</span>' : '')
+        : '';
+      return '<div class="' + cls + '">' +
+        '<div class="cmrow">' +
+          metricHtml +
+          '<span class="cdomain">' + esc(c.domain) + '</span>' +
+        '</div>' +
+        (c.impact ? '<div class="cimpact">' + esc(c.impact) + '</div>' : '') +
+        '<div class="caction">' + esc(c.action) + '</div>' +
+        (chipsHtml ? '<div class="cs">' + chipsHtml + '</div>' : '') +
+      '</div>';
+    }).join('');
+
+    var k = r.kpis || {};
+    var kpiBits = [];
+    if (k.ic)     kpiBits.push(esc(k.ic) + ' individual');
+    if (k.lead)   kpiBits.push(esc(k.lead) + ' leadership');
+    if (k.metric) kpiBits.push(esc(k.metric) + ' quantified');
+    var rkpiHtml = kpiBits.length
+      ? '<div class="rkpi">' + kpiBits.join('<span class="sep">\u00B7</span>') + '</div>'
+      : '';
+
+    return '<div class="role">' +
+      '<div class="rh">' +
+        '<div class="rt">' + esc(r.role_title) +
+          '<span class="rco"> \u00B7 ' + esc(r.company) + '</span>' +
+          (r.is_current ? '<span class="live">Current</span>' : '') +
+        '</div>' +
+        '<div class="rd">' + esc(r.dates) + '</div>' +
+      '</div>' +
+      rkpiHtml +
+      '<div class="contribs">' + contribsHtml + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Timeline ───────────────────────────────────────────────────────────── */
+  var timelineHtml = timeline.map(function (t) {
+    return '<div class="tlrow">' +
+      '<div class="tldate">' + esc(t.period) + '</div>' +
+      '<div>' +
+        '<div class="tllabel"><span class="' + esc(t.dotCls) + '"></span>' + esc(t.label) +
+          ' <span class="tlorg">\u2014 ' + esc(t.org) + '</span></div>' +
+        (t.metric ? '<div class="tlmetric">' + esc(t.metric) + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Sidebar: KPIs ──────────────────────────────────────────────────────── */
+  var kpisHtml = stats.map(function (s) {
+    return '<div class="kpi"><span class="v">' + esc(s.value) + '</span><span class="k">' + esc(s.label) + '</span></div>';
+  }).join('');
+
+  /* ── Sidebar: Skills ────────────────────────────────────────────────────── */
+  var skillsHtml = skillGroups.map(function (g) {
+    var itemsHtml = g.items.map(function (sk) {
+      var dotsHtml = sk.dots.map(function (d) {
+        return '<span class="' + esc(d.cls) + '"></span>';
+      }).join('');
+      var lvl = Math.max(0, Math.min(4, Number(sk.level) || 0));
+      return '<div class="sk"><span class="nm">' + esc(sk.name) + '</span>' +
+        '<div class="dots" role="img" aria-label="' + lvl + ' of 4">' + dotsHtml + '</div></div>';
+    }).join('');
+    return '<div class="skcat"><h4>' + esc(g.name) + '</h4>' + itemsHtml + '</div>';
+  }).join('');
+
+  /* ── Sidebar: Education ─────────────────────────────────────────────────── */
+  var eduHtml = education.map(function (e) {
+    return '<div class="edu">' +
+      '<div class="d">' + esc(e.degree_line) + '</div>' +
+      '<div class="i">' + esc(e.institution) + '</div>' +
+      '<div class="y">' + esc(e.dates) + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Sidebar: Certifications ────────────────────────────────────────────── */
+  var certsHtml = certifications.map(function (c) {
+    return '<div class="edu">' +
+      '<div class="d" style="font-size:13px">' + esc(c.name) + '</div>' +
+      '<div class="i">' + esc(c.issuer) + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Projects section (via template-utils.js) ───────────────────────────── */
+  var projectsSectionHtml = '';
+  if (projects && projects.length) {
+    projectsSectionHtml =
+      '<div class="sh"><h2>Projects</h2><span class="ln"></span></div>' +
+      renderProjectsHtml(projects);
+  }
+
+  /* ── Resume ATS section (via template-utils.js) ─────────────────────────── */
+  var resumeSectionHtml = '';
+  if (resume) {
+    resumeSectionHtml =
+      '<div class="sh"><h2>Resume</h2><span class="ln"></span></div>' +
+      '<div class="resume-wrap">' + renderResumeHtml(resume, meta) + '</div>';
+  }
+
+  /* ── Social section (via template-utils.js) ─────────────────────────────── */
+  var socialSectionHtml = '';
+  if (social && social.length) {
+    socialSectionHtml =
+      '<div class="sh"><h2>Social</h2><span class="ln"></span></div>' +
+      '<div class="soc-grid">' + renderSocialHtml(social) + '</div>';
+  }
+
+  /* ── Footer (via template-utils.js) ─────────────────────────────────────── */
+  var footerGenHtml = renderFooterHtml(meta);
+
+  /* ── Assemble ───────────────────────────────────────────────────────────── */
+  var html =
+    '<div class="ex">' +
+      bandHtml +
+      '<div class="body">' +
+        '<div class="main">' +
+          '<p class="lede">' + esc(pSummary) + '</p>' +
+          '<div class="sh first"><h2>Professional Experience</h2><span class="ln"></span></div>' +
+          rolesHtml +
+          '<div class="sh"><h2>Career Timeline</h2><span class="ln"></span></div>' +
+          '<div class="tl">' + timelineHtml + '</div>' +
+          projectsSectionHtml +
+          resumeSectionHtml +
+          socialSectionHtml +
+        '</div>' +
+        '<div class="side">' +
+          (kpisHtml ? '<div class="sideblk"><h3 class="sideh">Impact at a Glance</h3>' + kpisHtml + '</div>' : '') +
+          (skillsHtml ? '<div class="sideblk"><h3 class="sideh">Core Skills</h3>' + skillsHtml + '</div>' : '') +
+          (eduHtml ? '<div class="sideblk"><h3 class="sideh">Education</h3>' + eduHtml + '</div>' : '') +
+          (certsHtml ? '<div class="sideblk"><h3 class="sideh">Certifications</h3>' + certsHtml + '</div>' : '') +
+          (pInterests ? '<div class="sideblk"><h3 class="sideh">Interests</h3><div class="interests">' + esc(pInterests) + '</div></div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="foot"><b>' + esc(pName) + '</b> \u2014 ' + esc(pHeadline) + '</div>' +
+      footerGenHtml +
+    '</div>';
+
+  document.getElementById('app').innerHTML = html;
+
+  /* ── Entrance animation ─────────────────────────────────────────────────── */
+  revealRows('.tlrow');
+})();
+</script>
+<script src="switcher.js"></script>
+</body>
+</html>

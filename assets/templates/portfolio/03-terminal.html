@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light dark;--bg:#F3F5F7;--panel:#FFFFFF;--panel2:#F8FAFC;--bord:#D5DCE4;--bord2:#E6EBF0;--tx:#0E1620;--tx2:#3C4C5C;--tx3:#566779;--grn:#0F7A46;--cyan:#0A6E93;--amber:#8A5A00;--mag:#8340C0;--grid:rgba(15,122,70,.06);--winbar-bg:rgba(0,0,0,.02);--chip-bg:rgba(10,110,147,.08);--chip-bord:rgba(10,110,147,.22);--err:#D64545;--mono:"JetBrains Mono",monospace;--sans:"IBM Plex Sans",sans-serif}
+[data-theme="dark"]{--bg:#0B0F14;--panel:#11171F;--panel2:#0E141B;--bord:#212C38;--bord2:#1A2330;--tx:#E4ECF3;--tx2:#9FB0C0;--tx3:#7C90A4;--grn:#3DDC84;--cyan:#36C5F0;--amber:#F0B429;--mag:#C792EA;--grid:rgba(61,220,132,.04);--winbar-bg:rgba(255,255,255,.015);--chip-bg:rgba(54,197,240,.08);--chip-bord:rgba(54,197,240,.18)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--mono);-webkit-font-smoothing:antialiased;font-size:13px;line-height:1.6;background-image:radial-gradient(var(--grid) 1px,transparent 1px);background-size:22px 22px}
+.tm{max-width:1080px;margin:0 auto;padding:36px 32px 90px}
+.prompt{color:var(--tx3)}.prompt b{color:var(--grn);font-weight:600}.prompt .c{color:var(--cyan)}
+.win{border:1px solid var(--bord);border-radius:10px;background:linear-gradient(180deg,var(--panel),var(--panel2));overflow:hidden}
+.winbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--bord);background:var(--winbar-bg)}
+.dot{width:11px;height:11px;border-radius:50%}.d1{background:#FF5F56}.d2{background:#FFBD2E}.d3{background:#27C93F}
+.wintitle{margin-left:8px;color:var(--tx3);font-size:11.5px}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:24px;padding:26px 26px}
+.avatar{width:92px;height:92px;border-radius:10px;object-fit:cover;border:1px solid var(--bord);filter:saturate(.92)}
+.avatar-placeholder{width:92px;height:92px;border-radius:10px;border:1px solid var(--bord);background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--grn)}
+.name{font-family:var(--sans);font-size:clamp(24px,6vw,34px);font-weight:700;letter-spacing:-.02em;margin:0;line-height:1.05;overflow-wrap:anywhere}
+.role{color:var(--grn);font-size:13px;margin-top:6px}
+.bio{font-family:var(--sans);color:var(--tx2);font-size:14.5px;line-height:1.6;margin-top:14px;max-width:760px}
+.bio em{color:var(--cyan);font-style:normal;font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:18px;margin-top:16px;font-size:11.5px;color:var(--tx3)}
+.meta span b{color:var(--tx2);font-weight:500}
+.meta a{color:var(--cyan);text-decoration:none}
+.meta a svg{width:14px;height:14px;vertical-align:-2px;margin-right:3px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+.kpi{border:1px solid var(--bord);border-radius:9px;background:var(--panel);padding:16px 16px 14px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grn)}
+.kpi:nth-child(2)::before{background:var(--cyan)}.kpi:nth-child(3)::before{background:var(--amber)}.kpi:nth-child(4)::before{background:var(--mag)}
+.kpi .v{font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--tx)}
+.kpi .k{font-size:11px;color:var(--tx3);margin-top:8px;line-height:1.4}
+.sec{margin-top:30px}
+.sechd{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sechd .h{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--tx);margin:0}
+.sechd .tag{font-size:11px;color:var(--grn);border:1px solid var(--bord);border-radius:5px;padding:2px 8px}
+.sechd .line{flex:1;height:1px;background:var(--bord2)}
+.log{border:1px solid var(--bord);border-radius:10px;background:var(--panel2);padding:6px 0}
+.commit{display:grid;grid-template-columns:96px 16px 1fr auto;gap:14px;align-items:baseline;padding:11px 18px;border-bottom:1px solid var(--bord2)}
+.commit:last-child{border-bottom:0}
+.commit .dt{color:var(--tx3);font-size:11.5px}
+.graph{position:relative;display:flex;justify-content:center}
+.node{width:11px;height:11px;border-radius:50%;background:var(--grn);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--grn)}
+.node.edu{background:var(--cyan);box-shadow:0 0 0 1px var(--cyan)}
+.commit .lbl{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--tx)}
+.commit .org{color:var(--tx3);font-weight:400;font-size:12px}
+.commit .mx{color:var(--amber);font-size:11.5px;text-align:right;white-space:nowrap}
+.roles{display:flex;flex-direction:column;gap:14px}
+.rc{border:1px solid var(--bord);border-radius:10px;background:var(--panel);overflow:hidden}
+.rch{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 18px;border-bottom:1px solid var(--bord2);flex-wrap:wrap}
+.rch .rt{font-family:var(--sans);font-size:17px;font-weight:700;color:var(--tx);margin:0}
+.rch .rco{color:var(--grn);font-size:12.5px;margin-top:2px}
+.rch .rd{color:var(--tx3);font-size:11.5px;white-space:nowrap}
+.rch .rkpis{color:var(--tx3);font-size:10.5px;margin-top:4px;text-align:right}
+.live{display:inline-block;font-size:10px;color:var(--grn);border:1px solid var(--grn);border-radius:4px;padding:1px 7px;margin-left:8px;white-space:nowrap;vertical-align:middle}
+.cbody{padding:6px 18px 16px}
+.ct{padding:14px 0;border-bottom:1px solid var(--bord2)}
+.ct:last-child{border-bottom:0}
+.cdomain{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3)}
+.cmetric{display:inline-block;font-size:19px;font-weight:800;color:var(--amber);letter-spacing:-.01em;margin:4px 0 2px}
+.cmetric .csubj{font-family:var(--sans);font-weight:500;font-size:12.5px;color:var(--tx2);letter-spacing:0;margin-left:4px}
+.cimpact{font-family:var(--sans);font-size:14px;color:var(--tx);line-height:1.55;margin-top:2px}
+.caction{font-family:var(--sans);font-size:12.5px;color:var(--tx2);line-height:1.6;margin-top:6px}
+.cs{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.chip{font-size:10.5px;color:var(--cyan);background:var(--chip-bg);border:1px solid var(--chip-bord);border-radius:5px;padding:2px 8px}
+.cols{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+.skpanel{border:1px solid var(--bord);border-radius:10px;background:var(--panel);padding:18px}
+.skcat{margin-bottom:18px}.skcat:last-child{margin-bottom:0}
+.skcat h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--grn);margin:0 0 10px}
+.sk{display:grid;grid-template-columns:1fr auto;gap:10px 14px;align-items:center;padding:5px 0}
+.sk .nm{font-family:var(--sans);font-size:13px;color:var(--tx)}
+.meter{display:flex;gap:3px;align-items:center}
+.blk{width:18px;height:9px;border-radius:2px;background:var(--bord)}
+.blk.on{background:var(--grn)}
+.lv{color:var(--tx3);font-size:10.5px;width:58px;text-align:right}
+.edu-item{padding:11px 0;border-bottom:1px solid var(--bord2)}.edu-item:last-child{border-bottom:0}
+.edu-item .d{font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--tx)}
+.edu-item .i{color:var(--tx2);font-size:12px}
+.edu-item .y{color:var(--tx3);font-size:11px;margin-top:2px}
+
+/* ── Projects ── */
+.proj{border:1px solid var(--bord);border-radius:10px;background:var(--panel);padding:18px;margin-bottom:14px}
+.projhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.projname{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--tx)}
+.projname .live{font-size:10px}
+.projdate{color:var(--tx3);font-size:11.5px;white-space:nowrap}
+.projtag{color:var(--tx2);font-size:12.5px;margin-top:6px}
+.projmetric{display:inline-block;color:var(--amber);font-weight:800;font-size:12px;margin-left:8px}
+.projdesc{font-family:var(--sans);color:var(--tx2);font-size:13px;line-height:1.6;margin:8px 0 0}
+.projimpact{font-family:var(--sans);color:var(--tx);font-size:13px;line-height:1.55;margin:6px 0 0}
+.cskills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.projlink{margin-top:10px}
+.projlink a{color:var(--cyan);font-size:12px;text-decoration:none}
+
+/* ── Resume ATS ── */
+.resume-view{border:1px solid var(--bord);border-radius:10px;background:var(--panel);padding:28px 24px;font-family:var(--sans);color:var(--tx)}
+.resume-view h2{font-size:22px;font-weight:700;margin:0 0 4px}
+.resume-view h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--grn);margin:22px 0 10px;border-bottom:1px solid var(--bord2);padding-bottom:6px}
+.resume-headline{color:var(--tx2);font-size:14px;margin:0 0 8px}
+.resume-contact{color:var(--tx3);font-size:12px;margin-bottom:6px}
+.resume-contact a{color:var(--cyan);text-decoration:none}
+.resume-summary{color:var(--tx2);font-size:13px;line-height:1.65;margin:0}
+.rentry{margin-bottom:14px}
+.rentry:last-child{margin-bottom:0}
+.rentryhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.rtitle{font-weight:600;font-size:14px;color:var(--tx)}
+.rdates{color:var(--tx3);font-size:12px;white-space:nowrap}
+.rorg{color:var(--grn);font-size:12.5px;margin-top:2px}
+.rentry ul{margin:6px 0 0;padding-left:18px;color:var(--tx2);font-size:13px;line-height:1.65}
+.rentry li{margin-bottom:4px}
+.rentry li strong{color:var(--amber);font-weight:600;font-size:11px}
+.resume-skills{color:var(--tx2);font-size:13px;line-height:1.6;margin:0}
+
+/* ── Social cards ── */
+.soc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.soc-card{border:1px solid var(--bord);border-radius:10px;background:var(--panel);padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.soc-head{display:flex;align-items:center;gap:8px}
+.soc-head svg{width:18px;height:18px;color:var(--tx3)}
+.soc-platform{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--tx)}
+.soc-pinned{font-size:10px;color:var(--amber);border:1px solid var(--amber);border-radius:4px;padding:1px 7px;margin-left:auto}
+.soc-caption{font-family:var(--sans);color:var(--tx2);font-size:12.5px;line-height:1.55}
+.soc-link{color:var(--cyan);font-size:12px;text-decoration:none;margin-top:auto}
+
+/* ── Footer ── */
+.foot{margin-top:40px;color:var(--tx3);font-size:11.5px;text-align:center}
+.foot .grn{color:var(--grn)}
+.foot-gen{margin-top:8px;color:var(--tx3);font-size:11px;text-align:center}
+.foot-gen a{color:var(--cyan);text-decoration:none}
+
+@media(max-width:820px){.tm{padding:24px 16px}.hero{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.commit{grid-template-columns:80px 16px 1fr;gap:10px}.commit .mx{grid-column:3;text-align:left}.soc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="data.js"></script>
+<script src="template-utils.js"></script>
+<script>
+(function () {
+  var D = window.HOPE_DATA;
+  if (!D) { document.getElementById('root').innerHTML = '<p style="color:var(--err);padding:40px">HOPE_DATA not found — is data.js loaded?</p>'; return; }
+
+  var id   = D.identity || {};
+  var meta = D.meta || {};
+  var links = id.links || [];
+
+  /* ── Derived values ── */
+  var name     = meta.name || id.name || '';
+  var headline = meta.headline || '';
+  var location = id.location || '';
+  var email    = id.email || '';
+  var phone    = id.phone || '';
+  var photo    = id.photo || '';
+  var summary  = id.summary || '';
+  var genDate  = meta.generation_date || '';
+
+  /* ── Stats ── */
+  var stats = (D.overview && D.overview.headline_stats) || [];
+
+  /* ── Timeline ── */
+  var timeline = (D.timeline || []).map(function (t) {
+    return {
+      period: fmtPeriod(t.date_start, t.date_end, '\u2026'),
+      label: String(t.label||'').split(' @ ')[0],
+      org: t.org,
+      metric: t.metric || '',
+      nodeCls: (t.type === 'education' || t.type === 'certification') ? 'node edu' : 'node'
+    };
+  });
+  var tlCount = timeline.length;
+
+  /* ── Roles ── */
+  var roles = flattenContribs(D.experience);
+  var roleCount = roles.length;
+
+  /* ── Skills ── */
+  var skillGroups = (D.skills && D.skills.order || []).map(function (catName) {
+    var cat = D.skills.categories[catName] || { items: [] };
+    return {
+      name: catName,
+      items: (cat.items || []).map(function (it) {
+        return {
+          name: it.name,
+          years: it.years ? it.years + 'yr' : '',
+          level: it.level,
+          bars: bars(it.level, 'blk on', 'blk')
+        };
+      })
+    };
+  });
+
+  /* ── Education & Certs ── */
+  var education = (D.education || []).map(function (e) {
+    return { degree_line: e.degree_line, institution: e.institution, dates: e.dates };
+  });
+  var certs = (D.certifications || []).map(function (c) {
+    return { name: c.name, issuer: c.issuer };
+  });
+  var interests = (D.overview && D.overview.interests || []).join(', ');
+
+  /* ── fmtPeriod for roles (now lowercase, ellipsis separator) ── */
+  function rolePeriod(s, e) {
+    var a = fy(s), b = e ? fy(e) : 'now';
+    return a === b ? a : a + '\u2026' + b;
+  }
+
+  /* ── Links HTML (all links) ── */
+  var linksHtml = links.map(function (lnk) {
+    if (!lnk || !lnk.url) return '';
+    return '<span><a href="' + esc(lnk.url) + '" target="_blank" rel="noopener">' +
+      brandSvg(lnk.kind) + ' ' + esc(lnk.label) + '</a></span>';
+  }).join('');
+
+  /* ── Avatar HTML ── */
+  var avatarHtml = photo
+    ? '<img class="avatar" src="' + esc(photo) + '" alt="' + esc(name) + '">'
+    : '<div class="avatar-placeholder">' + esc(name.charAt(0)) + '</div>';
+
+  /* ── Stats HTML ── */
+  var statsHtml = stats.map(function (s) {
+    return '<div class="kpi"><div class="v">' + esc(s.value) + '</div><div class="k">' + esc(s.label) + '</div></div>';
+  }).join('');
+
+  /* ── Identity stats (identity.stats) ── */
+  var idStats = id.stats || [];
+  var idStatsHtml = '';
+  if (idStats.length) {
+    idStatsHtml = '<div class="sec">' +
+      '<div class="sechd"><h2 class="h">identity.stats</h2><span class="line"></span></div>' +
+      '<div class="kpis">' +
+      idStats.map(function (s) {
+        return '<div class="kpi"><div class="v">' + esc(s.value) + '</div><div class="k">' + esc(s.label) + '</div></div>';
+      }).join('') +
+      '</div></div>';
+  }
+
+  /* ── Timeline HTML ── */
+  var timelineHtml = timeline.map(function (t) {
+    return '<div class="commit tlrow">' +
+      '<div class="dt">' + esc(t.period) + '</div>' +
+      '<div class="graph"><span class="' + esc(t.nodeCls) + '"></span></div>' +
+      '<div><span class="lbl">' + esc(t.label) + '</span> <span class="org">@ ' + esc(t.org) + '</span></div>' +
+      '<div class="mx">' + esc(t.metric) + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Roles HTML ── */
+  var rolesHtml = roles.map(function (r) {
+    var liveBadge = r.is_current ? '<span class="live">\u25CF live</span>' : '';
+    var k = r.kpis || {};
+    var kpiParts = [];
+    if (k.ic != null)     kpiParts.push(k.ic + ' ic');
+    if (k.lead != null)   kpiParts.push(k.lead + ' lead');
+    if (k.metric != null) kpiParts.push(k.metric + ' metric');
+    var kpiHtml = kpiParts.length ? '<div class="rkpis">' + esc(kpiParts.join(' \u00B7 ')) + '</div>' : '';
+    var itemsHtml = r.items.map(function (c) {
+      var metricHtml = '';
+      if (c.metric) {
+        var arrow = metricArrow(c.metricDir);
+        var subj = c.metricSubject ? '<span class="csubj">' + esc(c.metricSubject) + '</span>' : '';
+        metricHtml = '<div class="cmetric">' + (arrow ? esc(arrow) + ' ' : '') + esc(c.metric) + subj + '</div>';
+      }
+      var skillsHtml = c.skills.map(function (sk) {
+        return '<span class="chip">' + esc(sk) + '</span>';
+      }).join('');
+      return '<div class="ct">' +
+        '<div class="cdomain">' + esc(c.domain) + '</div>' +
+        metricHtml +
+        '<div class="cimpact">' + esc(c.impact) + '</div>' +
+        '<div class="caction">' + esc(c.action) + '</div>' +
+        '<div class="cs">' + skillsHtml + '</div>' +
+      '</div>';
+    }).join('');
+    return '<div class="rc tlrow">' +
+      '<div class="rch"><div>' +
+        '<h3 class="rt">' + esc(r.role_title) + liveBadge + '</h3>' +
+        '<div class="rco">' + esc(r.company) + '</div>' +
+      '</div>' +
+      '<div><div class="rd">' + esc(r.dates) + '</div>' + kpiHtml + '</div></div>' +
+      '<div class="cbody">' + itemsHtml + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Skills HTML ── */
+  var skillsLeftHtml = skillGroups.map(function (g) {
+    var itemsHtml = g.items.map(function (sk) {
+      var barsHtml = sk.bars.map(function (b) {
+        return '<span class="' + esc(b.cls) + '"></span>';
+      }).join('');
+      return '<div class="sk">' +
+        '<span class="nm">' + esc(sk.name) + '</span>' +
+        '<div class="meter" role="img" aria-label="proficiency ' + esc(sk.level) + ' of 4">' + barsHtml + '<span class="lv">' + esc(sk.years) + '</span></div>' +
+      '</div>';
+    }).join('');
+    return '<div class="skcat"><h3>' + esc(g.name) + '</h3>' + itemsHtml + '</div>';
+  }).join('');
+
+  /* ── Education HTML ── */
+  var educationHtml = education.map(function (e) {
+    return '<div class="edu-item">' +
+      '<div class="d">' + esc(e.degree_line) + '</div>' +
+      '<div class="i">' + esc(e.institution) + '</div>' +
+      '<div class="y">' + esc(e.dates) + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Certs HTML ── */
+  var certsHtml = certs.map(function (c) {
+    return '<div class="edu-item">' +
+      '<div class="d" style="font-size:12.5px">' + esc(c.name) + '</div>' +
+      '<div class="i">' + esc(c.issuer) + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* ── Projects HTML (from template-utils) ── */
+  var projectsSection = '';
+  if (D.projects && D.projects.length) {
+    projectsSection = '<div class="sec">' +
+      '<div class="sechd"><h2 class="h">projects</h2><span class="tag">' + esc(D.projects.length) + ' repos</span><span class="line"></span></div>' +
+      renderProjectsHtml(D.projects) +
+    '</div>';
+  }
+
+  /* ── Resume ATS HTML (from template-utils) ── */
+  var resumeSection = '';
+  if (D.resume) {
+    resumeSection = '<div class="sec">' +
+      '<div class="sechd"><h2 class="h">resume --ats</h2><span class="line"></span></div>' +
+      renderResumeHtml(D.resume, meta) +
+    '</div>';
+  }
+
+  /* ── Social HTML (from template-utils) ── */
+  var socialSection = '';
+  var social = D.social || [];
+  if (social.length) {
+    socialSection = '<div class="sec">' +
+      '<div class="sechd"><h2 class="h">social</h2><span class="tag">' + esc(social.length) + ' posts</span><span class="line"></span></div>' +
+      '<div class="soc-grid">' + renderSocialHtml(social) + '</div>' +
+    '</div>';
+  }
+
+  /* ── Footer HTML (from template-utils) ── */
+  var footerHtml = renderFooterHtml(meta);
+
+  /* ── Meta HTML (location, email, phone, ALL links) ── */
+  var metaHtml = '';
+  if (location) metaHtml += '<span><b>' + esc(location) + '</b></span>';
+  if (email)    metaHtml += '<span>' + esc(email) + '</span>';
+  if (phone)    metaHtml += '<span>' + esc(phone) + '</span>';
+  metaHtml += linksHtml;
+
+  /* ── Assemble full page ── */
+  var html =
+    '<div class="tm">' +
+      '<div class="prompt" style="margin-bottom:14px">$ <b>' + esc(name.split(' ')[0].toLowerCase()) + '</b>@portfolio:<span class="c">~</span>$ cat profile.json <span style="color:var(--tx3)">\u2014 generated ' + esc(genDate) + '</span></div>' +
+
+      /* ── Profile window ── */
+      '<div class="win">' +
+        '<div class="winbar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="wintitle">profile \u00B7 ' + esc(name) + '</span></div>' +
+        '<div class="hero">' +
+          avatarHtml +
+          '<div>' +
+            '<h1 class="name">' + esc(name) + '</h1>' +
+            '<div class="role">' + esc(headline) + '</div>' +
+            '<p class="bio">' + esc(summary) + '</p>' +
+            '<div class="meta">' + metaHtml + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      /* ── KPIs (overview stats) ── */
+      (statsHtml ? '<div class="kpis">' + statsHtml + '</div>' : '') +
+
+      /* ── Identity stats ── */
+      idStatsHtml +
+
+      /* ── Timeline ── */
+      '<div class="sec">' +
+        '<div class="sechd"><h2 class="h">git log --career</h2><span class="tag">' + esc(tlCount) + ' commits</span><span class="line"></span></div>' +
+        '<div class="log">' + timelineHtml + '</div>' +
+      '</div>' +
+
+      /* ── Experience ── */
+      '<div class="sec">' +
+        '<div class="sechd"><h2 class="h">experience</h2><span class="tag">' + esc(roleCount) + ' roles</span><span class="line"></span></div>' +
+        '<div class="roles">' + rolesHtml + '</div>' +
+      '</div>' +
+
+      /* ── Skills & Credentials ── */
+      '<div class="sec">' +
+        '<div class="sechd"><h2 class="h">skills &amp; credentials</h2><span class="line"></span></div>' +
+        '<div class="cols">' +
+          '<div class="skpanel">' + skillsLeftHtml + '</div>' +
+          '<div>' +
+            '<div class="skpanel" style="margin-bottom:14px">' +
+              '<div class="skcat"><h3>Education</h3>' + educationHtml + '</div>' +
+            '</div>' +
+            '<div class="skpanel">' +
+              '<div class="skcat"><h3>Certifications</h3>' + certsHtml + '</div>' +
+              '<div class="skcat" style="margin-top:14px"><h3>Interests</h3>' +
+                '<div class="i" style="font-family:var(--sans);color:var(--tx2)">' + esc(interests) + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      /* ── Projects ── */
+      projectsSection +
+
+      /* ── Resume ATS ── */
+      resumeSection +
+
+      /* ── Social ── */
+      socialSection +
+
+      /* ── Footer ── */
+      '<div class="foot">$ <span class="grn">echo</span> "' + esc(name) + ' \u2014 ' + esc(headline) + '" \u00B7 built with JetBrains Mono</div>' +
+      footerHtml +
+
+    '</div>';
+
+  document.getElementById('root').innerHTML = html;
+
+  /* ── Entrance animation (horizontal for Terminal) ── */
+  revealRows('.tlrow', 'translateX(-10px)');
+})();
+</script>
+<script src="switcher.js"></script>
+</body>
+</html>
