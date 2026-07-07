@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light dark;--bg:#FCFCFC;--ink:#0E0E0E;--ink2:#5A5A5A;--ink3:#9A9A9A;--line:#E2E2E2;--line2:#EFEFEF;--red:#E2231A;--sans:"Archivo",Helvetica,Arial,sans-serif;--narrow:"Archivo Narrow",sans-serif}
+:root{color-scheme:light dark;--bg:#FCFCFC;--ink:#0E0E0E;--ink2:#5A5A5A;--ink3:#737373;--line:#E2E2E2;--line2:#EFEFEF;--red:#E2231A;--sans:"Archivo",Helvetica,Arial,sans-serif;--narrow:"Archivo Narrow",sans-serif}
 [data-theme="dark"]{color-scheme:dark;--bg:#121212;--ink:#F3F3F1;--ink2:#9C9C9A;--ink3:#7E7E7C;--line:#2E2E2E;--line2:#242424;--red:#FF4438}
 /* dark: white pill text on bright --red is only 3.42:1 — deepen the badge background so #fff reaches AA (keeps --red bright for accent text) */
 [data-theme="dark"] .live,[data-theme="dark"] .soc-pinned{background:#C21F16}
@@ -16,7 +16,7 @@
 .lbl{font-family:var(--narrow);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)}
 .lblr{color:var(--red)}
 .top{display:grid;grid-template-columns:1fr 280px;gap:48px;padding-top:18px}
-.name{font-size:64px;font-weight:800;letter-spacing:-.03em;line-height:.95;margin:14px 0 0}
+.name{font-size:clamp(40px,9vw,64px);font-weight:800;letter-spacing:-.03em;line-height:.95;margin:14px 0 0;overflow-wrap:anywhere}
 .headline{font-size:19px;font-weight:500;color:var(--ink2);max-width:560px;margin:18px 0 0;line-height:1.35}
 .contact{font-family:var(--narrow);font-size:13px;line-height:1.9;color:var(--ink2)}
 .contact a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--red)}
@@ -33,7 +33,7 @@
 .kpi .c{font-size:12px;color:var(--ink2);margin-top:10px;line-height:1.4;max-width:170px}
 .sec{margin-top:72px}
 .sechd{display:grid;grid-template-columns:280px 1fr;gap:48px;align-items:baseline;border-top:3px solid var(--ink);padding-top:12px}
-.sechd .t{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.sechd .t{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0}
 .tl{margin-top:8px}
 .tlrow{display:grid;grid-template-columns:280px 1fr auto;gap:48px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line2)}
 .tldate{font-family:var(--narrow);font-size:13px;color:var(--ink3)}
@@ -45,11 +45,13 @@
 .rolemeta .rt{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
 .rolemeta .rc{color:var(--red);font-weight:600;margin-top:3px}
 .rolemeta .rd{font-family:var(--narrow);font-size:13px;color:var(--ink3);margin-top:6px}
+.rolemeta .rk{font-family:var(--narrow);font-size:11px;letter-spacing:.08em;color:var(--ink3);margin-top:8px}
 .rolemeta .live{display:inline-block;font-family:var(--narrow);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--red);padding:2px 7px;margin-top:10px}
 .contribs{display:flex;flex-direction:column;gap:22px}
 .contrib{display:grid;gap:6px}
 .cd{font-family:var(--narrow);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
 .cm{font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--red);line-height:1}
+.csub{font-family:var(--narrow);font-size:11px;letter-spacing:.06em;color:var(--ink3);margin-top:-2px}
 .ci{font-size:15px;font-weight:500;line-height:1.5}
 .ca{font-size:13.5px;color:var(--ink2);line-height:1.6}
 .cs{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
@@ -181,6 +183,7 @@
         return {
           name: it.name,
           years: it.years ? it.years + 'y' : '',
+          level: it.level,
           w: 'width:' + (it.level / 4 * 100) + '%',
           fillCls: it.level >= 4 ? 'fillb l4' : 'fillb'
         };
@@ -223,7 +226,11 @@
   /* ── experience roles ────────────────────────────────────────────────── */
   var rolesHtml = roles.map(function (r) {
     var itemsHtml = r.items.map(function (c) {
-      var metricBlock = c.metric ? '<div class="cm">' + esc(c.metric) + '</div>' : '';
+      var arrow = metricArrow(c.metricDir);
+      var metricBlock = c.metric
+        ? '<div class="cm">' + (arrow ? esc(arrow) + ' ' : '') + esc(c.metric) + '</div>' +
+          (c.metricSubject ? '<div class="csub">' + esc(c.metricSubject) + '</div>' : '')
+        : '';
       var chipsHtml = c.skills.map(function (sk) {
         return '<span class="chip">' + esc(sk) + '</span>';
       }).join('');
@@ -238,11 +245,19 @@
 
     var currentBadge = r.is_current ? '<span class="live">Current</span>' : '';
 
+    var k = r.kpis || {};
+    var kParts = [];
+    if (k.ic)     kParts.push(k.ic + ' IC');
+    if (k.lead)   kParts.push(k.lead + ' lead');
+    if (k.metric) kParts.push(k.metric + (k.metric === 1 ? ' metric' : ' metrics'));
+    var kpiLine = kParts.length ? '<div class="rk">' + esc(kParts.join(' · ')) + '</div>' : '';
+
     return '<div class="role">' +
       '<div class="rolemeta">' +
         '<div class="rt">' + esc(r.role_title) + '</div>' +
         '<div class="rc">' + esc(r.company) + '</div>' +
         '<div class="rd">' + esc(r.dates) + '</div>' +
+        kpiLine +
         currentBadge +
       '</div>' +
       '<div class="contribs">' + itemsHtml + '</div>' +
@@ -254,7 +269,7 @@
     var itemsHtml = g.items.map(function (sk) {
       return '<div class="sk">' +
         '<span class="nm">' + esc(sk.name) + '</span>' +
-        '<div class="track"><div class="' + sk.fillCls + '" style="' + sk.w + '"></div></div>' +
+        '<div class="track" role="img" aria-label="Proficiency ' + esc(sk.level) + ' of 4"><div class="' + sk.fillCls + '" style="' + sk.w + '"></div></div>' +
         '<span class="yr">' + esc(sk.years) + '</span>' +
       '</div>';
     }).join('');
@@ -301,19 +316,19 @@
 
   sn++;
   var projectsSec = projectsContent ? '<div class="sec">' +
-    '<div class="sechd"><div class="lbl">Section 0' + sn + '</div><div class="t">Projects</div></div>' +
+    '<div class="sechd"><div class="lbl">Section 0' + sn + '</div><h2 class="t">Projects</h2></div>' +
     '<div class="projgrid"><div></div><div class="projcards">' + projectsContent + '</div></div>' +
   '</div>' : '';
   if (projectsContent) sn++;
 
   var resumeSec = resumeContent ? '<div class="sec">' +
-    '<div class="sechd"><div class="lbl">Section 0' + sn + '</div><div class="t">Resume (ATS)</div></div>' +
+    '<div class="sechd"><div class="lbl">Section 0' + sn + '</div><h2 class="t">Resume (ATS)</h2></div>' +
     '<div class="resume-wrap"><div></div><div>' + resumeContent + '</div></div>' +
   '</div>' : '';
   if (resumeContent) sn++;
 
   var socialSec = socialContent ? '<div class="sec">' +
-    '<div class="sechd"><div class="lbl">Section 0' + sn + '</div><div class="t">Social</div></div>' +
+    '<div class="sechd"><div class="lbl">Section 0' + sn + '</div><h2 class="t">Social</h2></div>' +
     '<div class="socgrid"><div></div><div class="soccards">' + socialContent + '</div></div>' +
   '</div>' : '';
 
@@ -347,19 +362,19 @@
 
     /* ── Section 01: Career Timeline ── */
     '<div class="sec">' +
-      '<div class="sechd"><div class="lbl">Section 01</div><div class="t">Career Timeline</div></div>' +
+      '<div class="sechd"><div class="lbl">Section 01</div><h2 class="t">Career Timeline</h2></div>' +
       '<div class="tl">' + timelineHtml + '</div>' +
     '</div>' +
 
     /* ── Section 02: Experience ── */
     '<div class="sec">' +
-      '<div class="sechd"><div class="lbl">Section 02</div><div class="t">Experience</div></div>' +
+      '<div class="sechd"><div class="lbl">Section 02</div><h2 class="t">Experience</h2></div>' +
       '<div>' + rolesHtml + '</div>' +
     '</div>' +
 
     /* ── Section 03: Skills, Education & Certifications ── */
     '<div class="sec">' +
-      '<div class="sechd"><div class="lbl">Section 03</div><div class="t">Skills, Education &amp; Certifications</div></div>' +
+      '<div class="sechd"><div class="lbl">Section 03</div><h2 class="t">Skills, Education &amp; Certifications</h2></div>' +
       '<div class="skgrid">' +
         '<div><div class="lbl" style="margin-bottom:8px">Capabilities</div></div>' +
         '<div><div class="skcols">' +

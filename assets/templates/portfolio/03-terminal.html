@@ -18,7 +18,7 @@
 .hero{display:grid;grid-template-columns:auto 1fr;gap:24px;padding:26px 26px}
 .avatar{width:92px;height:92px;border-radius:10px;object-fit:cover;border:1px solid var(--bord);filter:saturate(.92)}
 .avatar-placeholder{width:92px;height:92px;border-radius:10px;border:1px solid var(--bord);background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--grn)}
-.name{font-family:var(--sans);font-size:34px;font-weight:700;letter-spacing:-.02em;margin:0;line-height:1.05}
+.name{font-family:var(--sans);font-size:clamp(24px,6vw,34px);font-weight:700;letter-spacing:-.02em;margin:0;line-height:1.05;overflow-wrap:anywhere}
 .role{color:var(--grn);font-size:13px;margin-top:6px}
 .bio{font-family:var(--sans);color:var(--tx2);font-size:14.5px;line-height:1.6;margin-top:14px;max-width:760px}
 .bio em{color:var(--cyan);font-style:normal;font-weight:600}
@@ -34,7 +34,7 @@
 .kpi .k{font-size:11px;color:var(--tx3);margin-top:8px;line-height:1.4}
 .sec{margin-top:30px}
 .sechd{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.sechd .h{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--tx)}
+.sechd .h{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--tx);margin:0}
 .sechd .tag{font-size:11px;color:var(--grn);border:1px solid var(--bord);border-radius:5px;padding:2px 8px}
 .sechd .line{flex:1;height:1px;background:var(--bord2)}
 .log{border:1px solid var(--bord);border-radius:10px;background:var(--panel2);padding:6px 0}
@@ -50,15 +50,17 @@
 .roles{display:flex;flex-direction:column;gap:14px}
 .rc{border:1px solid var(--bord);border-radius:10px;background:var(--panel);overflow:hidden}
 .rch{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 18px;border-bottom:1px solid var(--bord2);flex-wrap:wrap}
-.rch .rt{font-family:var(--sans);font-size:17px;font-weight:700;color:var(--tx)}
+.rch .rt{font-family:var(--sans);font-size:17px;font-weight:700;color:var(--tx);margin:0}
 .rch .rco{color:var(--grn);font-size:12.5px;margin-top:2px}
 .rch .rd{color:var(--tx3);font-size:11.5px;white-space:nowrap}
+.rch .rkpis{color:var(--tx3);font-size:10.5px;margin-top:4px;text-align:right}
 .live{display:inline-block;font-size:10px;color:var(--grn);border:1px solid var(--grn);border-radius:4px;padding:1px 7px;margin-left:8px;white-space:nowrap;vertical-align:middle}
 .cbody{padding:6px 18px 16px}
 .ct{padding:14px 0;border-bottom:1px solid var(--bord2)}
 .ct:last-child{border-bottom:0}
 .cdomain{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3)}
 .cmetric{display:inline-block;font-size:19px;font-weight:800;color:var(--amber);letter-spacing:-.01em;margin:4px 0 2px}
+.cmetric .csubj{font-family:var(--sans);font-weight:500;font-size:12.5px;color:var(--tx2);letter-spacing:0;margin-left:4px}
 .cimpact{font-family:var(--sans);font-size:14px;color:var(--tx);line-height:1.55;margin-top:2px}
 .caction{font-family:var(--sans);font-size:12.5px;color:var(--tx2);line-height:1.6;margin-top:6px}
 .cs{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
@@ -181,6 +183,7 @@
         return {
           name: it.name,
           years: it.years ? it.years + 'yr' : '',
+          level: it.level,
           bars: bars(it.level, 'blk on', 'blk')
         };
       })
@@ -224,7 +227,7 @@
   var idStatsHtml = '';
   if (idStats.length) {
     idStatsHtml = '<div class="sec">' +
-      '<div class="sechd"><span class="h">identity.stats</span><span class="line"></span></div>' +
+      '<div class="sechd"><h2 class="h">identity.stats</h2><span class="line"></span></div>' +
       '<div class="kpis">' +
       idStats.map(function (s) {
         return '<div class="kpi"><div class="v">' + esc(s.value) + '</div><div class="k">' + esc(s.label) + '</div></div>';
@@ -245,8 +248,19 @@
   /* ── Roles HTML ── */
   var rolesHtml = roles.map(function (r) {
     var liveBadge = r.is_current ? '<span class="live">\u25CF live</span>' : '';
+    var k = r.kpis || {};
+    var kpiParts = [];
+    if (k.ic != null)     kpiParts.push(k.ic + ' ic');
+    if (k.lead != null)   kpiParts.push(k.lead + ' lead');
+    if (k.metric != null) kpiParts.push(k.metric + ' metric');
+    var kpiHtml = kpiParts.length ? '<div class="rkpis">' + esc(kpiParts.join(' \u00B7 ')) + '</div>' : '';
     var itemsHtml = r.items.map(function (c) {
-      var metricHtml = c.metric ? '<div class="cmetric">' + esc(c.metric) + '</div>' : '';
+      var metricHtml = '';
+      if (c.metric) {
+        var arrow = metricArrow(c.metricDir);
+        var subj = c.metricSubject ? '<span class="csubj">' + esc(c.metricSubject) + '</span>' : '';
+        metricHtml = '<div class="cmetric">' + (arrow ? esc(arrow) + ' ' : '') + esc(c.metric) + subj + '</div>';
+      }
       var skillsHtml = c.skills.map(function (sk) {
         return '<span class="chip">' + esc(sk) + '</span>';
       }).join('');
@@ -260,10 +274,10 @@
     }).join('');
     return '<div class="rc tlrow">' +
       '<div class="rch"><div>' +
-        '<div class="rt">' + esc(r.role_title) + liveBadge + '</div>' +
+        '<h3 class="rt">' + esc(r.role_title) + liveBadge + '</h3>' +
         '<div class="rco">' + esc(r.company) + '</div>' +
       '</div>' +
-      '<div class="rd">' + esc(r.dates) + '</div></div>' +
+      '<div><div class="rd">' + esc(r.dates) + '</div>' + kpiHtml + '</div></div>' +
       '<div class="cbody">' + itemsHtml + '</div>' +
     '</div>';
   }).join('');
@@ -276,7 +290,7 @@
       }).join('');
       return '<div class="sk">' +
         '<span class="nm">' + esc(sk.name) + '</span>' +
-        '<div class="meter">' + barsHtml + '<span class="lv">' + esc(sk.years) + '</span></div>' +
+        '<div class="meter" role="img" aria-label="proficiency ' + esc(sk.level) + ' of 4">' + barsHtml + '<span class="lv">' + esc(sk.years) + '</span></div>' +
       '</div>';
     }).join('');
     return '<div class="skcat"><h3>' + esc(g.name) + '</h3>' + itemsHtml + '</div>';
@@ -303,7 +317,7 @@
   var projectsSection = '';
   if (D.projects && D.projects.length) {
     projectsSection = '<div class="sec">' +
-      '<div class="sechd"><span class="h">projects</span><span class="tag">' + esc(D.projects.length) + ' repos</span><span class="line"></span></div>' +
+      '<div class="sechd"><h2 class="h">projects</h2><span class="tag">' + esc(D.projects.length) + ' repos</span><span class="line"></span></div>' +
       renderProjectsHtml(D.projects) +
     '</div>';
   }
@@ -312,7 +326,7 @@
   var resumeSection = '';
   if (D.resume) {
     resumeSection = '<div class="sec">' +
-      '<div class="sechd"><span class="h">resume --ats</span><span class="line"></span></div>' +
+      '<div class="sechd"><h2 class="h">resume --ats</h2><span class="line"></span></div>' +
       renderResumeHtml(D.resume, meta) +
     '</div>';
   }
@@ -322,7 +336,7 @@
   var social = D.social || [];
   if (social.length) {
     socialSection = '<div class="sec">' +
-      '<div class="sechd"><span class="h">social</span><span class="tag">' + esc(social.length) + ' posts</span><span class="line"></span></div>' +
+      '<div class="sechd"><h2 class="h">social</h2><span class="tag">' + esc(social.length) + ' posts</span><span class="line"></span></div>' +
       '<div class="soc-grid">' + renderSocialHtml(social) + '</div>' +
     '</div>';
   }
@@ -364,19 +378,19 @@
 
       /* ── Timeline ── */
       '<div class="sec">' +
-        '<div class="sechd"><span class="h">git log --career</span><span class="tag">' + esc(tlCount) + ' commits</span><span class="line"></span></div>' +
+        '<div class="sechd"><h2 class="h">git log --career</h2><span class="tag">' + esc(tlCount) + ' commits</span><span class="line"></span></div>' +
         '<div class="log">' + timelineHtml + '</div>' +
       '</div>' +
 
       /* ── Experience ── */
       '<div class="sec">' +
-        '<div class="sechd"><span class="h">experience</span><span class="tag">' + esc(roleCount) + ' roles</span><span class="line"></span></div>' +
+        '<div class="sechd"><h2 class="h">experience</h2><span class="tag">' + esc(roleCount) + ' roles</span><span class="line"></span></div>' +
         '<div class="roles">' + rolesHtml + '</div>' +
       '</div>' +
 
       /* ── Skills & Credentials ── */
       '<div class="sec">' +
-        '<div class="sechd"><span class="h">skills &amp; credentials</span><span class="line"></span></div>' +
+        '<div class="sechd"><h2 class="h">skills &amp; credentials</h2><span class="line"></span></div>' +
         '<div class="cols">' +
           '<div class="skpanel">' + skillsLeftHtml + '</div>' +
           '<div>' +

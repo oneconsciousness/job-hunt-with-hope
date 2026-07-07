@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light dark;--bg:#FFFFFF;--ink:#15202E;--ink2:#475569;--ink3:#94A3B8;--navy:#16263D;--navy2:#22344F;--line:#E4E8ED;--line2:#EEF1F4;--gold:#B0894F;--gold2:#8A6A3A;--blue:#1E4E8C;--soft:#F6F8FA;--serif:"Source Serif 4",Georgia,serif;--sans:"Libre Franklin",system-ui,sans-serif}
+:root{color-scheme:light dark;--bg:#FFFFFF;--ink:#15202E;--ink2:#475569;--ink3:#5F6E86;--navy:#16263D;--navy2:#22344F;--line:#E4E8ED;--line2:#EEF1F4;--gold:#B0894F;--gold2:#8A6A3A;--blue:#1E4E8C;--soft:#F6F8FA;--serif:"Source Serif 4",Georgia,serif;--sans:"Libre Franklin",system-ui,sans-serif}
 /* ── Dark theme (deep navy/graphite — preserves Executive character; managed by switcher.js) ── */
 [data-theme="dark"]{--bg:#161E29;--ink:#EAEFF4;--ink2:#AEBCCB;--ink3:#8493A3;--navy:#9FB4CD;--navy2:#1B2836;--line:#28323F;--line2:#1E2732;--gold:#CDA363;--gold2:#DCB87C;--blue:#86B4EA;--soft:#0F151D}
 [data-theme="dark"] .ex{box-shadow:0 1px 40px -16px rgba(0,0,0,.6)}
@@ -19,7 +19,7 @@
 .ex{max-width:1040px;margin:0 auto;background:var(--bg);box-shadow:0 1px 40px -16px rgba(21,32,46,.25)}
 .band{background:var(--navy);color:#fff;padding:42px 48px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
 .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
-.name{font-family:var(--serif);font-size:48px;font-weight:600;letter-spacing:-.01em;line-height:1;margin:12px 0 0;color:#fff}
+.name{font-family:var(--serif);font-size:clamp(30px,7vw,48px);font-weight:600;letter-spacing:-.01em;line-height:1;margin:12px 0 0;color:#fff;overflow-wrap:anywhere}
 .headline{font-size:16px;color:#C5D2E0;margin:12px 0 0;max-width:560px;line-height:1.45}
 .contact{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:20px;font-size:12px;color:#9FB2C7}
 .contact .g{color:var(--gold);font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:10px;margin-right:6px}
@@ -42,12 +42,15 @@
 .rt{font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.1}
 .rco{color:var(--gold2);font-weight:600}
 .rd{font-size:11.5px;color:var(--ink3);white-space:nowrap;font-weight:500}
-.live{display:inline-block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--gold);border-radius:3px;padding:2px 8px;margin-left:8px;vertical-align:middle;font-weight:600}
+.rkpi{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:10.5px;letter-spacing:.02em;color:var(--ink3);margin-top:6px}
+.rkpi .sep{opacity:.5;margin:0 6px}
+.live{display:inline-block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--gold2);border-radius:3px;padding:2px 8px;margin-left:8px;vertical-align:middle;font-weight:600}
 .contribs{display:flex;flex-direction:column;gap:16px;margin-top:14px}
 .contrib{border-left:3px solid var(--line);padding-left:16px}
 .contrib.hasm{border-left-color:var(--gold)}
 .cmrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .cmetric{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold2);line-height:1}
+.csubject{font-size:12.5px;color:var(--ink2);font-weight:500;line-height:1.4}
 .cdomain{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:600}
 .cimpact{font-size:14px;font-weight:500;line-height:1.5;margin-top:6px}
 .caction{font-size:13px;color:var(--ink2);line-height:1.6;margin-top:6px}
@@ -129,17 +132,17 @@
 .soc-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .soc-head svg{width:18px;height:18px;fill:var(--navy)}
 .soc-platform{font-size:12px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.04em}
-.soc-pinned{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--gold);border-radius:3px;padding:2px 7px;font-weight:600;margin-left:auto}
+.soc-pinned{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--gold2);border-radius:3px;padding:2px 7px;font-weight:600;margin-left:auto}
 .soc-caption{font-size:13px;color:var(--ink2);line-height:1.55;margin-bottom:10px}
 .soc-link{font-size:12px;font-weight:600;color:var(--gold2);text-decoration:none}
 .soc-link:hover{text-decoration:underline}
 
 /* ── Footer generation line ───────────────────────────────────────────────── */
-.foot-gen{background:var(--navy2);color:#7A8FA6;text-align:center;padding:12px 16px;font-size:10.5px;letter-spacing:.03em}
+.foot-gen{background:var(--navy2);color:#9EB0C5;text-align:center;padding:12px 16px;font-size:10.5px;letter-spacing:.03em}
 .foot-gen a{color:var(--gold);text-decoration:none;font-weight:600}
 .foot-gen a:hover{text-decoration:underline}
 
-@media(max-width:860px){.band{grid-template-columns:1fr;padding:30px 24px}.photo{width:96px;height:96px}.name{font-size:36px}.body{grid-template-columns:1fr}.main{border-right:0;padding:30px 22px}.side{padding:30px 22px}.soc-grid{grid-template-columns:1fr}.resume-wrap{padding:22px 18px}}
+@media(max-width:860px){.band{grid-template-columns:1fr;padding:30px 24px}.photo{width:96px;height:96px}.body{grid-template-columns:1fr}.main{border-right:0;padding:30px 22px}.side{padding:30px 22px}.soc-grid{grid-template-columns:1fr}.resume-wrap{padding:22px 18px}}
 </style>
 </head>
 <body>
@@ -164,7 +167,7 @@
     return {
       name: name,
       items: (cat.items || []).map(function (it) {
-        return { name: it.name, dots: bars(it.level, 'dt on', 'dt') };
+        return { name: it.name, level: it.level, dots: bars(it.level, 'dt on', 'dt') };
       })
     };
   });
@@ -248,9 +251,14 @@
       var chipsHtml = c.skills.map(function (sk) {
         return '<span class="chip">' + esc(sk) + '</span>';
       }).join('');
+      var arrow = c.metric ? metricArrow(c.metricDir) : '';
+      var metricHtml = c.metric
+        ? '<span class="cmetric">' + (arrow ? esc(arrow) + ' ' : '') + esc(c.metric) + '</span>' +
+          (c.metricSubject ? '<span class="csubject">' + esc(c.metricSubject) + '</span>' : '')
+        : '';
       return '<div class="' + cls + '">' +
         '<div class="cmrow">' +
-          (c.metric ? '<span class="cmetric">' + esc(c.metric) + '</span>' : '') +
+          metricHtml +
           '<span class="cdomain">' + esc(c.domain) + '</span>' +
         '</div>' +
         (c.impact ? '<div class="cimpact">' + esc(c.impact) + '</div>' : '') +
@@ -258,6 +266,15 @@
         (chipsHtml ? '<div class="cs">' + chipsHtml + '</div>' : '') +
       '</div>';
     }).join('');
+
+    var k = r.kpis || {};
+    var kpiBits = [];
+    if (k.ic)     kpiBits.push(esc(k.ic) + ' individual');
+    if (k.lead)   kpiBits.push(esc(k.lead) + ' leadership');
+    if (k.metric) kpiBits.push(esc(k.metric) + ' quantified');
+    var rkpiHtml = kpiBits.length
+      ? '<div class="rkpi">' + kpiBits.join('<span class="sep">\u00B7</span>') + '</div>'
+      : '';
 
     return '<div class="role">' +
       '<div class="rh">' +
@@ -267,6 +284,7 @@
         '</div>' +
         '<div class="rd">' + esc(r.dates) + '</div>' +
       '</div>' +
+      rkpiHtml +
       '<div class="contribs">' + contribsHtml + '</div>' +
     '</div>';
   }).join('');
@@ -294,7 +312,9 @@
       var dotsHtml = sk.dots.map(function (d) {
         return '<span class="' + esc(d.cls) + '"></span>';
       }).join('');
-      return '<div class="sk"><span class="nm">' + esc(sk.name) + '</span><div class="dots">' + dotsHtml + '</div></div>';
+      var lvl = Math.max(0, Math.min(4, Number(sk.level) || 0));
+      return '<div class="sk"><span class="nm">' + esc(sk.name) + '</span>' +
+        '<div class="dots" role="img" aria-label="' + lvl + ' of 4">' + dotsHtml + '</div></div>';
     }).join('');
     return '<div class="skcat"><h4>' + esc(g.name) + '</h4>' + itemsHtml + '</div>';
   }).join('');
