@@ -6,7 +6,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#FFFFFF;--ink:#15202E;--ink2:#475569;--ink3:#94A3B8;--navy:#16263D;--navy2:#22344F;--line:#E4E8ED;--line2:#EEF1F4;--gold:#B0894F;--gold2:#8A6A3A;--blue:#1E4E8C;--soft:#F6F8FA;--serif:"Source Serif 4",Georgia,serif;--sans:"Libre Franklin",system-ui,sans-serif}
+:root{color-scheme:light dark;--bg:#FFFFFF;--ink:#15202E;--ink2:#475569;--ink3:#94A3B8;--navy:#16263D;--navy2:#22344F;--line:#E4E8ED;--line2:#EEF1F4;--gold:#B0894F;--gold2:#8A6A3A;--blue:#1E4E8C;--soft:#F6F8FA;--serif:"Source Serif 4",Georgia,serif;--sans:"Libre Franklin",system-ui,sans-serif}
+/* ── Dark theme (deep navy/graphite — preserves Executive character; managed by switcher.js) ── */
+[data-theme="dark"]{--bg:#161E29;--ink:#EAEFF4;--ink2:#AEBCCB;--ink3:#8493A3;--navy:#9FB4CD;--navy2:#1B2836;--line:#28323F;--line2:#1E2732;--gold:#CDA363;--gold2:#DCB87C;--blue:#86B4EA;--soft:#0F151D}
+[data-theme="dark"] .ex{box-shadow:0 1px 40px -16px rgba(0,0,0,.6)}
+[data-theme="dark"] .band{background:#1B2C42}
+[data-theme="dark"] .foot{background:#152233}
+[data-theme="dark"] .chip{background:rgba(134,180,234,.14)}
+[data-theme="dark"] .live,[data-theme="dark"] .soc-pinned{color:#0F151D}
+[data-theme="dark"] .foot-gen{color:#98ABBF}
 *{box-sizing:border-box}body{margin:0;background:var(--soft);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.6}
 .ex{max-width:1040px;margin:0 auto;background:var(--bg);box-shadow:0 1px 40px -16px rgba(21,32,46,.25)}
 .band{background:var(--navy);color:#fff;padding:42px 48px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
@@ -165,7 +173,7 @@
   var timeline = (D.timeline || []).map(function (t) {
     return {
       period: fmtPeriod(t.date_start, t.date_end),
-      label:  t.label.split(' @ ')[0],
+      label:  String(t.label||'').split(' @ ')[0],
       org:    t.org,
       metric: t.metric || '',
       dotCls: (t.type === 'education' || t.type === 'certification') ? 'tldot edu' : 'tldot'
@@ -368,5 +376,6 @@
   revealRows('.tlrow');
 })();
 </script>
+<script src="switcher.js"></script>
 </body>
 </html>

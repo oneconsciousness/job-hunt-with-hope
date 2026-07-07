@@ -6,7 +6,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#FCFCFC;--ink:#0E0E0E;--ink2:#5A5A5A;--ink3:#9A9A9A;--line:#E2E2E2;--line2:#EFEFEF;--red:#E2231A;--sans:"Archivo",Helvetica,Arial,sans-serif;--narrow:"Archivo Narrow",sans-serif}
+:root{color-scheme:light dark;--bg:#FCFCFC;--ink:#0E0E0E;--ink2:#5A5A5A;--ink3:#9A9A9A;--line:#E2E2E2;--line2:#EFEFEF;--red:#E2231A;--sans:"Archivo",Helvetica,Arial,sans-serif;--narrow:"Archivo Narrow",sans-serif}
+[data-theme="dark"]{color-scheme:dark;--bg:#121212;--ink:#F3F3F1;--ink2:#9C9C9A;--ink3:#7E7E7C;--line:#2E2E2E;--line2:#242424;--red:#FF4438}
+/* dark: white pill text on bright --red is only 3.42:1 — deepen the badge background so #fff reaches AA (keeps --red bright for accent text) */
+[data-theme="dark"] .live,[data-theme="dark"] .soc-pinned{background:#C21F16}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
 .sw{max-width:1100px;margin:0 auto;padding:56px 48px 100px}
 .hl{height:3px;background:var(--ink)}
@@ -65,6 +68,7 @@
 .edu .d{font-size:15px;font-weight:600}
 .edu .i{color:var(--ink2);font-size:13px}
 .edu .y{font-family:var(--narrow);font-size:11px;color:var(--ink3);margin-top:2px}
+.interests{font-size:13px;color:var(--ink2);line-height:1.7}
 
 /* ── Projects ──────────────────────────────────────────────────────────────── */
 .projgrid{display:grid;grid-template-columns:280px 1fr;gap:48px;margin-top:8px}
@@ -161,7 +165,7 @@
   var timeline = (D.timeline || []).map(function (t) {
     return {
       period: fmtPeriod(t.date_start, t.date_end),
-      label: t.label.split(' @ ')[0],
+      label: String(t.label||'').split(' @ ')[0],
       org: t.org,
       metric: t.metric || ''
     };
@@ -193,6 +197,8 @@
   var certs = (D.certifications || []).map(function (c) {
     return { name: c.name, issuer: c.issuer };
   });
+
+  var interests = (D.overview && D.overview.interests || []).join(' · ');
 
   /* ── contact links ───────────────────────────────────────────────────── */
   var linksHtml = links.map(function (lnk) {
@@ -361,6 +367,7 @@
           '<div>' + colBHtml +
             '<div class="skcat"><h3>Education</h3>' + eduHtml + '</div>' +
             '<div class="skcat"><h3>Certifications</h3>' + certsHtml + '</div>' +
+            (interests ? '<div class="skcat"><h3>Interests</h3><div class="interests">' + esc(interests) + '</div></div>' : '') +
           '</div>' +
         '</div></div>' +
       '</div>' +
@@ -390,5 +397,6 @@
   revealRows('.tlrow');
 })();
 </script>
+<script src="switcher.js"></script>
 </body>
 </html>

@@ -6,7 +6,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#F3EDE3;--paper2:#EFE7DA;--card:#FBF6EE;--cardh:#FFFCF5;--ink:#221B12;--ink2:#5C4F3D;--ink3:#8C7E6D;--line:rgba(34,27,18,.10);--line2:rgba(34,27,18,.06);--orange:#C2620E;--orange2:#9C4E0A;--teal:#1F7A6B;--gold:#B8860B;--shadow:0 1px 2px rgba(34,27,18,.05),0 8px 24px -12px rgba(34,27,18,.16);--serif:"Spectral",Georgia,serif;--sans:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",monospace}
+:root{color-scheme:light dark;--paper:#F3EDE3;--paper2:#EFE7DA;--card:#FBF6EE;--cardh:#FFFCF5;--ink:#221B12;--ink2:#5C4F3D;--ink3:#8C7E6D;--line:rgba(34,27,18,.10);--line2:rgba(34,27,18,.06);--orange:#C2620E;--orange2:#9C4E0A;--teal:#1F7A6B;--gold:#B8860B;--shadow:0 1px 2px rgba(34,27,18,.05),0 8px 24px -12px rgba(34,27,18,.16);--serif:"Spectral",Georgia,serif;--sans:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",monospace}
+/* ── Dark theme — warm near-black paper, warm off-white ink, brightened orange/teal/gold accents ── */
+[data-theme="dark"]{color-scheme:dark;--paper:#1A1611;--paper2:#221D16;--card:#221C15;--cardh:#2A2318;--ink:#F1E9DC;--ink2:#C4B7A3;--ink3:#9A8D7A;--line:rgba(241,233,220,.12);--line2:rgba(241,233,220,.07);--orange:#E8873A;--orange2:#D9822F;--teal:#4FB3A0;--gold:#D9A93A;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7)}
+/* dark overrides for colors set outside :root — retint accent fills, flip pill text to dark ink on bright accent for AA */
+[data-theme="dark"] .badge{background:rgba(232,135,58,.14);border-color:rgba(232,135,58,.30)}
+[data-theme="dark"] .badge.none{background:rgba(79,179,160,.12);border-color:rgba(79,179,160,.30)}
+[data-theme="dark"] .projmetric{background:rgba(232,135,58,.14);border-color:rgba(232,135,58,.30)}
+[data-theme="dark"] .live{color:var(--paper)}
+[data-theme="dark"] .soc-pinned{color:var(--paper)}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-size:14.5px;line-height:1.6}
 .wr{max-width:980px;margin:0 auto;padding:48px 36px 96px}
 .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange)}
@@ -158,7 +166,7 @@
   /* ── timeline ────────────────────────────────────────────── */
   var timeline = (D.timeline || []).map(function (t) {
     var period = fmtPeriodLocal(t.date_start, t.date_end);
-    var label  = t.label.split(' @ ')[0];
+    var label  = String(t.label||'').split(' @ ')[0];
     var org    = t.org || '';
     var metric = t.metric || '';
     var dotCls = (t.type === 'education' || t.type === 'certification') ? 'tldot edu' : 'tldot';
@@ -179,7 +187,7 @@
     var itemsHtml = r.items.map(function (c) {
       var metric    = c.metric;
       var badgeCls  = metric ? 'badge' : 'badge none';
-      var badgeText = metric || 'Leadership';
+      var badgeText = metric || (c.kind === 'lead' ? 'Leadership' : '');
       var skillsHtml = c.skills.map(function (sk) {
         return '<span class="chip">' + esc(sk) + '</span>';
       }).join('');
@@ -359,5 +367,6 @@
 
 })();
 </script>
+<script src="switcher.js"></script>
 </body>
 </html>
