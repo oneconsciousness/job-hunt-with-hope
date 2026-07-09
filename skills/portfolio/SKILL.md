@@ -138,6 +138,22 @@ The portfolio is **not** built by substituting tokens into static markup. The ag
 
 The per-section contracts below are **field-mapping references** — they name which `window.HOPE_DATA` field drives which DOM, deferring to the template's `data.js` authoring contract (the `window.HOPE_DATA` schema) for field types and optionality. They are not substitution tables: you author data, not markup.
 
+### The look is the user's choice — offer it, never assume it
+
+Hope ships **six designs**, and real users have real taste — the lesson from our first users is that they came back wanting their *own* look, not the one we picked for them. The template folder carries them all:
+
+- **Standard** (`index.html` + runtime renderer) — the flagship: full-featured (résumé export, share menu, social feed, print modes). Always the folder's entry page.
+- **Five alternates** — `01-editorial.html` · `02-swiss-minimal.html` · `03-terminal.html` · `04-warm-refined.html` · `05-executive.html` — complete visual re-renderings that read the same `data.js` at runtime (each is self-contained; they need `template-utils.js` beside them).
+- **The design dock** (`switcher.js`) — a floating switcher that lets the user flip between all six + light/dark, on any page of the folder.
+
+Ask for the look via the design question in "What to ask the user before generating", then honor the answer mechanically:
+
+- **All six + the dock (the recommended default)**: copy the five alternate pages + `template-utils.js` + `switcher.js` into the output folder alongside the Standard files, and add `<script src="switcher.js"></script>` at the end of `index.html`'s body (mirror how the alternates include it). The user flips looks anytime, offline, and keeps every option. Alternates ship **verbatim except** the `<title>`/OG-title, which you personalize the same way the agenthope.ai demos do.
+- **Standard only**: the lean folder — the four named files plus share cards, no dock.
+- **If the user falls in love with one alternate** and wants *it* to lead: the entry page stays `index.html` (Standard carries the résumé/share/print machinery), but the alternate is one click away on the dock, and its direct link (e.g. `<site>/01-editorial.html`) is fully shareable — offer that link as the one they put in their bio. Never rename an alternate to `index.html`; the dock navigates by filename and would break.
+
+Point them at the live gallery before they choose: **agenthope.ai/styles** — all six looks, each previewable across nine very different careers.
+
 **Reuse shipped patterns — grep `portfolio.css` before you write any new CSS or markup.** Search for the pattern that already exists and reuse it: responsive grids (`grep -nE 'auto-fit|auto-fill|grid-template' portfolio.css`), card shells (`.item-card`, `.edu-card`), chips (`.skill-chip`), pills, hex KPIs. Because `portfolio.css` ships **verbatim** and custom CSS has nowhere clean to live, a hand-rolled rule — e.g. a fixed `grid-template-columns: 1fr 1fr` that never collapses on a phone — is a **bug, not a shortcut**. The shipped patterns are the only way to stay consistent and responsive: treat "reuse the existing pattern" as a required pre-flight, not a preference.
 
 ### Rich education & certification cards
@@ -483,6 +499,18 @@ If the answer is "general", scaffold the constraint question instead of leaving 
 > 3. **Pull the older roles back** — lead with recent work
 >
 > Or tell me in your own words — these are just sparks.
+
+**The design question — always asked, never assumed.** The look of their portfolio is one of the most personal calls in the whole hunt (our first users taught us this by coming back with their own designs). Before generating, show them where to browse — "have a look at agenthope.ai/styles — all six looks, previewable across nine very different careers" — then ask (💬-bearing; this one is personal):
+
+> Which look should your portfolio lead with?
+> 1. **Standard, with all six looks + the design dock included** (recommended — you keep every option and can flip anytime, offline too)
+> 2. **Standard only** — the lean folder, one signature look
+> 3. **One of the alternates leading** — Editorial, Swiss Minimal, Terminal, Warm Refined, or Executive: tell me which, and I'll hand you its direct link to share
+> 4. 💬 Chat about this first — tell me the vibe you're after and I'll point at the closest look
+>
+> Or tell me in your own words.
+
+Never present the six looks with rankings or "best for your field" labels — show them all, equal weight, and let taste decide (see "The look is the user's choice" above for the mechanics). If they describe a vibe in their own words ("something print-like", "dark and technical"), map it honestly to the closest design and *say which one you picked and why* so they can veto it.
 
 **App catalog — pick the optional apps (ask once per portfolio).** Every portfolio always carries the core sections: Experience, Skills, Education & Certifications, Projects. On top of those, Hope has **optional apps** the user chooses — don't decide for them. Offer the ones that apply as **one multi-select** (`AskUserQuestion`, `multiSelect: true`; the tool's "enter your own answer" is the escape hatch), recommending the ones that fit. This is a catalog: today the optional apps are **Overview** and **Social Feed**, and future apps slot into the same pick-list.
 
