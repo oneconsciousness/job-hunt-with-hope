@@ -11,6 +11,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
 .ed{max-width:1000px;margin:0 auto;padding:64px 56px 96px}
 .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.masthead .kicker{margin-bottom:12px}
 .rule{height:1px;background:var(--ink);margin:18px 0}
 .rulethin{height:1px;background:var(--line);margin:0}
 .masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;border-bottom:2px solid var(--ink);padding-bottom:14px}
@@ -209,9 +210,11 @@
   html += '<div class="kicker">Portfolio \u00B7 ' + esc(genDate) + '</div>';
   html += '<h1 class="name">' + esc(personName) + '</h1>';
   html += '</div>';
-  html += '<div class="metaR">' + esc(id.location || '') + '<br>' + esc(id.email || '') + '<br>' + esc(id.phone || '');
-  html += '<br><a href="' + esc(link0.url || '#') + '">' + esc(link0.label || 'LinkedIn') + '</a>';
-  html += '</div></div>';
+  /* Only render meta lines that exist — empty email/phone must not leave blank rows. */
+  var metaBits = [id.location, id.email, id.phone].filter(Boolean).map(esc);
+  metaBits.push('<a href="' + esc(link0.url || '#') + '">' + esc(link0.label || 'LinkedIn') + '</a>');
+  html += '<div class="metaR">' + metaBits.join('<br>') + '</div>';
+  html += '</div>';
 
   /* ── All links row ──────────────────────────────────────────────────── */
   if (id.links && id.links.length) {

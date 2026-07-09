@@ -346,9 +346,10 @@
       '<div>' +
         '<div class="lbl" style="margin-bottom:10px">Contact</div>' +
         '<div class="contact">' +
-          '<span class="k">Location</span>' + esc(location) + '<br>' +
-          '<span class="k">Email</span>' + esc(email) + '<br>' +
-          '<span class="k">Phone</span>' + esc(phone) + '<br>' +
+          /* Only rows with values — an empty Email/Phone must not render a dangling label. */
+          (location ? '<span class="k">Location</span>' + esc(location) + '<br>' : '') +
+          (email ? '<span class="k">Email</span>' + esc(email) + '<br>' : '') +
+          (phone ? '<span class="k">Phone</span>' + esc(phone) + '<br>' : '') +
           linksHtml +
         '</div>' +
       '</div>' +
