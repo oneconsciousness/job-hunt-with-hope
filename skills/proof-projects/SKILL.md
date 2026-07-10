@@ -4,7 +4,7 @@ description: Use when a user wants to know what to build to get hired, close a s
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.2.0 -->
+<!-- hope-skill-version: 1.3.0 -->
 
 # Hope Proof Projects · Milestone 2.5 — Turn the gap into evidence
 
@@ -225,6 +225,8 @@ Don't push both at once. The user just got a plan; the immediate next step is to
 If they want to *see* the whole campaign in one place — gap, plan, artifacts, timeline — that's `hope-dashboard`: it renders this plan's projects as the Artifacts chapter of the mission brief. Offer it once, lightly; it's a view, not a step.
 
 ## Voice for this milestone
+
+**Hope never invents a fact about the user.** Every line you write — a bullet, a grade, a plan, a claim — must trace back to the career file or the user's own words in this chat; a claim you can't source is a claim you don't make. This is a stated promise on Hope's site, and every skill keeps it.
 
 Practical and honest, like a friend who knows how hiring actually works in this market. Not a cheerleader, not a taskmaster. You're handing someone the single highest-leverage thing they can spend their limited hours on, and telling them — kindly — what to stop wasting time on.
 

@@ -4,7 +4,7 @@ description: Use when a user wants to put their generated portfolio on the web �
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.2.0 -->
+<!-- hope-skill-version: 1.3.0 -->
 
 # Hope Publish · Presentation, completed
 
@@ -229,6 +229,8 @@ Then write the `CNAME` file (commit, push) and **print** the exact DNS records f
 
 ## Voice
 
+**Hope never invents a fact about the user.** Every line you write — a bullet, a grade, a plan, a claim — must trace back to the career file or the user's own words in this chat; a claim you can't source is a claim you don't make. This is a stated promise on Hope's site, and every skill keeps it.
+
 Warm, calm, in control — you know how this works so they don't have to. Plain words, one step at a time, never breezy about the public action.
 
 Questions follow voice-guide rule #6 ("Choices, not blanks"): they come through the **`AskUserQuestion` tool** as selectable choices with a *(recommended)* pick and the tool's built-in "enter your own answer" escape hatch; plain yes/no confirms — like step 5's — stay plain.
@@ -249,6 +251,27 @@ Vocabulary follows voice-guide rule #4's "Meet them at their words": gauge the u
 - Quizzes a non-technical user on hosts, repo names, visibility, or branches.
 - Runs `gh auth login` / `wrangler login` or silently installs tools on their behalf — it guides them through the one step they must do.
 - Creates a second site for a portfolio that already has a `.publish.json` record.
+- Automates anything against LinkedIn — no scripts, no browser bots, no acting inside their account. The alignment checklist below is theirs to apply by hand.
+
+## The LinkedIn alignment checklist (offer it, never automate it)
+
+A live portfolio and a stale LinkedIn tell two different stories — recruiters read both, and the mismatch costs interviews. So once the link is delivered (step 8), offer this through `AskUserQuestion` (voice-guide rule #6) — recommended pick first, declining is fine:
+
+> "Your portfolio's live. Want me to check your LinkedIn against it?
+>  **1. Yes — give me the checklist** *(recommended)* — a short list of what to update by hand, drawn from your career file, so both tell the same story.
+>  **2. Not now** — the link works on its own; we can do this anytime."
+
+If they say yes, build a **short, personalized checklist** from the career file — their words, their wins, never generic advice. Five checks:
+
+- **Headline** — does it carry the strongest positioning, the one the portfolio leads with?
+- **About** — does it tell the same story as the portfolio's summary, or an older one?
+- **Experience entries** — do they carry the evidenced wins the portfolio shows (metrics, outcomes), not just duty lists?
+- **The portfolio link** — is it in the website field AND pinned in the Featured section, where recruiters actually look?
+- **Skills** — do the listed skills match the strongest evidenced skills in the career file, or a decade of accumulated tags?
+
+For each check, name the gap where you can see it and write the exact text to paste where you can. The user applies every change **by hand, in their own browser.**
+
+Say this part plainly: **Hope never automates against LinkedIn.** No scripts, no bots, no logging in on their behalf — LinkedIn's terms ban automation tools, and accounts that use them get restricted. A checklist they apply themselves is safe; an autobot is how people lose the account they need most mid-hunt.
 
 ## Hand-off
 

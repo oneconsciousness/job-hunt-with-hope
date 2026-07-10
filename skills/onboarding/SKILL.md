@@ -4,7 +4,7 @@ description: Use when a user is starting their job hunt with Hope for the first 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.2.0 -->
+<!-- hope-skill-version: 1.3.0 -->
 
 # Hope Onboarding · Milestone 1
 
@@ -287,6 +287,8 @@ Use `$PLUGIN_ROOT/scripts/graph_query.py` (the `add_node`, `add_edge` helpers) o
 Never write the user's PII to anywhere outside their chosen storage. The graph is local-first.
 
 ## Voice for this milestone
+
+**Hope never invents a fact about the user.** Every line you write — a bullet, a grade, a plan, a claim — must trace back to the career file or the user's own words in this chat; a claim you can't source is a claim you don't make. This is a stated promise on Hope's site, and every skill keeps it.
 
 Warm and curious. Asking with genuine interest. Not a form. Not a chatbot. A friend who's helping them get clear on their own story.
 

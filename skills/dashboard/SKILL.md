@@ -4,7 +4,7 @@ description: Use when a user wants to see where they stand and where they're goi
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.2.0 -->
+<!-- hope-skill-version: 1.3.0 -->
 
 # Hope Dashboard · The mission brief
 
@@ -77,7 +77,7 @@ The **forward throughline** in chapter 01 is the deliberate mirror of the portfo
 
 ## The synthesis rules
 
-These are the framework. Every dashboard follows all seven.
+These are the framework. Every dashboard follows all eight.
 
 1. **Research the role, not the résumé.** The gap board and the plan are read against *live market evidence* — current postings, interview-loop guides, comp reports — for the target role, level, and market. Name the sources and the date in `matrix.source`. Never invent requirements from memory.
 2. **The gap must be theirs, not generic.** Diff the role research against the user's *real* evidence in the career file. "Learn system design" is a horoscope; "you've built the governance layer twice but never foregrounded it" is a read. If a gap could appear on anyone's dashboard, it doesn't belong on this one.
@@ -86,6 +86,7 @@ These are the framework. Every dashboard follows all seven.
 5. **Opinionated, with autonomy.** Chapter 07 steers hard: the two moves that close most of the gap, the skip-list with a *why* per item (certs, grind-work, retooling — whatever doesn't move *this* offer), and always the closing autonomy note: side-quests are fine if they energize you; just don't let them displace the two moves.
 6. **Structured data in, rendering out.** You fill the `target` contract; the template renders it. You do not restyle, do not add sections, do not touch the CSS. All your creativity goes into the *content* of the data — the design is already done and locked.
 7. **Digestible or it doesn't ship.** ≤3 phases, ≤7 moves, ≤6 stats, ≤3 projects, exactly one starred door-opener, exactly one featured artifact. If you're tempted to add more, cut instead — the twentieth item is why nobody reads status pages.
+8. **Warm paths before cold ones.** When the plan's market phase involves applying, referrals lead: the plan names the warm-intro moves — people the user already knows, or is one intro away from, at target companies — before any cold-application move, and the move copy reflects the order ("warm-intro into three teams" beats "send thirty applications").
 
 ## Build it
 
@@ -120,6 +121,8 @@ The design is governed by the locked design tokens (`references/design-tokens.md
 
 ## Voice for this milestone
 
+**Hope never invents a fact about the user.** Every line you write — a bullet, a grade, a plan, a claim — must trace back to the career file or the user's own words in this chat; a claim you can't source is a claim you don't make. This is a stated promise on Hope's site, and every skill keeps it.
+
 Dashboard shade (voice-guide): **glanceable, just-the-facts, confident.** The chapter copy is short, declarative, and second-person. The one long-form moment is Hope's take — and even that is two tight paragraphs, not an essay.
 
 - ❌ "Comprehensive Career Analytics Dashboard — 17 KPIs tracked across 5 dimensions."
@@ -144,6 +147,8 @@ The dashboard is a synthesis, so it hands off *backwards* to whatever is missing
 - **No gap read** → `hope-skill-gap`: "Five minutes, and the gap board stops being generic."
 - **No proof plan** → `hope-proof-projects`: "The plan chapter is thin because we haven't picked what you'll build — want to do that now?"
 - **An artifact shipped** → `hope-portfolio`, then re-run this skill: the readiness gauge moves, and watching it move is the point. The dashboard is regenerated, never hand-patched.
+
+**Offer a rhythm — once, never a nag.** After the brief is handed over, offer the cadence per voice-guide #6 through `AskUserQuestion`: re-run the gap read after each artifact they ship so the readiness gauge moves, plus a weekly brief regeneration while the market phase is live so the plan tracks reality (recommended — the brief only earns its keep if it tracks the hunt); just the gap re-read after each ship; or no rhythm — they know where to find you. It's an offered habit, not automation: the user opts in, Hope schedules nothing and chases no one.
 
 ### Keep the notebook current
 

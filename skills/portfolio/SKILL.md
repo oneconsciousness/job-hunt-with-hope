@@ -4,7 +4,7 @@ description: Use when a user wants to generate a portfolio — their work, their
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.2.0 -->
+<!-- hope-skill-version: 1.3.0 -->
 
 # Hope Portfolio · Milestone 3 — Hope's Signature
 
@@ -79,6 +79,8 @@ If no target Job is named, generate a **general portfolio** representing the use
 Either way, **create a CuratedPortfolio node** in the graph linking to the included Experiences/Skills/Projects, and record on it the user's app-catalog decisions as `"show_summary": true|false` and `"show_social": true|false`, and their traveler choice as `"timeline_traveler"` (see the app catalog and the traveler picker below — per-portfolio presentation choices, not Person facts). This means the user's graph remembers which curation went out for which role.
 
 ## Voice in the portfolio copy
+
+**Hope never invents a fact about the user.** Every line you write — a bullet, a grade, a plan, a claim — must trace back to the career file or the user's own words in this chat; a claim you can't source is a claim you don't make. This is a stated promise on Hope's site, and every skill keeps it.
 
 You are not writing a résumé. You are writing **a designerly statement of work** in Hope's voice.
 
@@ -369,6 +371,8 @@ What each `resume` field drives — see the `data.js` authoring contract for the
 | `skills_line` | `.resume-skills` | Top **10–14 skills, comma-joined**, strongest-evidenced and most market-demanded first. |
 
 **ATS rules — non-negotiable inside `#resume-view`:** real text only, standard section headings (Experience, Education, Skills), semantic markup — real `<h1>`/`<h2>` and `<ul><li>` — **no tables, no images or icons, no icon fonts, no text rendered as graphics.** Recruiters' parsers must be able to read every word.
+
+**Why these rules survive every system — and what not to break.** The big applicant-tracking systems (Workday, Greenhouse, Taleo, iCIMS) each parse résumés their own way, and the resume view's law above — real text, standard section headings, no icon fonts — is exactly the intersection that survives all of them; the template meets it by construction, so your job during generation is to not break it. Concretely: keep the standard reverse-chronological shape with the literal headings "Experience", "Education", "Skills" — they parse everywhere, and a creative rename defeats section detection; write dates in one consistent `Month YYYY` format across every entry; keep company name and role title on their own lines — `role_title` and `company` are separate fields for a reason, never fold the company into the title string; and never introduce tables, multi-column layout, or text-in-images anywhere in the resume path. Don't claim or assume anything about a specific system's internals beyond these widely-documented parsing basics — this floor is the contract.
 
 ### Icons for links — bundled first, fetched when missing
 
@@ -667,7 +671,7 @@ Options 1–3 (and any updates the user accepts from option 5) land here. **Rege
 
 ## Stale-session check — is this chat running an older Hope?
 
-This file carries a version marker near the top — `<!-- hope-skill-version: 1.2.0 -->` — naming the Hope this chat loaded. The live version is whatever `$PLUGIN_ROOT/plugin.json` says **right now** (the `<LIVE>` one-liner above). Run the comparison whenever the user picks option 4 or 5 of the update menu.
+This file carries a version marker near the top — `<!-- hope-skill-version: 1.3.0 -->` — naming the Hope this chat loaded. The live version is whatever `$PLUGIN_ROOT/plugin.json` says **right now** (the `<LIVE>` one-liner above). Run the comparison whenever the user picks option 4 or 5 of the update menu.
 
 When `plugin.json` is **newer** than the marker, this conversation loaded an older Hope — a newer release is installed, but a running chat can't pick it up mid-flight. Output exactly this structure:
 
