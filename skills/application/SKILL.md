@@ -95,6 +95,8 @@ Hope runs on whatever agent the user already uses. Find what browser control **y
 
 **Per-system field notes** (the big ones, so you're not surprised): **Workday** — per-employer account the *user* creates and logs into; 6–12 page wizard; its résumé parse still needs manual re-entry — treat every parsed field as unverified until read back; its custom dropdowns (state, "how did you hear") need deliberate selection, not typed text. **Greenhouse** — usually one page; knockout questions are real gates; self-ID carries the decline option. **Lever** — simple, forgiving, strips formatting. **Ashby** — treat *optional* fields as required: recruiters filter on them, and blank means invisible. **iCIMS / Taleo** — older and quirkier; verify field-by-field and say so when a form defeats clean automation. **SmartRecruiters** — small upload cap; check file size first.
 
+**Working through a list ("apply to all of them").** When discovery hands over a board and the user says *all*, that's a **queue, not a blast**: Hope works the list in the user's order (know-someone first, then grade), one full ritual per application — and checks in between sends ("that's three sent; keep going?"). The user can stop, skip, or reorder anytime. Same rules at any size: tailored materials, every field shown, every send approved.
+
 **Pace, not spray.** One application at a time, done well. A handful per sitting is a strong day; if the user asks for "apply to all fifty," advise against it honestly — and if they insist, each one still gets the full individual ritual. There is no bulk mode. That's not a missing feature.
 
 ## Step 4 · Write it down — the hunt has a memory

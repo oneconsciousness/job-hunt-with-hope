@@ -1,7 +1,9 @@
 /* =============================================================================
- * dashboard.js — renders the mission brief from window.HOPE_DATA.target.
- * Classic script, offline-safe. One scroll, seven chapters:
- * destination → proof → gap → plan → artifacts → public → Hope's take.
+ * dashboard.js — Hope Career Dashboard v2. Two pages, actions only.
+ * SKILL GAPS: close these · your moat · the plan · build these.
+ * JOBS: the board · do next.
+ * Reads window.HOPE_DATA.target (same contract as v1 — renders less prose).
+ * Deep-link a page with #gaps / #jobs.
  * ===========================================================================*/
 (function () {
   'use strict';
@@ -14,358 +16,187 @@
     });
   }
   function el(id) { return document.getElementById(id); }
-  function icon(name, fill) {
-    return '<span class="material-symbols-rounded"' + (fill ? ' style="font-variation-settings:\'FILL\' 1"' : '') + '>' + esc(name) + '</span>';
+  function icon(n, fill) { return '<span class="material-symbols-rounded"' + (fill ? ' style="font-variation-settings:\'FILL\' 1"' : '') + '>' + esc(n) + '</span>'; }
+  function head(num, title, hint) {
+    return '<div class="block-head"><span class="block-num">' + esc(num) + '</span>' +
+      '<span class="block-title">' + esc(title) + '</span>' +
+      (hint ? '<span class="block-hint">' + esc(hint) + '</span>' : '') + '</div>';
   }
-  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ── THEME (key shared with the portfolio so both flip together). ── */
-  var STORAGE_KEY = 'hope-portfolio-theme';
-  function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem(STORAGE_KEY, t); } catch (e) {} }
-  try { var s0 = localStorage.getItem(STORAGE_KEY); if (s0 === 'light' || s0 === 'dark') applyTheme(s0); } catch (e) {}
-  var toggle = el('theme-toggle');
-  if (toggle) toggle.addEventListener('click', function () {
+  /* ── THEME (shared key with the portfolio). ── */
+  var KEY = 'hope-portfolio-theme';
+  function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem(KEY, t); } catch (e) {} }
+  var tg = el('theme-toggle');
+  if (tg) tg.addEventListener('click', function () {
     applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   });
 
-  /* ── TOPBAR — identity + scrollspy nav. ── */
-  var CHAPTERS = [
-    { id: 'destination', label: 'Destination' },
-    { id: 'proof',       label: 'Proof' },
-    { id: 'gap',         label: 'Gap' },
-    { id: 'plan',        label: 'Plan' },
-    { id: 'artifacts',   label: 'Artifacts' },
-    { id: 'board',       label: 'Board' },
-    { id: 'public',      label: 'Public' },
-    { id: 'take',        label: 'Hope’s take' }
-  ];
+  /* ── HEADER + HERO. ── */
   (function () {
     var name = (DATA.meta && DATA.meta.name) || 'Career dashboard';
-    document.title = name + ' — Career Dashboard' + (T.role ? ' · ' + T.role : '');
-    var idHost = el('tb-id');
-    if (idHost) {
-      var initials = name.split(/\s+/).map(function (w) { return w.charAt(0); }).slice(0, 2).join('').toUpperCase();
-      idHost.innerHTML =
-        '<img class="tb-avatar" src="headshot.jpg" alt="" onerror="this.outerHTML=\'<span class=&quot;tb-avatar-fallback&quot;>' + esc(initials) + '</span>\'">' +
-        '<span><span class="tb-name">' + esc(name) + '</span><br><span class="tb-role">Mission · ' + esc(T.role || '') + '</span></span>';
-    }
-    if (!(Array.isArray(T.board) && T.board.length)) {
-      for (var bi = CHAPTERS.length - 1; bi >= 0; bi--) if (CHAPTERS[bi].id === 'board') CHAPTERS.splice(bi, 1);
-    }
-    var nav = el('tb-nav');
-    if (nav) {
-      nav.innerHTML = CHAPTERS.map(function (c, i) {
-        return '<a class="tb-link' + (i === 0 ? ' active' : '') + '" href="#' + c.id + '" data-spy="' + c.id + '">' + esc(c.label) + '</a>';
-      }).join('');
-    }
-  })();
+    document.title = name + ' — Career Dashboard';
+    var initials = name.split(/\s+/).map(function (w) { return w.charAt(0); }).slice(0, 2).join('').toUpperCase();
+    var hid = el('head-id');
+    if (hid) hid.innerHTML =
+      '<img class="head-avatar" src="headshot.jpg" alt="" onerror="this.outerHTML=\'<span class=&quot;head-avatar-fb&quot;>' + esc(initials) + '</span>\'">' +
+      '<span><span class="head-name">' + esc(name) + '</span><br><span class="head-sub">Career dashboard</span></span>';
 
-  /* ── 01 · HERO. ── */
-  (function () {
-    var eb = el('hero-eyebrow-text');
-    if (eb) eb.textContent = 'Target state · ' + (T.window || 'the destination');
-    var title = el('hero-title');
-    if (title) title.innerHTML = esc(T.role || 'Your next role') + '<span class="accent">.</span>';
-    var north = el('hero-north');
-    if (north) north.innerHTML = '“' + esc(T.northStar || '') + '”';
-    var meta = el('hero-meta');
-    if (meta) {
-      var chips = [];
-      chips.push('<span class="meta-chip live"><span class="dot"></span>Portfolio live</span>');
-      if (T.comp) chips.push('<span class="meta-chip">' + icon('payments') + esc(T.comp) + '</span>');
-      var gapsN = ((T.matrix || {}).gaps || []).length;
-      var projN = (T.projects || []).length;
-      if (gapsN) chips.push('<span class="meta-chip">' + icon('target') + gapsN + ' gaps to close</span>');
-      if (projN) chips.push('<span class="meta-chip">' + icon('rocket_launch') + projN + ' artifacts to ship</span>');
-      meta.innerHTML = chips.join('');
-    }
-
-    /* Gauge — count-up + arc sweep. */
     var pct = Math.max(0, Math.min(100, Number(T.readiness) || 0));
-    var arc = el('gauge-arc');
-    var C = 2 * Math.PI * 86;
-    if (arc) {
-      arc.style.strokeDasharray = C;
-      arc.style.strokeDashoffset = C;
+    var C = 2 * Math.PI * 46;
+    var chips = ['<span class="chip live"><span class="dot"></span>Portfolio live</span>'];
+    if (T.window) chips.push('<span class="chip">' + icon('event') + esc(T.window) + '</span>');
+    if (T.comp) chips.push('<span class="chip">' + icon('payments') + esc(T.comp) + '</span>');
+    var hero = el('hero');
+    if (hero) {
+      hero.innerHTML =
+        '<div class="hero-main">' +
+          '<span class="hero-eyebrow">' + icon('explore') + 'Where you’re headed</span>' +
+          '<h1 class="hero-role">' + esc(T.role || 'Your next role') + '</h1>' +
+          '<span class="hero-from">' + esc(T.from || 'today') + ' ' + icon('trending_flat') + ' ' + esc(T.role || '') + '</span>' +
+          '<div class="hero-chips">' + chips.join('') + '</div>' +
+        '</div>' +
+        '<div class="gauge" role="img" aria-label="' + pct + '% ready">' +
+          '<svg viewBox="0 0 104 104"><circle class="gauge-track" cx="52" cy="52" r="46"></circle>' +
+          '<circle class="gauge-arc" id="g-arc" cx="52" cy="52" r="46" stroke-dasharray="' + C + '" stroke-dashoffset="' + C + '"></circle></svg>' +
+          '<div class="gauge-center"><span class="gauge-val">' + pct + '%</span><span class="gauge-lbl">ready</span></div>' +
+        '</div>';
       requestAnimationFrame(function () { requestAnimationFrame(function () {
-        arc.style.strokeDashoffset = C * (1 - pct / 100);
+        var a = el('g-arc'); if (a) a.style.strokeDashoffset = C * (1 - pct / 100);
       }); });
     }
-    var g = el('gauge');
-    if (g) g.setAttribute('aria-label', pct + '% ready for ' + (T.role || 'the target role'));
-    var val = el('gauge-val');
-    if (val) {
-      if (REDUCED) { val.textContent = pct; }
-      else {
-        var t0 = null, DUR = 1400;
-        (function tick(ts) {
-          if (!t0) t0 = ts;
-          var k = Math.min(1, (ts - t0) / DUR);
-          k = 1 - Math.pow(1 - k, 3);
-          val.textContent = Math.round(pct * k);
-          if (k < 1) requestAnimationFrame(tick);
-        })(performance.now());
-      }
-    }
-    var sub = el('gauge-sub');
-    if (sub) {
-      var moves = (T.plan && T.plan.phases || []).reduce(function (n, p) { return n + (p.moves || []).length; }, 0);
-      sub.innerHTML = '<b>' + gapsN + '</b> gaps · <b>' + projN + '</b> artifacts · <b>' + moves + '</b> moves';
-    }
-
-    /* Forward throughline — road ahead, playhead at readiness%. */
-    var f = el('fwdline');
-    if (f) {
-      var mids = [25, 50, 75].map(function (x) {
-        return '<span class="fwd-node mid' + (x <= pct ? ' done' : '') + '" style="left:' + x + '%"><span class="fwd-hex"></span></span>';
-      }).join('');
-      f.innerHTML =
-        '<div class="fwdline-rail">' +
-          '<span class="fwdline-track"></span>' +
-          '<span class="fwdline-progress" style="width:' + pct + '%"></span>' +
-          mids +
-          '<span class="fwd-node from" style="left:1.5%"><span class="fwd-hex"></span>' +
-            '<span class="fwd-label" style="transform:none"><span class="l1">Today</span><span class="l2">' + esc(T.from || 'Where you are') + '</span></span></span>' +
-          '<span class="fwd-node to" style="left:98.5%"><span class="fwd-hex"></span>' +
-            '<span class="fwd-label" style="transform:translateX(-100%)"><span class="l1">Destination</span><span class="l2">' + esc(T.role || '') + '</span></span></span>' +
-          '<span class="fwd-you" style="left:' + pct + '%"><span class="halo"></span><span class="core"></span><span class="tag">You · ' + pct + '%</span></span>' +
-        '</div>';
-    }
   })();
 
-  /* ── 02 · PROOF STATS. ── */
-  (function () {
-    var host = el('stat-grid');
-    if (!host || !Array.isArray(T.stats)) return;
-    var subEl = el('proof-sub');
-    if (subEl) subEl.textContent = T.positioning || '';
-    host.innerHTML = T.stats.map(function (s) {
-      return '<article class="stat-card">' +
-        '<span class="stat-hex">' + icon(s.icon || 'star') + '</span>' +
-        '<div class="stat-value">' + esc(s.value) + '</div>' +
-        '<div class="stat-label">' + esc(s.label) + '</div>' +
-      '</article>';
-    }).join('');
-  })();
+  /* ── PAGE TABS (+ #gaps / #jobs deep link). ── */
+  function activate(page) {
+    document.querySelectorAll('.page-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-page') === page); });
+    document.querySelectorAll('.page').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-page') === page); });
+  }
+  document.querySelectorAll('.page-tab').forEach(function (b) {
+    b.addEventListener('click', function () { activate(b.getAttribute('data-page')); });
+  });
+  if (location.hash === '#jobs') activate('jobs');
 
-  /* ── 03 · DELTA BOARD. ── */
-  (function () {
-    var m = T.matrix || {};
-    var head = el('gap-headline');
-    if (head) head.textContent = m.headline || '';
-    var src = el('delta-source');
-    if (src && m.source) src.innerHTML = icon('travel_explore') + '<span>' + esc(m.source) + '</span>';
+  /* ══ PAGE 1 · SKILL GAPS ══ */
 
+  /* 1 · Close these */
+  (function () {
+    var host = el('blk-gaps');
+    var rows = (T.matrix && T.matrix.gaps) || [];
+    if (!host) return;
     function dots(cur, tgt) {
       var out = '';
-      for (var i = 1; i <= 5; i++) {
-        var cls = 'dot5';
-        if (i <= cur) cls += ' on';
-        else if (i === tgt) cls += ' tgt';
-        out += '<span class="' + cls + '"></span>';
-      }
-      return '<span class="delta-dots" role="img" aria-label="now ' + cur + ' of 5, role needs ' + tgt + '">' + out + '</span>';
+      for (var i = 1; i <= 5; i++) out += '<span class="dot' + (i <= cur ? ' on' : (i === tgt ? ' tgt' : '')) + '"></span>';
+      return '<span class="dots" role="img" aria-label="now ' + cur + ' of 5, role needs ' + tgt + '">' + out + '</span>';
     }
-    function rows(list, kind) {
-      return (list || []).map(function (r) {
-        var cur = Math.max(0, Math.min(5, Number(r.current) || 0));
-        var tgt = Math.max(0, Math.min(5, Number(r.target) || 5));
-        var chip = kind === 'gaps'
-          ? '<span class="delta-chip lift">+' + Math.max(0, tgt - cur) + ' to close</span>'
-          : '<span class="delta-chip clear">✓ clear</span>';
-        var door = r.star ? '<span class="door-tag">' + icon('star', true) + 'Door-opener</span>' : '';
-        return '<div class="delta-row' + (r.star ? ' door' : '') + '">' +
-          '<div class="delta-row-top"><span class="delta-skill">' + esc(r.skill) + '</span>' + door + dots(cur, tgt) + chip + '</div>' +
-          '<p class="delta-note">' + esc(r.note || '') + '</p>' +
-        '</div>';
-      }).join('');
-    }
-    var gapsHost = el('delta-gaps');
-    if (gapsHost) gapsHost.innerHTML =
-      '<div class="delta-col-head">' + icon('trending_up') + '<span class="delta-col-title">Close these — the delta</span></div>' +
-      '<p class="delta-col-sub">Ranked by how many doors each one opens.</p>' + rows(m.gaps, 'gaps');
-    var moatHost = el('delta-moat');
-    if (moatHost) moatHost.innerHTML =
-      '<div class="delta-col-head">' + icon('verified') + '<span class="delta-col-title">Your moat — lean all the way in</span></div>' +
-      '<p class="delta-col-sub">Already past the bar the role sets. Lead with these.</p>' + rows(m.moat, 'moat');
-  })();
-
-  /* ── 04 · THE PLAN. ── */
-  (function () {
-    var host = el('plan-list');
-    var plan = T.plan || {};
-    if (!host || !Array.isArray(plan.phases)) return;
-    var intro = el('plan-intro');
-    if (intro) intro.textContent = plan.intro || '';
-    var titleEl = el('plan-title');
-    if (titleEl) {
-      var moves = plan.phases.reduce(function (n, p) { return n + (p.moves || []).length; }, 0);
-      var t = numWord(plan.phases.length) + ' phases, ' + numWord(moves) + ' moves';
-      titleEl.textContent = t.charAt(0).toUpperCase() + t.slice(1);
-    }
-    function numWord(n) { return ['zero','one','two','three','four','five','six','seven','eight','nine'][n] || n; }
-    var MOVE_IC = { done: 'check_circle', active: 'bolt', todo: 'radio_button_unchecked' };
-    var herePlaced = false;
-    host.innerHTML = plan.phases.map(function (p) {
-      var clock = p.clock === 'market’s clock' || p.clock === "market's clock"
-        ? '<span class="clock-chip market">' + icon('hourglass_top') + 'Market’s clock</span>'
-        : '<span class="clock-chip yours">' + icon('bolt') + 'Your clock</span>';
-      var moves = (p.moves || []).map(function (mv) {
-        var here = '';
-        if (mv.status === 'active' && !herePlaced) { here = '<span class="here-tag"><span class="dot"></span>You are here</span>'; herePlaced = true; }
-        return '<div class="move ' + esc(mv.status || 'todo') + '">' +
-          '<span class="move-ic">' + icon(MOVE_IC[mv.status] || MOVE_IC.todo) + '</span>' +
-          '<div>' +
-            '<div class="move-top"><span class="move-label">' + esc(mv.label) + '</span>' + here +
-              '<span class="move-date">' + esc(mv.date || '') + '</span></div>' +
-            '<p class="move-desc">' + esc(mv.desc || '') + '</p>' +
-            (mv.closes ? '<span class="move-closes">' + icon('flag') + 'Closes ' + esc(mv.closes) + '</span>' : '') +
-          '</div>' +
-        '</div>';
-      }).join('');
-      return '<article class="phase ' + esc(p.status || '') + '">' +
-        '<div class="phase-card" data-num="' + esc(p.num) + '">' +
-          '<div class="phase-head">' +
-            '<span class="phase-kicker">Phase ' + esc(p.num) + '</span>' +
-            '<h3 class="phase-title">' + esc(p.title) + '</h3>' +
-            clock +
-            '<span class="phase-window">' + icon('calendar_month') + esc(p.window || '') + '</span>' +
-          '</div>' +
-          '<p class="phase-why">' + esc(p.why || '') + '</p>' +
-          moves +
-        '</div>' +
-      '</article>';
-    }).join('');
-  })();
-
-  /* ── 05 · ARTIFACTS. ── */
-  (function () {
-    var host = el('proj-grid');
-    if (!host || !Array.isArray(T.projects)) return;
-    var MARKS = ['fact_check', 'monitoring', 'auto_stories'];
-    host.innerHTML = T.projects.map(function (p, i) {
-      var featured = !!p.featured;
-      var ship = '<span class="ship-chip' + (p.status === 'active' ? ' now' : '') + '">' + icon('event') + esc(p.ship || '') + '</span>';
-      var sig = featured ? '<span class="sig-tag">★ Signature artifact</span>' : '';
-      return '<article class="proj-card' + (featured ? ' featured' : '') + '">' +
-        '<div class="proj-head">' +
-          '<span class="proj-mark">' + icon(MARKS[i] || 'rocket_launch') + '</span>' +
-          '<div class="proj-title-block">' +
-            '<h3 class="proj-name">' + esc(p.name) + '</h3>' +
-            '<p class="proj-tagline">' + esc(p.tagline || '') + '</p>' +
-          '</div>' +
-          '<div class="proj-meta">' + ship + sig + '</div>' +
-        '</div>' +
-        '<p class="proj-desc">' + esc(p.desc || '') + '</p>' +
-        '<div class="proj-badges">' +
-          (p.closes ? '<span class="ai-badge closes">' + icon('flag') + '<span class="k">closes</span>' + esc(p.closes) + '</span>' : '') +
-          (p.builtWith ? '<span class="ai-badge built">' + icon('smart_toy') + '<span class="k">built with</span>' + esc(p.builtWith) + '</span>' : '') +
-          (p.runsOn ? '<span class="ai-badge runs">' + icon('memory') + '<span class="k">runs on</span>' + esc(p.runsOn) + '</span>' : '') +
-        '</div>' +
-      '</article>';
-    }).join('');
-  })();
-
-  /* ── 06 · THE BOARD — validated target roles, human-word statuses. ── */
-  (function () {
-    var host = el('board-rows');
-    var rows = Array.isArray(T.board) ? T.board : [];
-    if (!host || !rows.length) return;
-    var sec = el('board'); if (sec) sec.hidden = false;
-    var GRADE = { A: 'var(--accent-emerald)', B: 'var(--accent-amber)', C: 'var(--accent-slate)', D: 'var(--accent-rose)', F: 'var(--accent-rose)' };
-    host.innerHTML = rows.map(function (r) {
-      var g = String(r.grade || '').charAt(0).toUpperCase();
-      var color = GRADE[g] || 'var(--accent-slate)';
-      var initial = esc((r.company || '?').charAt(0).toUpperCase());
-      var warm = r.warmPath ? '<span class="board-warm" title="' + esc(r.warmPath) + '">' + icon('handshake') + 'warm path</span>' : '';
-      var link = r.url ? '<a class="board-open" href="' + esc(r.url) + '" target="_blank" rel="noopener" aria-label="Open posting">' + icon('open_in_new') + '</a>' : '';
-      return '<div class="board-row">' +
-        '<span class="board-mark">' + initial + '</span>' +
-        '<div class="board-main"><span class="board-role">' + esc(r.role) + '</span>' +
-          '<span class="board-co">' + esc(r.company) + (r.note ? ' · ' + esc(r.note) : '') + '</span></div>' +
-        warm +
-        '<span class="board-grade" style="--g:' + color + '">' + esc(r.grade || '—') + '</span>' +
-        '<span class="board-status">' + esc(r.status || 'Interested') + '</span>' +
-        (r.next ? '<span class="board-next">' + esc(r.next) + '</span>' : '') +
-        link +
+    host.innerHTML = head('01', 'Close these', rows.length + ' gaps') + rows.map(function (r) {
+      var cur = Math.max(0, Math.min(5, Number(r.current) || 0));
+      var tgt = Math.max(0, Math.min(5, Number(r.target) || 5));
+      return '<div class="gap-row">' +
+        '<span class="gap-skill">' + esc(r.skill) + (r.star ? '<span class="gap-star material-symbols-rounded" title="Opens the most doors">star</span>' : '') + '</span>' +
+        dots(cur, tgt) +
+        '<span class="gap-note">' + esc(r.note || '') + '</span>' +
       '</div>';
     }).join('');
-    var note = el('board-note');
-    if (note && T.boardNote) note.innerHTML = icon('travel_explore') + '<span>' + esc(T.boardNote) + '</span>';
   })();
 
-  /* ── 06 · GO PUBLIC. ── */
+  /* 2 · Your moat — what you already win on */
   (function () {
-    var host = el('post-rail');
-    if (!host || !Array.isArray(T.posts)) return;
-    var PLAT = { linkedin: { label: 'LinkedIn', icon: 'campaign' }, link: { label: 'Web', icon: 'public' } };
-    host.innerHTML = T.posts.map(function (p, i) {
-      var plat = PLAT[p.platform] || PLAT.link;
-      var tags = (Array.isArray(p.tags) ? p.tags : []).map(function (t) { return '<span class="post-tag">#' + esc(t) + '</span>'; }).join(' ');
-      return '<article class="post-card" data-post="' + i + '">' +
-        '<div class="post-head"><span class="post-day">' + esc(p.day) + '</span>' +
-          '<span class="post-plat">' + icon(plat.icon) + esc(plat.label) + '</span></div>' +
-        '<div class="post-hook">' + esc(p.hook) + '</div>' +
-        '<p class="post-body">' + esc(p.body) + '</p>' +
-        '<span class="post-more" role="button" tabindex="0">Read the full draft</span>' +
-        '<p class="post-cta">' + esc(p.cta || '') + '</p>' +
-        '<div class="post-foot"><span class="post-tags">' + tags + '</span>' +
-          '<button class="post-copy" type="button" data-copy="' + i + '">' + icon('content_copy') + 'Copy</button></div>' +
-      '</article>';
-    }).join('');
-    host.addEventListener('click', function (e) {
-      var more = e.target.closest('.post-more');
-      if (more) {
-        var card = more.closest('.post-card');
-        card.classList.toggle('open');
-        more.textContent = card.classList.contains('open') ? 'Collapse' : 'Read the full draft';
-        return;
-      }
-      var btn = e.target.closest('.post-copy');
-      if (!btn) return;
-      var p = T.posts[Number(btn.getAttribute('data-copy'))];
-      if (!p) return;
-      var text = p.hook + '\n\n' + p.body + '\n\n' + (p.cta || '') + '\n\n' +
-        (Array.isArray(p.tags) ? p.tags.map(function (t) { return '#' + t; }).join(' ') : '');
-      function done() {
-        btn.classList.add('copied');
-        btn.innerHTML = icon('check') + 'Copied';
-        setTimeout(function () { btn.classList.remove('copied'); btn.innerHTML = icon('content_copy') + 'Copy'; }, 1800);
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
-      } else { fallbackCopy(text); done(); }
+    var host = el('blk-moat');
+    var rows = (T.matrix && T.matrix.moat) || [];
+    if (!host) return;
+    host.innerHTML = head('02', 'Already strong — lead with these', 'hover for why') +
+      '<div class="moat-chips">' + rows.map(function (r) {
+        return '<span class="moat-chip" title="' + esc(r.note || '') + '">' + icon('verified') + esc(r.skill) + '</span>';
+      }).join('') + '</div>';
+  })();
+
+  /* 3 · The plan — numbered actions with phase dividers */
+  (function () {
+    var host = el('blk-plan');
+    var phases = (T.plan && T.plan.phases) || [];
+    if (!host) return;
+    var IC = { done: 'check_circle', active: 'bolt', todo: 'radio_button_unchecked' };
+    var n = 0, herePlaced = false, html = '';
+    phases.forEach(function (p) {
+      var clock = /market/i.test(p.clock || '')
+        ? '<span class="pd-clock market">' + icon('hourglass_top') + 'market’s clock</span>'
+        : '<span class="pd-clock yours">' + icon('bolt') + 'your clock</span>';
+      html += '<div class="phase-divider"><span class="pd-label">' + esc(p.title || ('Phase ' + p.num)) + ' · ' + esc(p.window || '') + '</span>' + clock + '<span class="pd-rule"></span></div>';
+      (p.moves || []).forEach(function (m) {
+        n++;
+        var here = '';
+        if (m.status === 'active' && !herePlaced) { here = '<span class="tag here">You are here</span>'; herePlaced = true; }
+        html += '<div class="act ' + esc(m.status || 'todo') + '">' +
+          '<span class="act-num">' + String(n).padStart(2, '0') + '</span>' +
+          '<span class="act-ic">' + icon(IC[m.status] || IC.todo) + '</span>' +
+          '<span class="act-label">' + esc(m.label) +
+            '<span class="act-tags">' + (m.closes ? '<span class="tag closes">' + esc(m.closes) + '</span>' : '') + here + '</span></span>' +
+          '<span class="act-date">' + esc(m.date || '') + '</span>' +
+        '</div>';
+      });
     });
-    function fallbackCopy(text) {
-      var ta = document.createElement('textarea');
-      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); } catch (e) {}
-      document.body.removeChild(ta);
-    }
+    host.innerHTML = head('03', 'The plan — do these in order', n + ' steps') + (html || '<div class="empty">' + icon('checklist') + 'No plan yet — run the gap check and Hope builds it with you.</div>');
   })();
 
-  /* ── 07 · HOPE'S TAKE. ── */
+  /* 4 · Build these — the proof artifacts, one line each */
   (function () {
-    var host = el('take-band');
-    var gd = T.guidance || {};
-    if (!host || !gd.take) return;
-    var moves = (Array.isArray(gd.moves) ? gd.moves : []).map(function (mv, i) {
-      return '<div class="take-move"><span class="take-move-num">Move 0' + (i + 1) + '</span>' +
-        '<h4 class="take-move-title">' + esc(mv.title) + '</h4>' +
-        '<p class="take-move-desc">' + esc(mv.desc) + '</p></div>';
-    }).join('');
-    var chips = (Array.isArray(gd.deprioritize) ? gd.deprioritize : []).map(function (d) {
-      return '<span class="deprio-chip" title="' + esc(d.why) + '">' + icon('block') + esc(d.thing) + '</span>';
-    }).join('');
-    host.innerHTML =
-      '<div class="take-head"><span class="take-avatar">' + icon('waving_hand') + '</span><span class="take-title">A note from Hope</span></div>' +
-      '<p class="take-lede">' + esc(gd.take) + '</p>' +
-      (moves ? '<div class="take-moves">' + moves + '</div>' : '') +
-      (gd.then ? '<p class="take-then">' + esc(gd.then) + '</p>' : '') +
-      (chips ? '<div class="deprio-row"><span class="deprio-label">' + icon('low_priority') + 'Skip for now (hover for why)</span>' + chips + '</div>' : '') +
-      (gd.autonomy ? '<p class="take-autonomy">' + icon('self_improvement') + '<span>' + esc(gd.autonomy) + '</span></p>' : '');
+    var host = el('blk-build');
+    var rows = Array.isArray(T.projects) ? T.projects : [];
+    if (!host) return;
+    host.innerHTML = head('04', 'Build these', rows.length + ' artifacts') + (rows.length ? rows.map(function (p) {
+      return '<div class="build-row">' +
+        '<span class="build-mark">' + esc((p.name || '?').charAt(0).toUpperCase()) + '</span>' +
+        '<span><span class="build-name">' + esc(p.name) + '</span><span class="build-what">' + esc(p.tagline || '') + '</span></span>' +
+        (p.closes ? '<span class="tag closes">' + esc(p.closes) + '</span>' : '<span></span>') +
+        '<span class="ship-chip' + (p.status === 'active' ? ' now' : '') + '">' + icon('event') + esc(p.ship || '') + '</span>' +
+      '</div>';
+    }).join('') : '<div class="empty">' + icon('handyman') + 'Nothing queued — the proof-projects skill picks these with you.</div>');
   })();
+
+  /* ══ PAGE 2 · JOBS ══ */
+
+  /* 1 · The board */
+  function renderBoard() {
+    var host = el('blk-board');
+    if (!host) return;
+    var rows = Array.isArray(T.board) ? T.board : [];
+    var GRADE = { A: 'var(--accent-emerald)', B: 'var(--accent-amber)', C: 'var(--accent-slate)', D: 'var(--accent-rose)', F: 'var(--accent-rose)' };
+    var HOT = { Interview: 1, Offer: 1, Hired: 1 };
+    var body = rows.length ? rows.map(function (r) {
+      var g = String(r.grade || '').charAt(0).toUpperCase();
+      var color = GRADE[g] || 'var(--accent-slate)';
+      return '<div class="board-row">' +
+        '<span class="board-mark">' + esc((r.company || '?').charAt(0).toUpperCase()) + '</span>' +
+        '<div class="board-main"><span class="board-role">' + esc(r.role) + '</span>' +
+          '<span class="board-co">' + esc(r.company) + (r.note ? ' · ' + esc(r.note) : '') + '</span></div>' +
+        (r.warmPath ? '<span class="board-warm" title="' + esc(r.warmPath) + '">' + icon('handshake') + 'know someone</span>' : '') +
+        '<span class="board-grade" style="--g:' + color + '">' + esc(r.grade || '—') + '</span>' +
+        '<span class="board-status' + (HOT[r.status] ? ' hot' : '') + '">' + esc(r.status || 'Found') + '</span>' +
+        (r.next ? '<span class="board-next">' + esc(r.next) + '</span>' : '') +
+        (r.url ? '<a class="board-open" href="' + esc(r.url) + '" target="_blank" rel="noopener" aria-label="Open the job posting">' + icon('open_in_new') + '</a>' : '') +
+      '</div>';
+    }).join('') : '<div class="empty">' + icon('travel_explore') + 'No jobs yet — say "find me jobs" and Hope goes looking. You pick what lands here.</div>';
+    host.innerHTML = head('01', 'Your board', rows.length ? rows.length + ' jobs — every one picked by you' : '') + body +
+      (T.boardNote ? '<div class="block-note">' + icon('travel_explore') + '<span>' + esc(T.boardNote) + '</span></div>' : '');
+  }
+  renderBoard();
+
+  /* 2 · Do next — pulled straight from the board rows */
+  function renderNext() {
+    var host = el('blk-next');
+    if (!host) return;
+    var rows = (Array.isArray(T.board) ? T.board : []).filter(function (r) {
+      return r.next && r.next !== '—' && r.status !== 'Closed';
+    });
+    host.innerHTML = head('02', 'Do next', rows.length + ' actions') + (rows.length ? rows.map(function (r, i) {
+      return '<div class="next-row">' +
+        '<span class="act-num">' + String(i + 1).padStart(2, '0') + '</span>' +
+        '<span class="next-what">' + esc(r.next) + ' <span class="next-co">— ' + esc(r.company) + '</span></span>' +
+        '<span class="board-status' + (r.status === 'Interview' || r.status === 'Offer' ? ' hot' : '') + '">' + esc(r.status) + '</span>' +
+      '</div>';
+    }).join('') : '<div class="empty">' + icon('done_all') + 'Nothing due. Nice.</div>');
+  }
+  renderNext();
 
   /* ── FOOTER. ── */
   (function () {
@@ -373,48 +204,6 @@
     if (!f) return;
     var name = (DATA.meta && DATA.meta.name) || '';
     var d = new Date();
-    var stamp = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-    f.textContent = (name ? name.toUpperCase() + ' · ' : '') + 'MISSION BRIEF · ' + stamp.toUpperCase();
-  })();
-
-  /* ── SCROLL REVEAL + SCROLLSPY. ── */
-  (function () {
-    var reveals = document.querySelectorAll('.reveal');
-    if (REDUCED || !('IntersectionObserver' in window)) {
-      reveals.forEach(function (n) { n.classList.add('in'); });
-    } else {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-        });
-      }, { rootMargin: '0px 0px -4% 0px', threshold: 0.02 });
-      reveals.forEach(function (n) { io.observe(n); });
-    }
-
-    /* Scrollspy from scroll position (IntersectionObserver misfires on
-       instant jumps): the active chapter is the last one whose top has
-       crossed 40% of the viewport. */
-    var links = {};
-    document.querySelectorAll('.tb-link[data-spy]').forEach(function (a) { links[a.getAttribute('data-spy')] = a; });
-    function spy() {
-      var line = window.innerHeight * 0.4;
-      var current = CHAPTERS[0].id;
-      CHAPTERS.forEach(function (c) {
-        var n = el(c.id);
-        if (n && n.getBoundingClientRect().top <= line) current = c.id;
-      });
-      Object.keys(links).forEach(function (k) { links[k].classList.toggle('active', k === current); });
-    }
-    /* setTimeout throttle, not rAF — rAF stalls in occluded tabs and the
-       active chip would freeze until the next real frame. */
-    var spyPending = false;
-    function scheduleSpy() {
-      if (spyPending) return;
-      spyPending = true;
-      setTimeout(function () { spyPending = false; spy(); }, 80);
-    }
-    window.addEventListener('scroll', scheduleSpy, { passive: true });
-    document.addEventListener('visibilitychange', spy);
-    spy();
+    f.textContent = (name ? name.toUpperCase() + ' · ' : '') + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
   })();
 })();

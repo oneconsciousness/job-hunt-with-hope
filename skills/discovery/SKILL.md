@@ -52,7 +52,9 @@ Read what you already know first: the `Goal` node (role, level, hours, runway), 
 - **The exclusions** — "Anywhere you *won't* work — companies, industries, setups?" (a real question; the never-list is as load-bearing as the wish-list)
 - **The size-and-stage taste** — frontier lab vs. startup vs. enterprise vs. mission org; scaffold from where they've thrived before
 
-Two to four asks total, not an intake form. Write the answers onto the `Goal` node (merge, never duplicate) so no future skill asks twice.
+- **The size of the sweep** — ask plainly, with real options: *"How many open jobs should I bring back?"* — **25 (recommended — enough to choose well, fast to check)** · 100 · 200 · "just a handful". Be honest about the trade: Hope verifies **every single job is still open** before it counts, so 200 takes real time — offer to run big sweeps in batches and show results as they land.
+
+Two to four asks total, not an intake form (the sweep-size ask included). Write the answers onto the `Goal` node (merge, never duplicate) so no future skill asks twice.
 
 ## Phase 1 · The sweep — look where fewer people look
 
@@ -72,16 +74,16 @@ Scout on **four fronts**, and tell the user which fronts you're covering (and wh
 
 Grade every candidate with the **fit-verdict pattern** (the gap skill's "fit verdict" — honest A–F, the three load-bearing reasons, the positioning angle; reference it, don't restate). Ground grades in the career file — and in the **agreed gap read when it exists**, which makes grades sharper ("this posting leans on the exact gap you're closing — it's a B today, an A after ClaimClear ships").
 
-Keep at most **10** for presentation, ranked by grade × pull × warm path. The rest you mention in one line ("I also saw six weaker fits — say the word and I'll show them"). Twenty options is a decision nobody makes.
+Present what the user asked for, shaped so it stays decidable: **grade-ranked, A's first, in a compact table** (company · role · grade · know-someone · one-line why). For big sweeps (100–200), lead with the top 15–20 and say plainly what's behind them ("142 verified open — here are the strongest; want the full table, or the next 20?"). Every job shown is verified open — a dead link never reaches the user.
 
 ## Phase 3 · Validate — the board is agreed, never assigned
 
 **Nothing gets targeted without the user's yes.** Present the shortlist as a compact board in chat — company · role · grade · warm path · the one-line why — then run the validation loop via `AskUserQuestion`:
 
 > "Here's the board I'd chase. Which of these are real for you?
-> 1. Target the top five (recommended — a focused board beats a long one)
-> 2. Let me pick — I'll say which numbers
-> 3. More like one of these — tell me which and I'll widen that lane
+> 1. Target the strongest few (recommended — a focused board gets tailored applications, and tailored wins)
+> 2. Put ALL of them on the board — fine too; applying still happens one at a time, each with your yes
+> 3. Let me pick — I'll say which numbers, or "more like #2" and I'll widen that lane
 > 4. 💬 Talk the board through first"
 
 Honor the steering: "more like #3, fewer agencies" is the most valuable sentence in this skill — re-sweep that lane and re-present. Loop until the user names their targets. **That's the discovery lock**: the user chose the board; Hope didn't assign it. (Aim for ~5 targeted roles — enough to run at, few enough to tailor every one.)
@@ -134,7 +136,7 @@ Discovery stands on patterns others proved: **career-ops** (santifer, MIT) pione
 
 ## Hand-off
 
-- The natural next step once a board exists: **`hope-application`** — "Want to start applying? We'll take them one at a time, tailored, and you approve every send." Warm paths first, always.
+- The natural next step once a board exists: **`hope-application`** — and ask the scope question plainly: *"Want me to work through ALL of these, or start with a few you pick?"* Either answer is honored: all-of-them becomes a queue Hope works through **one at a time** — tailored, every send approved — and a-few starts with their picks. Warm paths first, always.
 - If grades kept landing on the same gap: **`hope-skill-gap`** ("the same gap is costing you a letter grade on half the board — want the full read?").
 - The dashboard renders the living board; offer it once if they don't have one.
 

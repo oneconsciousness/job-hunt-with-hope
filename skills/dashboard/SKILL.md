@@ -12,7 +12,12 @@ You are running Hope's dashboard skill. The portfolio shows who the user **is**.
 
 This is not a status page and not a report. It's a **destination**. The design bar is: the user opens it and *wants* the future it shows. If it reads as a checklist, it has failed. If it reads as "this is within reach, and here is exactly how" — it has done its job.
 
-The dashboard is a **single-scroll mission brief in seven chapters**: destination → proof → gap → plan → artifacts → public → Hope's take. Glanceable at the top, deep at the bottom. The user should absorb the whole plan in about twenty seconds at phase level, then drill wherever they want.
+The dashboard is **two clean pages behind one slim header** — no scrolling essay, no paragraphs, only actions:
+
+- **Skill Gaps** — the bridge strategy (skills 4–6): what to close, what to lead with, the plan in order, what to build.
+- **Jobs** — the hunt (skills 7–8): the board of roles the user picked, and what to do next.
+
+Every surface is a table, a numbered list, or a chip. The user should read either page in under twenty seconds. If a sentence wants to become a paragraph, cut it — prose lives in chat, actions live on the dashboard.
 
 ## Locate the plugin files first (do this before anything else)
 
@@ -61,20 +66,16 @@ The dashboard is the **cross-cut** — it runs anytime, but it *synthesizes*, it
 
 **Reads only.** This skill never writes to the career file. It writes exactly one artifact — the dashboard folder — plus the notebook line at the end.
 
-## The seven chapters — and what feeds each
+## The two pages — and what feeds each
 
-| # | Chapter | What it says | Data it needs |
-|---|---|---|---|
-| 01 | **The destination** | The target role as the hero, an honest readiness gauge, and the forward throughline | target role + `readiness` + `from` |
-| 02 | **The proof you already have** | "You're not starting — you're most of the way there" — their real numbers | ≤6 stats from evidenced wins |
-| 03 | **The honest delta** | Gaps (ranked, door-opener starred) beside the moat (lead with these) | `skill-gap.json` |
-| 04 | **The plan** | 2–3 phases, ≤7 moves, each move dated and mapped to the gap it closes | gap read + proof plan |
-| 05 | **The artifacts** | The proof projects as cards — one featured signature artifact | proof plan `Project` nodes |
-| 06 | **The board** *(when roles are targeted)* | The validated target roles — grade, warm path, plain-word status, next move | `hope-discovery` writes it; `hope-application` moves the statuses |
-| 07 | **Go public** | Build-in-public post drafts, ready to copy | the artifacts + real wins |
-| 08 | **Hope's take** | The opinionated close: two moves, the skip-list, the autonomy note | everything above |
+**The header** (always visible): name · target role · one-line from → to · readiness dial · up to three chips (portfolio live, offer window, salary band). One glance, no reading.
 
-The **forward throughline** in chapter 01 is the deliberate mirror of the portfolio's timeline: the portfolio's strip shows the road behind; the dashboard's shows the road ahead, with a playhead at `readiness`% between the current role and the target. One brand gesture, two directions in time. Don't drop it.
+| Page | Blocks, in order | Fed by |
+|---|---|---|
+| **Skill Gaps** | 01 Close these (gap rows: skill · dots now→needed · one line) · 02 Already strong (chips, hover for why) · 03 The plan — do these in order (numbered actions, phase dividers with your-clock/market's-clock chips, "You are here" tag) · 04 Build these (one artifact per line + ship-by chip) | `skill-gap.json` (user-agreed) + the proof plan |
+| **Jobs** | 01 Your board (one row per role: company · role · know-someone pill · grade · one-word status · next move · link) · 02 Do next (numbered actions pulled from the board) | `hope-discovery` writes the board; `hope-application` moves the statuses |
+
+Each page shows a friendly empty state when its skills haven't run yet ("No jobs yet — say 'find me jobs' and Hope goes looking"). Statuses are always the human words: **Found → Interested → Applied → Interview → Offer → Closed** (and **Hired** for the win). Deep-link a page with `#gaps` / `#jobs`.
 
 ## The synthesis rules
 
@@ -133,13 +134,13 @@ And the internal-vocab ban holds on every rendered word: no "graph", "node", "sk
 
 ## Quality bar before handing over
 
-- All seven chapters render from the user's real data — grep the folder for the sample persona's name to prove no placeholder survived.
+- Both pages render from the user's real data — grep the folder for the sample persona's name to prove no placeholder survived.
 - `matrix.source` names real, current research with a date. Rule 2 holds: no generic gaps.
 - Exactly one ★ door-opener; exactly one featured artifact; counts within the digestibility caps.
 - Every build move is dated on the user's clock; market-paced moves carry the market's-clock chip.
 - Light + dark both verified **in a browser**, not assumed. Toggle persists across reload.
 - The zero-token grep passes and the texture signatures are present.
-- Chapter 07 ends on the autonomy note — the last word on the page after the footer credit is the user's freedom, not Hope's orders.
+- Every visible word is everyday language — one-word statuses, no jargon, and not a single paragraph anywhere on either page.
 
 ## Hand-off
 

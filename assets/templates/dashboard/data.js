@@ -53,6 +53,11 @@
                    { take, moves: [2 of { title, desc }], then,
                      deprioritize: [≤4 of { thing, why }], autonomy }
 
+   RENDERED BY THE TEMPLATE (v2, two pages): role, from, readiness, window,
+   comp, matrix (gaps+moat), plan, projects, board, boardNote. The other
+   fields (stats, posts, guidance, northStar, positioning) stay in the
+   contract — they feed the conversation and future surfaces, not the page.
+
    The SAMPLE below is shape-reference only (a fictional seeker) so a
    contributor can double-click dashboard.html and see every surface render.
    The generator replaces the whole object with the user's real read. */
