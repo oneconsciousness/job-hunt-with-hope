@@ -134,7 +134,7 @@ window.HOPE_DATA = {
       { "company": "Linear", "role": "Senior Product Designer", "url": "https://linear.app/careers", "grade": "A", "status": "Interested", "warmPath": "Maya — design lead, ex-teammate", "next": "Warm intro via Maya this week" },
       { "company": "Figma", "role": "Product Designer, Growth", "url": "https://figma.com/careers", "grade": "B", "status": "Applied", "note": "applied Jul 8", "next": "Follow up Jul 15" }
     ],
-    "boardNote": "Chosen together on Jul 11 — graded against your evidenced skills; warm paths first.",
+    "boardNote": "Built together on Jul 11 — every job is real, checked by Hope, and picked by you.",
     "posts": [
       {
         "day": "Day 1", "platform": "linkedin",
