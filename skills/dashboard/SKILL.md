@@ -72,7 +72,7 @@ The dashboard is the **cross-cut** — it runs anytime, but it *synthesizes*, it
 | 05 | **The artifacts** | The proof projects as cards — one featured signature artifact | proof plan `Project` nodes |
 | 06 | **The board** *(when roles are targeted)* | The validated target roles — grade, warm path, plain-word status, next move | `hope-discovery` writes it; `hope-application` moves the statuses |
 | 07 | **Go public** | Build-in-public post drafts, ready to copy | the artifacts + real wins |
-| 07 | **Hope's take** | The opinionated close: two moves, the skip-list, the autonomy note | everything above |
+| 08 | **Hope's take** | The opinionated close: two moves, the skip-list, the autonomy note | everything above |
 
 The **forward throughline** in chapter 01 is the deliberate mirror of the portfolio's timeline: the portfolio's strip shows the road behind; the dashboard's shows the road ahead, with a playhead at `readiness`% between the current role and the target. One brand gesture, two directions in time. Don't drop it.
 
