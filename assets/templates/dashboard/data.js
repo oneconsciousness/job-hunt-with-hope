@@ -42,6 +42,13 @@
      posts       [≤6]   — build-in-public drafts, ready to copy:
                    { day, platform: "linkedin"|"link", hook, body, cta,
                      tags: [string] }
+     board       [≤8]   — OPTIONAL · the validated target-roles board (written
+                   by hope-discovery, statuses updated by hope-application):
+                   { company, role, url?, grade "A".."F", status: human words
+                     ("Found"|"Interested"|"Applied"|"Interview"|"Offer"|"Closed"),
+                     warmPath?: "who/how", note?: short, next?: "the next move" }
+                   — chapter renders only when rows exist.
+     boardNote   string | null — one-line provenance note under the board.
      guidance    — Hope's take (opinionated, autonomy-respecting):
                    { take, moves: [2 of { title, desc }], then,
                      deprioritize: [≤4 of { thing, why }], autonomy }
@@ -123,6 +130,11 @@ window.HOPE_DATA = {
         "desc": "Propose one missing component, document its states and accessibility, and land it. Small on purpose — the signal is that you improved the system others work in."
       }
     ],
+    "board": [
+      { "company": "Linear", "role": "Senior Product Designer", "url": "https://linear.app/careers", "grade": "A", "status": "Interested", "warmPath": "Maya — design lead, ex-teammate", "next": "Warm intro via Maya this week" },
+      { "company": "Figma", "role": "Product Designer, Growth", "url": "https://figma.com/careers", "grade": "B", "status": "Applied", "note": "applied Jul 8", "next": "Follow up Jul 15" }
+    ],
+    "boardNote": "Chosen together on Jul 11 — graded against your evidenced skills; warm paths first.",
     "posts": [
       {
         "day": "Day 1", "platform": "linkedin",

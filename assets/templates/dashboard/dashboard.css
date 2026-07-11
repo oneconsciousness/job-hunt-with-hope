@@ -349,6 +349,24 @@ a { color: inherit; }
 .ai-badge.runs { color: var(--accent-cyan); background: var(--accent-cyan-soft); border-color: var(--accent-cyan-edge); }
 .ai-badge.closes { color: var(--accent-emerald); background: var(--accent-emerald-bg); border-color: var(--accent-emerald-edge); }
 
+/* ── 06 · THE BOARD — validated target roles ── */
+.board { background: var(--card-bg); border: 1px solid var(--border-default); border-radius: var(--radius-panel); box-shadow: var(--shadow-sm); padding: 8px 18px; }
+.board-row { display: flex; align-items: center; gap: 14px; padding: 14px 4px; }
+.board-row + .board-row { border-top: 1px solid var(--border-subtle); }
+.board-mark { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex-shrink: 0; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: var(--accent-orange-bg); color: var(--accent-orange); font-weight: 800; font-size: 15px; }
+.board-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.board-role { font-size: 14.5px; font-weight: 700; letter-spacing: -0.01em; }
+.board-co { font-size: 12.5px; color: var(--text-secondary); }
+.board-warm { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: var(--radius-pill); background: var(--accent-emerald-bg); border: 1px solid var(--accent-emerald-edge); color: var(--accent-emerald); font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; cursor: help; }
+.board-warm .material-symbols-rounded { font-size: 12px; }
+.board-grade { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 8px; border-radius: var(--radius-card); font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--g); background: color-mix(in srgb, var(--g) 12%, transparent); border: 1px solid color-mix(in srgb, var(--g) 30%, transparent); }
+.board-status { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); white-space: nowrap; }
+.board-next { font-size: 12px; color: var(--text-secondary); max-width: 200px; }
+.board-open { display: inline-flex; color: var(--text-dim); }
+.board-open:hover { color: var(--accent-orange); }
+.board-open .material-symbols-rounded { font-size: 16px; }
+@media (max-width: 680px) { .board-row { flex-wrap: wrap; } .board-next { display: none; } }
+
 /* ── 06 · GO PUBLIC — post rail ── */
 .post-rail-wrap { position: relative; }
 .post-rail { display: grid; grid-auto-flow: column; grid-auto-columns: min(400px, 82vw); gap: 14px; overflow-x: auto; padding: 4px 4px 16px; scroll-snap-type: x mandatory; scrollbar-width: thin; }

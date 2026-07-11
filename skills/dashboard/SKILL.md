@@ -4,7 +4,7 @@ description: Use when a user wants to see where they stand and where they're goi
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.3.0 -->
+<!-- hope-skill-version: 1.4.0 -->
 
 # Hope Dashboard · The mission brief
 
@@ -70,7 +70,8 @@ The dashboard is the **cross-cut** — it runs anytime, but it *synthesizes*, it
 | 03 | **The honest delta** | Gaps (ranked, door-opener starred) beside the moat (lead with these) | `skill-gap.json` |
 | 04 | **The plan** | 2–3 phases, ≤7 moves, each move dated and mapped to the gap it closes | gap read + proof plan |
 | 05 | **The artifacts** | The proof projects as cards — one featured signature artifact | proof plan `Project` nodes |
-| 06 | **Go public** | Build-in-public post drafts, ready to copy | the artifacts + real wins |
+| 06 | **The board** *(when roles are targeted)* | The validated target roles — grade, warm path, plain-word status, next move | `hope-discovery` writes it; `hope-application` moves the statuses |
+| 07 | **Go public** | Build-in-public post drafts, ready to copy | the artifacts + real wins |
 | 07 | **Hope's take** | The opinionated close: two moves, the skip-list, the autonomy note | everything above |
 
 The **forward throughline** in chapter 01 is the deliberate mirror of the portfolio's timeline: the portfolio's strip shows the road behind; the dashboard's shows the road ahead, with a playhead at `readiness`% between the current role and the target. One brand gesture, two directions in time. Don't drop it.
@@ -99,7 +100,7 @@ cp "$PLUGIN_ROOT/assets/templates/dashboard/dashboard.html" \
    "$PLUGIN_ROOT/assets/templates/dashboard/dashboard.js" <portfolio-folder>/
 ```
 
-2. **Data:** add the `target` block to the folder's existing `data.js` (one dataset, two surfaces — the portfolio reads its keys, the dashboard reads `meta.name` + `target`). The full field-by-field authoring contract is at the top of `assets/templates/dashboard/data.js` — follow it exactly; it is the spec, and silent drift from it is a bug. If the user has no portfolio yet, copy the template's `data.js` too and fill `meta.name` + `target`; the topbar's Portfolio button expects a sibling `index.html` — remove that button from `dashboard.html` if none exists.
+2. **Data:** add the `target` block to the folder's existing `data.js` (one dataset, two surfaces — the portfolio reads its keys, the dashboard reads `meta.name` + `target`). The board chapter renders only when `target.board` has rows — write it from the targeted roles when discovery has run, omit it cleanly when not. The full field-by-field authoring contract is at the top of `assets/templates/dashboard/data.js` — follow it exactly; it is the spec, and silent drift from it is a bug. If the user has no portfolio yet, copy the template's `data.js` too and fill `meta.name` + `target`; the topbar's Portfolio button expects a sibling `index.html` — remove that button from `dashboard.html` if none exists.
 
 3. **Level mapping** from the gap read's words to the 5-dot rows: **Aware → 1 · Practicing → 2–3 · Proficient → 4 · Expert → 5** (use 3 for a deep Practicing with real war stories — your judgment, stated honestly in the row's note).
 

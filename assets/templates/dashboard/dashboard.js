@@ -35,6 +35,7 @@
     { id: 'gap',         label: 'Gap' },
     { id: 'plan',        label: 'Plan' },
     { id: 'artifacts',   label: 'Artifacts' },
+    { id: 'board',       label: 'Board' },
     { id: 'public',      label: 'Public' },
     { id: 'take',        label: 'Hope’s take' }
   ];
@@ -47,6 +48,9 @@
       idHost.innerHTML =
         '<img class="tb-avatar" src="headshot.jpg" alt="" onerror="this.outerHTML=\'<span class=&quot;tb-avatar-fallback&quot;>' + esc(initials) + '</span>\'">' +
         '<span><span class="tb-name">' + esc(name) + '</span><br><span class="tb-role">Mission · ' + esc(T.role || '') + '</span></span>';
+    }
+    if (!(Array.isArray(T.board) && T.board.length)) {
+      for (var bi = CHAPTERS.length - 1; bi >= 0; bi--) if (CHAPTERS[bi].id === 'board') CHAPTERS.splice(bi, 1);
     }
     var nav = el('tb-nav');
     if (nav) {
@@ -260,6 +264,34 @@
         '</div>' +
       '</article>';
     }).join('');
+  })();
+
+  /* ── 06 · THE BOARD — validated target roles, human-word statuses. ── */
+  (function () {
+    var host = el('board-rows');
+    var rows = Array.isArray(T.board) ? T.board : [];
+    if (!host || !rows.length) return;
+    var sec = el('board'); if (sec) sec.hidden = false;
+    var GRADE = { A: 'var(--accent-emerald)', B: 'var(--accent-amber)', C: 'var(--accent-slate)', D: 'var(--accent-rose)', F: 'var(--accent-rose)' };
+    host.innerHTML = rows.map(function (r) {
+      var g = String(r.grade || '').charAt(0).toUpperCase();
+      var color = GRADE[g] || 'var(--accent-slate)';
+      var initial = esc((r.company || '?').charAt(0).toUpperCase());
+      var warm = r.warmPath ? '<span class="board-warm" title="' + esc(r.warmPath) + '">' + icon('handshake') + 'warm path</span>' : '';
+      var link = r.url ? '<a class="board-open" href="' + esc(r.url) + '" target="_blank" rel="noopener" aria-label="Open posting">' + icon('open_in_new') + '</a>' : '';
+      return '<div class="board-row">' +
+        '<span class="board-mark">' + initial + '</span>' +
+        '<div class="board-main"><span class="board-role">' + esc(r.role) + '</span>' +
+          '<span class="board-co">' + esc(r.company) + (r.note ? ' · ' + esc(r.note) : '') + '</span></div>' +
+        warm +
+        '<span class="board-grade" style="--g:' + color + '">' + esc(r.grade || '—') + '</span>' +
+        '<span class="board-status">' + esc(r.status || 'Interested') + '</span>' +
+        (r.next ? '<span class="board-next">' + esc(r.next) + '</span>' : '') +
+        link +
+      '</div>';
+    }).join('');
+    var note = el('board-note');
+    if (note && T.boardNote) note.innerHTML = icon('travel_explore') + '<span>' + esc(T.boardNote) + '</span>';
   })();
 
   /* ── 06 · GO PUBLIC. ── */
