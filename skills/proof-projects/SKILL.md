@@ -4,7 +4,7 @@ description: Use when a user wants to know what to build to get hired, close a s
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.3.0 -->
+<!-- hope-skill-version: 1.4.0 -->
 
 # Hope Proof Projects · Milestone 2.5 — Turn the gap into evidence
 

@@ -20,14 +20,12 @@
 <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
+<div class="wrap">
 
-<!-- Sticky mission bar: identity · scrollspy chapters · portfolio + theme -->
-<header class="topbar">
-  <div class="wrap topbar-inner">
-    <div class="tb-id" id="tb-id"></div>
-    <span class="tb-sep" aria-hidden="true"></span>
-    <nav class="tb-nav" id="tb-nav" aria-label="Dashboard sections"></nav>
-    <div class="tb-actions">
+  <!-- HEADER — who, where to, how far. One glance, no reading. -->
+  <header class="head reveal">
+    <div class="head-id" id="head-id"></div>
+    <div class="head-actions">
       <a class="tb-btn" href="index.html" target="_blank" rel="noopener">
         <span class="material-symbols-rounded">badge</span><span>Portfolio</span>
       </a>
@@ -36,119 +34,38 @@
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
     </div>
-  </div>
-</header>
+  </header>
 
-<main class="wrap">
+  <div class="hero reveal" id="hero"></div>
 
-  <!-- 01 · THE DESTINATION -->
-  <section class="hero" id="destination" aria-labelledby="hero-title">
-    <div class="hero-card">
-      <div class="hero-grid">
-        <div>
-          <span class="hero-eyebrow"><span class="material-symbols-rounded">explore</span><span id="hero-eyebrow-text">Target state</span></span>
-          <h1 class="hero-title" id="hero-title"></h1>
-          <p class="hero-north" id="hero-north"></p>
-          <div class="hero-meta" id="hero-meta"></div>
-        </div>
-        <div class="gauge-wrap" role="img" id="gauge" aria-label="Readiness">
-          <svg viewBox="0 0 200 200" aria-hidden="true">
-            <defs>
-              <linearGradient id="gauge-grad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" style="stop-color: var(--accent-amber)"/>
-                <stop offset="100%" style="stop-color: var(--accent-orange)"/>
-              </linearGradient>
-            </defs>
-            <circle class="gauge-track" cx="100" cy="100" r="86"></circle>
-            <circle class="gauge-arc" id="gauge-arc" cx="100" cy="100" r="86"></circle>
-          </svg>
-          <div class="gauge-center">
-            <span class="gauge-val"><span id="gauge-val">0</span><span class="pct-sign">%</span></span>
-            <span class="gauge-label">ready today</span>
-            <span class="gauge-sub" id="gauge-sub"></span>
-          </div>
-        </div>
-      </div>
-      <!-- The forward throughline: the portfolio's timeline shows the road behind; this is the road ahead. -->
-      <div class="fwdline" id="fwdline" aria-label="The road from current role to target role"></div>
-    </div>
-  </section>
+  <!-- THE TWO PAGES -->
+  <nav class="pages reveal" aria-label="Dashboard pages">
+    <button class="page-tab active" data-page="gaps" type="button">
+      <span class="pt-ic material-symbols-rounded">target</span>
+      <span class="pt-body"><span class="pt-label">Skill Gaps</span><span class="pt-sub">close what's between you and the role</span></span>
+    </button>
+    <button class="page-tab" data-page="jobs" type="button">
+      <span class="pt-ic material-symbols-rounded">work</span>
+      <span class="pt-body"><span class="pt-label">Jobs</span><span class="pt-sub">find them · apply · track</span></span>
+    </button>
+  </nav>
 
-  <!-- 02 · WHAT YOU ALREADY BRING -->
-  <section class="chapter reveal" id="proof" aria-labelledby="proof-title">
-    <div class="chapter-head">
-      <div class="chapter-eyebrow"><span class="chapter-num">02</span><span class="chapter-tag">The proof you already have</span><span class="chapter-rule"></span></div>
-      <h2 class="chapter-title" id="proof-title">You're not starting — you're most of the way there</h2>
-      <p class="chapter-sub" id="proof-sub"></p>
-    </div>
-    <div class="stat-grid" id="stat-grid"></div>
-  </section>
+  <!-- PAGE 1 · SKILL GAPS — the bridge, actions only -->
+  <main class="page active" data-page="gaps">
+    <section class="block reveal" id="blk-gaps"></section>
+    <section class="block reveal" id="blk-moat"></section>
+    <section class="block reveal" id="blk-plan"></section>
+    <section class="block reveal" id="blk-build"></section>
+  </main>
 
-  <!-- 03 · THE GAP -->
-  <section class="chapter reveal" id="gap" aria-labelledby="gap-title">
-    <div class="chapter-head">
-      <div class="chapter-eyebrow"><span class="chapter-num">03</span><span class="chapter-tag">The honest delta</span><span class="chapter-rule"></span></div>
-      <h2 class="chapter-title" id="gap-title">What's actually between you and the role</h2>
-      <p class="chapter-sub" id="gap-headline"></p>
-    </div>
-    <div class="delta-board">
-      <div class="delta-col gaps" id="delta-gaps"></div>
-      <div class="delta-col moat" id="delta-moat"></div>
-    </div>
-    <div class="delta-legend" aria-hidden="true">
-      <span><span class="dot5 on" style="background: var(--text-muted); border-color: var(--text-muted);"></span>where you are</span>
-      <span><span class="dot5 tgt"></span>where the role needs you</span>
-    </div>
-    <p class="delta-source" id="delta-source"></p>
-  </section>
+  <!-- PAGE 2 · JOBS — the board + what to do next -->
+  <main class="page" data-page="jobs">
+    <section class="block reveal" id="blk-board"></section>
+    <section class="block reveal" id="blk-next"></section>
+  </main>
 
-  <!-- 04 · THE PLAN -->
-  <section class="chapter reveal" id="plan" aria-labelledby="plan-title">
-    <div class="chapter-head">
-      <div class="chapter-eyebrow"><span class="chapter-num">04</span><span class="chapter-tag">The plan</span><span class="chapter-rule"></span></div>
-      <h2 class="chapter-title" id="plan-title">Three phases, seven moves</h2>
-      <p class="chapter-sub" id="plan-intro"></p>
-    </div>
-    <div class="plan-list" id="plan-list"></div>
-  </section>
-
-  <!-- 05 · THE ARTIFACTS -->
-  <section class="chapter reveal" id="artifacts" aria-labelledby="artifacts-title">
-    <div class="chapter-head">
-      <div class="chapter-eyebrow"><span class="chapter-num">05</span><span class="chapter-tag">The artifacts</span><span class="chapter-rule"></span></div>
-      <h2 class="chapter-title" id="artifacts-title">Three things to ship — each closes a named gap</h2>
-      <p class="chapter-sub">Built with AI in days, not months. Every one lands on your portfolio the moment it ships.</p>
-    </div>
-    <div class="proj-grid" id="proj-grid"></div>
-  </section>
-
-  <!-- 06 · GO PUBLIC -->
-  <section class="chapter reveal" id="public" aria-labelledby="public-title">
-    <div class="chapter-head">
-      <div class="chapter-eyebrow"><span class="chapter-num">06</span><span class="chapter-tag">Go public</span><span class="chapter-rule"></span></div>
-      <h2 class="chapter-title" id="public-title">Make your speed customer-legible</h2>
-      <p class="chapter-sub">Five posts, drafted and ready to copy — post as you ship. This run seeds the warm referral path senior FDE roles are actually filled through.</p>
-    </div>
-    <div class="post-rail-wrap">
-      <div class="post-rail" id="post-rail" tabindex="0" aria-label="Build-in-public post drafts"></div>
-    </div>
-  </section>
-
-  <!-- 07 · HOPE'S TAKE -->
-  <section class="chapter reveal" id="take" aria-labelledby="take-title">
-    <div class="chapter-head">
-      <div class="chapter-eyebrow"><span class="chapter-num">07</span><span class="chapter-tag">Hope's take</span><span class="chapter-rule"></span></div>
-      <h2 class="chapter-title" id="take-title">Where I'd put your energy</h2>
-    </div>
-    <div class="take-band" id="take-band"></div>
-  </section>
-
-  <footer class="footer">
-    <span id="footer-stamp"></span>
-    <span class="right"><span class="material-symbols-rounded">favorite</span><span>Career dashboard by <a href="https://github.com/oneconsciousness/job-hunt-with-hope" target="_blank" rel="noopener">Hope</a></span></span>
-  </footer>
-
-</main>
+  <footer class="footer"><span id="footer-stamp"></span><span class="right"><span class="material-symbols-rounded">favorite</span><span>by <a href="https://github.com/oneconsciousness/job-hunt-with-hope" target="_blank" rel="noopener">Hope</a></span></span></footer>
+</div>
 
 <script src="data.js"></script>
 <script src="dashboard.js"></script>
