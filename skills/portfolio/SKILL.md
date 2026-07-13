@@ -4,7 +4,7 @@ description: Use when a user wants to generate a portfolio — their work, their
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.4.0 -->
+<!-- hope-skill-version: 1.5.0 -->
 
 # Hope Portfolio · Milestone 3 — Hope's Signature
 
@@ -217,7 +217,7 @@ What each `projects[]` field drives — see the `data.js` authoring contract for
 | `skills[]` (`{name, category}`) | `.contrib-skills` `.skill-chip`s | One chip per `SkillRef`; `category` → `data-cat` (CSS owns the color, same category map as Experience). `[]` → block omitted. |
 | `link` (`{url, label}`) | `.project-link-row` → `.project-link` | Optional external link; row omitted when absent. |
 
-The renderer leaves **every** project card **collapsed** by default and reuses Experience's `.item-card[data-expand] .item-head` markup, so card-expand and the "Projects" section filter work with no extra wiring. **Projects carry NO competencies, scope, metric-badge, or contrib-num** (the `.project` class drives the cyan accent via CSS — don't port those Experience-only fields). There is no project tile, hero gradient, or metric tag.
+The renderer leaves **every** project card **collapsed** by default and reuses Experience's `.item-card[data-expand] .item-head` markup, so card-expand and the "Projects" section filter work with no extra wiring. The `.project` class drives the cyan accent via CSS. There is no project tile, hero gradient, or metric tag.
 
 ### Skills section — radar axes (optional)
 
@@ -671,7 +671,7 @@ Options 1–3 (and any updates the user accepts from option 5) land here. **Rege
 
 ## Stale-session check — is this chat running an older Hope?
 
-This file carries a version marker near the top — `<!-- hope-skill-version: 1.4.0 -->` — naming the Hope this chat loaded. The live version is whatever `$PLUGIN_ROOT/plugin.json` says **right now** (the `<LIVE>` one-liner above). Run the comparison whenever the user picks option 4 or 5 of the update menu.
+This file carries a version marker near the top — `<!-- hope-skill-version: 1.5.0 -->` — naming the Hope this chat loaded. The live version is whatever `$PLUGIN_ROOT/plugin.json` says **right now** (the `<LIVE>` one-liner above). Run the comparison whenever the user picks option 4 or 5 of the update menu.
 
 When `plugin.json` is **newer** than the marker, this conversation loaded an older Hope — a newer release is installed, but a running chat can't pick it up mid-flight. Output exactly this structure:
 
