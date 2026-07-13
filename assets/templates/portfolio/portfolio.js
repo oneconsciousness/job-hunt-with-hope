@@ -714,8 +714,67 @@
       esc(meta.generation_date) + companyClause;
   }
 
+  // renderResumeExperienceEntry — one <article class="resume-entry"> for the
+  // Experience section, given a role_title / company / dates head and an
+  // already-built <li> bullet string. Shared by all three content modes so
+  // the header markup never drifts between them.
+  function renderResumeExperienceEntry(roleTitle, company, dates, bulletsHtml) {
+    return '<article class="resume-entry">' +
+      '<div class="resume-entry-head"><h3>' + esc(roleTitle) + '</h3>' +
+        '<span class="resume-dates">' + esc(dates) + '</span></div>' +
+      '<p class="resume-org">' + esc(company) + '</p>' +
+      '<ul>' + bulletsHtml + '</ul>' +
+    '</article>';
+  }
+
+  // renderResumeCuratedExperience — 'highlights' mode: today's unchanged
+  // behavior, from the curated d.resume.experience[].bullets[].
+  function renderResumeCuratedExperience(r) {
+    return (Array.isArray(r.experience) ? r.experience : []).map(function (e) {
+      var bullets = (Array.isArray(e.bullets) ? e.bullets : []).map(function (b) {
+        if (b && b.tag != null && String(b.tag).trim() !== '') {
+          return '<li>' + esc(b.text) + ' <strong>' + esc(b.tag) + '</strong></li>';
+        }
+        // Documented fail-soft: missing tag → unbolded <li> + WARNING.
+        try { console.warn('[hope-portfolio] renderResumeView: bullet missing tag: ' + String(b && b.text).slice(0, 80)); } catch (e2) {}
+        return '<li>' + esc(b && b.text) + '</li>';
+      }).join('');
+      return renderResumeExperienceEntry(e.role_title, e.company, e.dates, bullets);
+    }).join('');
+  }
+
+  // renderResumeContributionBullet — one ATS-clean <li> for the top5/complete
+  // modes: "action — impact" (em dash only when impact exists), figures bold
+  // via boldMetrics on the already-escaped, combined string. No colors, no
+  // skill chips, no tags.
+  function renderResumeContributionBullet(c) {
+    var text = esc(c.action) + (c.impact ? ' — ' + esc(c.impact) : '');
+    return '<li>' + boldMetrics(text) + '</li>';
+  }
+
+  // renderResumeFullExperience — 'top5' / 'complete' modes: every role from
+  // d.experience (ALL roles, portfolio order), concatenating groups in order
+  // (ic then lead, as they appear) since contributions are already
+  // importance-ordered within each group. 'top5' caps at the first 5
+  // contributions per role; 'complete' takes every contribution.
+  function renderResumeFullExperience(experience, cap) {
+    return (Array.isArray(experience) ? experience : []).map(function (e) {
+      var contribs = [];
+      (Array.isArray(e.groups) ? e.groups : []).forEach(function (g) {
+        (Array.isArray(g.contributions) ? g.contributions : []).forEach(function (c) {
+          contribs.push(c);
+        });
+      });
+      if (cap) contribs = contribs.slice(0, cap);
+      var bullets = contribs.map(renderResumeContributionBullet).join('');
+      return renderResumeExperienceEntry(e.role_title, e.company, e.dates, bullets);
+    }).join('');
+  }
+
   // renderResumeView — the ATS résumé. Bullet tag is APPENDED (one <strong>).
-  function renderResumeView(d) {
+  // content: 'highlights' (default, curated d.resume) | 'top5' (5 per role,
+  // from d.experience) | 'complete' (every contribution, from d.experience).
+  function renderResumeView(d, content) {
     var mount = document.getElementById('resume-view');
     if (!mount) return;
     var r = d.resume || {};
@@ -734,22 +793,14 @@
     var shareUrl = getCanonicalUrl();
     if (shareUrl) contactBits.push('<a href="' + esc(shareUrl) + '" target="_blank" rel="noopener">Portfolio</a>');
 
-    var expHtml = (Array.isArray(r.experience) ? r.experience : []).map(function (e) {
-      var bullets = (Array.isArray(e.bullets) ? e.bullets : []).map(function (b) {
-        if (b && b.tag != null && String(b.tag).trim() !== '') {
-          return '<li>' + esc(b.text) + ' <strong>' + esc(b.tag) + '</strong></li>';
-        }
-        // Documented fail-soft: missing tag → unbolded <li> + WARNING.
-        try { console.warn('[hope-portfolio] renderResumeView: bullet missing tag: ' + String(b && b.text).slice(0, 80)); } catch (e2) {}
-        return '<li>' + esc(b && b.text) + '</li>';
-      }).join('');
-      return '<article class="resume-entry">' +
-        '<div class="resume-entry-head"><h3>' + esc(e.role_title) + '</h3>' +
-          '<span class="resume-dates">' + esc(e.dates) + '</span></div>' +
-        '<p class="resume-org">' + esc(e.company) + '</p>' +
-        '<ul>' + bullets + '</ul>' +
-      '</article>';
-    }).join('');
+    var expHtml;
+    if (content === 'complete') {
+      expHtml = renderResumeFullExperience(d.experience, 0);
+    } else if (content === 'top5') {
+      expHtml = renderResumeFullExperience(d.experience, 5);
+    } else {
+      expHtml = renderResumeCuratedExperience(r);
+    }
 
     var eduHtml = (Array.isArray(r.education) ? r.education : []).map(function (e) {
       return '<article class="resume-entry">' +
@@ -1000,6 +1051,7 @@
   var RESUME_STYLES = ['classic', 'modern', 'compact'];
   var RESUME_FONTS = ['georgia', 'times', 'inter'];
   var RESUME_FITS = ['comfortable', 'auto'];
+  var RESUME_CONTENTS = ['highlights', 'top5', 'complete'];
   var RESUME_FONT_STACKS = {
     georgia: "Georgia, 'Times New Roman', serif",
     times: "'Times New Roman', Times, serif",
@@ -1007,7 +1059,7 @@
   };
   var RESUME_DEFAULT_FONT = { classic: 'georgia', modern: 'inter', compact: 'inter' };
   var readResumePref = function () {
-    var pref = { style: 'classic', font: '', fit: 'comfortable' };
+    var pref = { style: 'classic', font: '', fit: 'comfortable', content: 'highlights' };
     try {
       var raw = localStorage.getItem(RESUME_PREF_KEY);
       if (raw) {
@@ -1015,6 +1067,7 @@
         if (p && RESUME_STYLES.indexOf(p.style) !== -1) pref.style = p.style;
         if (p && RESUME_FONTS.indexOf(p.font) !== -1) pref.font = p.font;
         if (p && RESUME_FITS.indexOf(p.fit) !== -1) pref.fit = p.fit;
+        if (p && RESUME_CONTENTS.indexOf(p.content) !== -1) pref.content = p.content;
       }
     } catch (e) {}
     if (!pref.font) pref.font = RESUME_DEFAULT_FONT[pref.style] || 'georgia';
@@ -1107,6 +1160,8 @@
       if (fontRadio) fontRadio.checked = true;
       var fitRadio = exportModal.querySelector('input[name="export-fit-resume"][value="' + pref.fit + '"]');
       if (fitRadio) fitRadio.checked = true;
+      var contentRadio = exportModal.querySelector('input[name="export-content-resume"][value="' + pref.content + '"]');
+      if (contentRadio) contentRadio.checked = true;
       syncExportUI();
       exportModal.hidden = false;
     });
@@ -1125,9 +1180,15 @@
       var style = checkedValue('export-style-resume') || 'classic';
       var font = checkedValue('export-font-resume') || RESUME_DEFAULT_FONT[style] || 'georgia';
       var fit = checkedValue('export-fit-resume') || 'comfortable';
-      try { localStorage.setItem(RESUME_PREF_KEY, JSON.stringify({ style: style, font: font, fit: fit })); } catch (e) {}
-      document.body.classList.add('print-doc-resume', 'print-style-' + style);
+      var content = checkedValue('export-content-resume') || 'highlights';
+      try { localStorage.setItem(RESUME_PREF_KEY, JSON.stringify({ style: style, font: font, fit: fit, content: content })); } catch (e) {}
+      // print-content-{mode} lets the CSS relax the .resume-entry keep-together
+      // rule for top5/complete (a role taller than a page would otherwise
+      // strand page 1 with only header+summary). Swept by the same generic
+      // afterprint prefix cleanup as print-doc-/print-style- below.
+      document.body.classList.add('print-doc-resume', 'print-style-' + style, 'print-content-' + content);
       resumeView.style.setProperty('--resume-font', RESUME_FONT_STACKS[font] || RESUME_FONT_STACKS.georgia);
+      renderResumeView(HOPE, content);
       closeExportModal();
       if (fit === 'auto') runResumeAutoFit(style);
       window.print();
@@ -1135,13 +1196,14 @@
     window.addEventListener('afterprint', function () {
       var stale = [];
       document.body.classList.forEach(function (c) {
-        if (c.indexOf('print-doc-') === 0 || c.indexOf('print-style-') === 0) stale.push(c);
+        if (c.indexOf('print-doc-') === 0 || c.indexOf('print-style-') === 0 || c.indexOf('print-content-') === 0) stale.push(c);
       });
       stale.forEach(function (c) { document.body.classList.remove(c); });
       resumeView.style.removeProperty('--rfs');
       resumeView.style.removeProperty('--resume-font');
       document.body.style.width = '';
       disableContinuousPrint();
+      renderResumeView(HOPE);
     });
   }
 
