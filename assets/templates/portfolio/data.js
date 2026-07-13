@@ -116,6 +116,8 @@
      company:            string (req) — .role-company, <img alt>.
      company_domain:     string? (opt) — favicon; absent → bare .org-fallback.
      company_initial:    string (req) — first-letter fallback (baked into onerror).
+     logo:                string? (opt) — explicit local logo path; wins over the
+                                          company_domain favicon service when present.
      dates:              string (req) — .role-dates ("Jan 2025 — Present").
      is_current:         boolean (req) — true → .is-current + .active-pill.
      contribution_count: number (req) — .contrib-pill (renderer pluralizes).
@@ -128,22 +130,25 @@
 
      Contribution:  { num, icon, domain?, scope?, metric?, action, impact?,
                       skills, competencies }
-       num:          number (req) — .contrib-num; AUTHORITATIVE, renderer never
-                                    auto-indexes.
-       icon:         string (req) — Material name.
-       domain:       string? (opt) — .contrib-domain. Omit span if absent.
-       scope:        "team"|"department"|"company-wide"|"industry"? (opt) — badge.
-       metric:       Metric? (opt) — .metric-badge. Omit block if absent.
-       action:       string (req) — .contrib-action.
-       impact:       string? (opt) — .contrib-impact <p>. Omit if absent.
-       skills:       SkillRef[] (req, may be []) — chips. [] → omit block.
-       competencies: string[] (req, may be []) — labels. [] → omit block.
+       num:          number (req) — AUTHORITATIVE ordering key; renderer never
+                                    auto-indexes. Not rendered in V5 (data only).
+       icon:         string (req) — Material name. Not rendered in V5 (data only).
+       domain:       string? (opt) — not rendered in V5 (data only).
+       scope:        "team"|"department"|"company-wide"|"industry"? (opt) — not
+                     rendered in V5 (data only).
+       metric:       Metric? (opt) — .metric-inline, shown ONLY when impact is
+                     absent (impact restates the metric in every observed dataset).
+       action:       string (req) — .contrib-action. Figures and the first
+                     mention of each skill name are auto-bolded (boldActionMentions).
+       impact:       string? (opt) — .contrib-impact <p> (soft emerald slab).
+                     Figures auto-bolded (boldMetrics). Omit if absent.
+       skills:       SkillRef[] (req, may be []) — .skill-chip chips. [] → omit block.
+       competencies: string[] (req, may be []) — not rendered in V5 (data only).
 
      Metric:  { value, direction, subject }
-       value:     string (req) — .val ("5 of 10+").
-       direction: "up"|"down"|"achieved" (req) — up→↑, down→↓, achieved→✓ AND
-                  .metric-badge gets .achieved class (cyan). Two coupled outputs.
-       subject:   string (req) — .subj.
+       value:     string (req) — inline metric value ("5 of 10+").
+       direction: "up"|"down"|"achieved" (req) — up→↑, down→↓, achieved→✓.
+       subject:   string (req) — inline metric subject.
 
      SkillRef:  { name, category? }
        name:     string (req) — chip text.

@@ -95,10 +95,15 @@
   // onerror that swaps to a bare <span class="org-fallback">{initial}</span>
   // (the ONE sanctioned external URL; the onerror string is emitted verbatim,
   // never re-encoded). No domain → the bare .org-fallback span directly.
-  function favicon(domain, initial, alt) {
+  function favicon(domain, initial, alt, logo) {
     var ini = esc(initial);
-    if (!domain) return '<span class="org-fallback">' + ini + '</span>';
     var onerr = "this.outerHTML='&lt;span class=\\'org-fallback\\'&gt;" + ini + "&lt;/span&gt;';";
+    // Explicit local logo wins over the favicon service (dead domains, better art).
+    if (logo) {
+      return '<img class="org-logo" src="' + esc(logo) + '" alt="' + esc(alt) +
+        '" width="44" height="44" onerror="' + onerr + '">';
+    }
+    if (!domain) return '<span class="org-fallback">' + ini + '</span>';
     return '<img class="org-logo" src="https://www.google.com/s2/favicons?domain=' + esc(domain) +
       '&sz=128" alt="' + esc(alt) + '" width="44" height="44" onerror="' + onerr + '">';
   }
@@ -357,7 +362,7 @@
       var isCur = !!r.is_current;
       var head =
         '<div class="item-head">' +
-          favicon(r.company_domain, r.company_initial, r.company) +
+          favicon(r.company_domain, r.company_initial, r.company, r.logo) +
           '<div class="item-info">' +
             '<div class="title-row">' +
               '<span class="role-title">' + esc(r.role_title) + '</span>' +
@@ -411,39 +416,52 @@
     return frag(html);
   }
 
-  // A single .contrib article inside an experience group. Honors achieved.
+  // boldMetrics — wraps number tokens ($2M+, 100,000+, 5 of 10+, 85%) in an
+  // already-ESCAPED string so the result line's figures pop. Escaped input
+  // only — the regex never touches markup. The lookbehind keeps digits inside
+  // product names (GO2, ROS2, D3.js) unbolded.
+  function boldMetrics(escaped) {
+    return String(escaped).replace(/(?<![A-Za-z\d,.])[$€£]?\d[\d,.]*(?:\s?[KMBx]\+?|\+|%)?/g, function (m) {
+      return '<strong class="m">' + m + '</strong>';
+    });
+  }
+
+  // boldActionMentions — in the ESCAPED action sentence, bolds the figures
+  // plus the first literal mention of each skill (so the 7-second skim lands
+  // on the tech). Names are matched conservatively: the part before any
+  // " / " or " (", 4+ chars, first occurrence only, skipped if already bold.
+  function boldActionMentions(escaped, skills) {
+    var out = boldMetrics(escaped);
+    (Array.isArray(skills) ? skills : []).forEach(function (s) {
+      var core = esc(String((s && s.name) || '')).split(' / ')[0].split(' (')[0].trim();
+      if (core.length < 4) return;
+      var i = out.indexOf(core);
+      if (i === -1) return;
+      if (out.lastIndexOf('<strong', i) > out.lastIndexOf('</strong>', i)) return;
+      out = out.slice(0, i) + '<strong>' + core + '</strong>' + out.slice(i + core.length);
+    });
+    return out;
+  }
+
+  // A single .contrib bullet inside an experience group. One idea per line:
+  // the sentence, the emerald result, the skills. (domain / scope / num /
+  // competencies stay in the data — the human view keeps only what a
+  // recruiter reads.) The inline metric shows only when there's no impact
+  // line, which restates it in every observed dataset.
   function renderContribution(c, kind) {
-    var domain = c.domain ? '<span class="contrib-domain">' + esc(c.domain) + '</span>' : '';
-    var scope = c.scope ? '<span class="scope-badge">' + esc(c.scope) + '</span>' : '';
     var metric = '';
-    if (c.metric) {
+    if (c.metric && !c.impact) {
       var dir = String(c.metric.direction || '');
       var arrow = dir === 'down' ? '↓' : (dir === 'achieved' ? '✓' : '↑');
-      var achieved = (dir === 'achieved') ? ' achieved' : '';
-      metric = '<span class="metric-badge' + achieved + '">' +
-        '<span class="val">' + esc(c.metric.value) + '</span>' +
-        '<span class="arrow">' + arrow + '</span>' +
-        '<span class="subj">' + esc(c.metric.subject) + '</span>' +
-      '</span>';
+      metric = ' <span class="metric-inline">' + esc(c.metric.value) + ' ' + esc(c.metric.subject) + ' ' + arrow + '</span>';
     }
     var impact = c.impact
-      ? '<div class="contrib-impact"><span class="material-symbols-rounded">arrow_forward</span><p>' + esc(c.impact) + '</p></div>'
+      ? '<p class="contrib-impact">' + boldMetrics(esc(c.impact)) + '</p>'
       : '';
     var skills = skillChips(c.skills);
-    var comps = '';
-    if (Array.isArray(c.competencies) && c.competencies.length) {
-      comps = '<div class="contrib-competencies">' +
-        c.competencies.map(function (n) { return '<span class="competency">' + esc(n) + '</span>'; }).join('') +
-        '</div>';
-    }
     return '<article class="contrib ' + kind + '">' +
-      '<div class="contrib-head">' +
-        '<span class="contrib-num">' + esc(c.num) + '</span>' +
-        '<span class="material-symbols-rounded type-icon">' + esc(c.icon) + '</span>' +
-        domain + scope + metric +
-      '</div>' +
-      '<p class="contrib-action">' + esc(c.action) + '</p>' +
-      impact + skills + comps +
+      '<p class="contrib-action">' + boldActionMentions(esc(c.action), c.skills) + metric + '</p>' +
+      impact + skills +
     '</article>';
   }
 
