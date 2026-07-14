@@ -4,7 +4,7 @@ description: Use when a user wants to know how close they are to a job, what the
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.4.0 -->
+<!-- hope-skill-version: 1.5.0 -->
 
 # Hope Skill Gap · The honest delta
 
