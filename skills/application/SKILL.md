@@ -4,7 +4,7 @@ description: Use when a user wants Hope to apply to a job for them — fill the 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.5.0 -->
+<!-- hope-skill-version: 1.5.1 -->
 
 # Hope Application · Applied, in your name, with your yes
 
