@@ -308,14 +308,16 @@ img { display: block; }
   body.print-doc-resume #resume-view h3,
   body.print-doc-resume #resume-view p { margin: 0; }
   body.print-doc-resume #resume-view h2 { break-after: avoid; page-break-after: avoid; }
-  body.print-doc-resume .resume-entry { break-inside: avoid; page-break-inside: avoid; }
-  /* top5/complete can carry many more bullets per role than the curated
-     highlights list — keeping a whole role together would strand page 1 with
-     only the header + summary when a role runs taller than a page. Relax to
-     let entries break internally in those two modes only; highlights keeps
-     today's keep-together behavior. */
-  body.print-doc-resume.print-content-top5 .resume-entry,
-  body.print-doc-resume.print-content-complete .resume-entry { break-inside: auto; page-break-inside: auto; }
+  /* A curated "highlights" role can run just as long as a top5/complete one —
+     real résumé bullets, not a fixture. Keeping the whole role together
+     (break-inside: avoid) strands the rest of the page blank whenever a role
+     doesn't fit in the remaining space, in EVERY content mode, not just
+     top5/complete. Let entries break internally everywhere; glue the head
+     (title/company/dates) to the first bullet instead so a role never opens
+     with a bare title-and-dates line stranded at a page bottom. */
+  body.print-doc-resume .resume-entry { break-inside: auto; page-break-inside: auto; }
+  body.print-doc-resume .resume-entry-head,
+  body.print-doc-resume .resume-org { break-after: avoid; page-break-after: avoid; }
   body.print-doc-resume #resume-view li { orphans: 2; widows: 2; }
   /* Title left, dates right — flex, not a table: copies out as linear text,
      so the PDF still passes the plain-text ATS paste test. */
