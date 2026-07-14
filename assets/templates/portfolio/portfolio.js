@@ -1182,10 +1182,11 @@
       var fit = checkedValue('export-fit-resume') || 'comfortable';
       var content = checkedValue('export-content-resume') || 'highlights';
       try { localStorage.setItem(RESUME_PREF_KEY, JSON.stringify({ style: style, font: font, fit: fit, content: content })); } catch (e) {}
-      // print-content-{mode} lets the CSS relax the .resume-entry keep-together
-      // rule for top5/complete (a role taller than a page would otherwise
-      // strand page 1 with only header+summary). Swept by the same generic
-      // afterprint prefix cleanup as print-doc-/print-style- below.
+      // print-content-{mode} is no longer read by the print stylesheet (the
+      // resume-entry break rule now applies uniformly — see portfolio.css);
+      // kept on body for CSS hooks other content-mode styling may want later.
+      // Swept by the same generic afterprint prefix cleanup as
+      // print-doc-/print-style- below.
       document.body.classList.add('print-doc-resume', 'print-style-' + style, 'print-content-' + content);
       resumeView.style.setProperty('--resume-font', RESUME_FONT_STACKS[font] || RESUME_FONT_STACKS.georgia);
       renderResumeView(HOPE, content);
