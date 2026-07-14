@@ -4,7 +4,7 @@ description: Use when a user wants Hope to find roles worth pursuing — scout t
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 1.5.0 -->
+<!-- hope-skill-version: 1.5.1 -->
 
 # Hope Discovery · Roles worth pursuing
 
