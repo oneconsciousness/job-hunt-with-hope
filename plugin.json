@@ -1,8 +1,8 @@
 {
   "name": "hope",
   "displayName": "JobHunt with Hope",
-  "version": "1.5.1",
-  "description": "JobHunt with Hope — a Claude plugin for your job hunt. It builds a designed HTML portfolio from your own facts and publishes it to a free GitHub Pages site you own — one link to share. Built while job-hunting; the maker's Hope-generated portfolio is getting interview calls.",
+  "version": "2.0.0",
+  "description": "JobHunt with Hope - Hope runs your whole job hunt with the AI you already use: a designed portfolio and one résumé, real openings found through the job boards' own data feeds, applications filled in your browser (you press send), every message drafted in your voice, interview prep with a record-the-call reminder and a debrief, a daily read-only sync of email and LinkedIn, and one tracker spreadsheet you own. Free, open-source, your data stays on your machine.",
   "author": {
     "name": "Hope contributors",
     "url": "https://github.com/oneconsciousness/job-hunt-with-hope"
@@ -13,10 +13,13 @@
   "keywords": [
     "career",
     "job-search",
+    "job-hunt",
     "portfolio",
     "resume",
+    "cover-letter",
+    "applications",
     "interview-prep",
-    "milestones",
+    "tracker",
     "anthropic",
     "claude",
     "skill",
