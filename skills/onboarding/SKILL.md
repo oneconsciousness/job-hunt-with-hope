@@ -4,7 +4,7 @@ description: Use when a user is starting their job hunt with Hope for the first 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.0 -->
+<!-- hope-skill-version: 2.0.1 -->
 
 # Hope Onboarding · Your story, then your setup
 

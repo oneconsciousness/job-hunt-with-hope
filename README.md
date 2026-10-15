@@ -2,7 +2,7 @@
 
 > **AI already changed hiring. Use it to get hired.** Free job-hunt skills for any AI agent. No coding, no catch.
 
-Free · open-source (MIT) · works with the AI you already use (ChatGPT · Claude · Gemini · Copilot…) · your data never leaves your laptop
+Free · open-source (MIT) · works with the AI you already use (Claude Code · Codex · Gemini · Copilot…) · your data never leaves your laptop
 
 <!-- IMAGE: any-agent: agent-agnostic hero (user-provided) -->
 <p align="center"><img src="assets/readme/any-agent.png" alt="Tell your favorite AI agent, Claude, ChatGPT, Gemini, Cursor, VS Code, GitHub Copilot, Windsurf, or Perplexity: &quot;build my portfolio with Job Hunt with Hope.&quot;" width="720"></p>
@@ -73,7 +73,7 @@ Hope ships as a one-command plugin for **[Claude Code](https://claude.com/claude
   /plugin marketplace add oneconsciousness/job-hunt-with-hope
   /plugin install hope@hope
   ```
-- **Any other agent** (Cursor, GitHub Copilot, ChatGPT / Codex, Gemini, Windsurf, Perplexity…): point it at this repo and say **"run my job hunt with Hope."** It reads the skills and follows them.
+- **Any other agent** (OpenAI Codex, Cursor, GitHub Copilot, Gemini, Windsurf…): point it at this repo and say **"run my job hunt with Hope."** It reads the skills and follows them.
 
 Then, in a fresh chat in an empty folder:
 

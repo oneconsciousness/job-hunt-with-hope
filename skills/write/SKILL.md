@@ -4,7 +4,7 @@ description: Use when the user needs words that will go out in their name, such 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.0 -->
+<!-- hope-skill-version: 2.0.1 -->
 
 # Hope Write · Your voice, you send
 
