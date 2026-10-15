@@ -15,13 +15,18 @@ Hope sweeps job boards through their own data feeds and reads each full job desc
 1. Find the plugin root. Run this once:
 
    ```bash
-   # Resolve the Hope plugin root (references/, assets/, scripts/ live there).
-   PLUGIN_ROOT=""
-   for c in "$CLAUDE_PLUGIN_ROOT" "$HOME"/.claude/plugins/cache/hope/hope/*/ "$HOME/.claude/plugins/marketplaces/hope"; do
-     [ -n "$c" ] && [ -f "${c%/}/plugin.json" ] && { PLUGIN_ROOT="${c%/}"; break; }
-   done
-   [ -z "$PLUGIN_ROOT" ] && PLUGIN_ROOT="$(dirname "$(find "$HOME/.claude/plugins" -path '*hope*/plugin.json' -print -quit 2>/dev/null)")"
-   echo "PLUGIN_ROOT=$PLUGIN_ROOT"
+# Find the Hope plugin root (references/, assets/, scripts/ live there).
+# $CLAUDE_PLUGIN_ROOT is not expanded inside this Markdown, so resolve it in the shell.
+# Works whether Hope is installed, marketplace-cached, or run with --plugin-dir, in bash or zsh.
+PLUGIN_ROOT=""
+if [ -n "$CLAUDE_PLUGIN_ROOT" ] && [ -f "$CLAUDE_PLUGIN_ROOT/plugin.json" ]; then PLUGIN_ROOT="$CLAUDE_PLUGIN_ROOT"; fi
+if [ -z "$PLUGIN_ROOT" ]; then
+  c="$(find "$HOME/.claude/plugins/cache/hope/hope" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -1)"   # newest cached version
+  if [ -n "$c" ] && [ -f "${c%/}/plugin.json" ]; then PLUGIN_ROOT="${c%/}"; fi
+fi
+if [ -z "$PLUGIN_ROOT" ] && [ -f "$HOME/.claude/plugins/marketplaces/hope/plugin.json" ]; then PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/hope"; fi
+if [ -z "$PLUGIN_ROOT" ]; then f="$(find "$HOME/.claude/plugins" -path '*hope*/plugin.json' -print -quit 2>/dev/null)"; if [ -n "$f" ]; then PLUGIN_ROOT="$(dirname "$f")"; fi; fi
+echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; empty means ask the user where Hope is
    ```
 
    If `PLUGIN_ROOT` is empty, ask the user where the Hope plugin folder is. Do not guess paths. Then run `ls "$PLUGIN_ROOT/scripts/sweep_boards.py"`. If it is missing, that folder is an older Hope: ask the user for the Hope 2.0 folder.

@@ -17,15 +17,18 @@ You are running Hope's portfolio skill. This is the skill that defines Hope. It 
 Hope's reference files and the portfolio template folder ship **inside the plugin**, not in the user's project. The paths below (`references/…`, `assets/templates/…`) are **relative to the plugin root**. They are NOT relative to your working directory, which is the user's project folder. `${CLAUDE_PLUGIN_ROOT}` is **not** filled in inside this Markdown. So resolve the plugin root yourself with Bash, once, before you read anything:
 
 ```bash
-# Resolve the Hope plugin root (references/, assets/, scripts/ live there).
-# $CLAUDE_PLUGIN_ROOT is NOT expanded in this Markdown - resolve in Bash. Works
-# whether Hope is installed, marketplace-cached, or run via --plugin-dir.
+# Find the Hope plugin root (references/, assets/, scripts/ live there).
+# $CLAUDE_PLUGIN_ROOT is not expanded inside this Markdown, so resolve it in the shell.
+# Works whether Hope is installed, marketplace-cached, or run with --plugin-dir, in bash or zsh.
 PLUGIN_ROOT=""
-for c in "$CLAUDE_PLUGIN_ROOT" "$HOME"/.claude/plugins/cache/hope/hope/*/ "$HOME/.claude/plugins/marketplaces/hope"; do
-  [ -n "$c" ] && [ -f "${c%/}/plugin.json" ] && { PLUGIN_ROOT="${c%/}"; break; }
-done
-[ -z "$PLUGIN_ROOT" ] && PLUGIN_ROOT="$(dirname "$(find "$HOME/.claude/plugins" -path '*hope*/plugin.json' -print -quit 2>/dev/null)")"
-echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # sanity-check before reading bundled files
+if [ -n "$CLAUDE_PLUGIN_ROOT" ] && [ -f "$CLAUDE_PLUGIN_ROOT/plugin.json" ]; then PLUGIN_ROOT="$CLAUDE_PLUGIN_ROOT"; fi
+if [ -z "$PLUGIN_ROOT" ]; then
+  c="$(find "$HOME/.claude/plugins/cache/hope/hope" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -1)"   # newest cached version
+  if [ -n "$c" ] && [ -f "${c%/}/plugin.json" ]; then PLUGIN_ROOT="${c%/}"; fi
+fi
+if [ -z "$PLUGIN_ROOT" ] && [ -f "$HOME/.claude/plugins/marketplaces/hope/plugin.json" ]; then PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/hope"; fi
+if [ -z "$PLUGIN_ROOT" ]; then f="$(find "$HOME/.claude/plugins" -path '*hope*/plugin.json' -print -quit 2>/dev/null)"; if [ -n "$f" ]; then PLUGIN_ROOT="$(dirname "$f")"; fi; fi
+echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; empty means ask the user where Hope is
 ```
 
 If `PLUGIN_ROOT` comes back empty, ask the user where the Hope plugin is checked out (for example a `--plugin-dir` path). Do not guess relative paths: a relative `references/…` read resolves against the user's project folder and will 404.

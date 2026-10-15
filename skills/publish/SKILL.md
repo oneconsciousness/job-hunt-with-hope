@@ -19,15 +19,18 @@ You are running Hope's publish step. The user has a generated portfolio in a loc
 This skill reads files that ship **inside the Hope plugin** (`references/…`). They are **not** in the user's project folder. Your working directory is the user's job-hunt folder, so a plain relative path will not resolve. Resolve the plugin root once, then read the bundled files from there:
 
 ```bash
-# Resolve the Hope plugin root (references/, assets/, scripts/ live there).
-# $CLAUDE_PLUGIN_ROOT is NOT expanded in this Markdown - resolve in Bash. Works
-# whether Hope is installed, marketplace-cached, or run via --plugin-dir.
+# Find the Hope plugin root (references/, assets/, scripts/ live there).
+# $CLAUDE_PLUGIN_ROOT is not expanded inside this Markdown, so resolve it in the shell.
+# Works whether Hope is installed, marketplace-cached, or run with --plugin-dir, in bash or zsh.
 PLUGIN_ROOT=""
-for c in "$CLAUDE_PLUGIN_ROOT" "$HOME"/.claude/plugins/cache/hope/hope/*/ "$HOME/.claude/plugins/marketplaces/hope"; do
-  [ -n "$c" ] && [ -f "${c%/}/plugin.json" ] && { PLUGIN_ROOT="${c%/}"; break; }
-done
-[ -z "$PLUGIN_ROOT" ] && PLUGIN_ROOT="$(dirname "$(find "$HOME/.claude/plugins" -path '*hope*/plugin.json' -print -quit 2>/dev/null)")"
-echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # sanity-check before reading bundled files
+if [ -n "$CLAUDE_PLUGIN_ROOT" ] && [ -f "$CLAUDE_PLUGIN_ROOT/plugin.json" ]; then PLUGIN_ROOT="$CLAUDE_PLUGIN_ROOT"; fi
+if [ -z "$PLUGIN_ROOT" ]; then
+  c="$(find "$HOME/.claude/plugins/cache/hope/hope" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -1)"   # newest cached version
+  if [ -n "$c" ] && [ -f "${c%/}/plugin.json" ]; then PLUGIN_ROOT="${c%/}"; fi
+fi
+if [ -z "$PLUGIN_ROOT" ] && [ -f "$HOME/.claude/plugins/marketplaces/hope/plugin.json" ]; then PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/hope"; fi
+if [ -z "$PLUGIN_ROOT" ]; then f="$(find "$HOME/.claude/plugins" -path '*hope*/plugin.json' -print -quit 2>/dev/null)"; if [ -n "$f" ]; then PLUGIN_ROOT="$(dirname "$f")"; fi; fi
+echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; empty means ask the user where Hope is
 ```
 
 If `PLUGIN_ROOT` comes back empty, ask the user where the Hope plugin is checked out (for example a `--plugin-dir` path). Do not guess relative paths.
