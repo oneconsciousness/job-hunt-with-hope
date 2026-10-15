@@ -13,6 +13,7 @@ Rules this script enforces (see references/tracker-contract.md):
   * Notes are newest first. Each entry starts with a date and entries are
     joined with " || ". Old notes are never overwritten:
         14 Oct 2026: Phone screen booked || 2 Oct 2026: Applied
+    A note given an older --date goes in by date, not on top.
   * Status uses a fixed vocabulary so filters work. A short detail may follow a
     dash, e.g. "Interviewing - round 2 on 15 Oct".
   * New rows copy the cell styles of the row above.
@@ -122,6 +123,7 @@ NEEDS_YOU_PATTERN = re.compile(r"\b(?:you|your call|needs you)\b", re.IGNORECASE
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 NOTE_SEPARATOR = " || "
+NOTE_DATE_PATTERN = re.compile(r"(\d{1,2}) ([A-Za-z]{3}) (\d{4}):")
 
 HEADER_FILL = "1F2933"
 HEADER_FONT_COLOR = "FFFFFF"
@@ -218,11 +220,38 @@ def parse_day(text: Optional[str]) -> date:
         raise TrackerError(f"--date must look like 2026-10-14, not '{text}'.")
 
 
-def prepend_note(old_notes: str, note: str, day: date) -> str:
-    """Put a dated note in front of the old notes. Never drops old notes."""
+def note_entry_date(entry: str) -> Optional[date]:
+    """The date an entry starts with ('2 Oct 2026: ...'), or None if it has none."""
+    match = NOTE_DATE_PATTERN.match(entry.strip())
+    if not match:
+        return None
+    try:
+        return date(int(match.group(3)), MONTHS.index(match.group(2).title()) + 1,
+                    int(match.group(1)))
+    except ValueError:
+        return None
+
+
+def insert_note(old_notes: str, note: str, day: date) -> Tuple[str, int, int]:
+    """Add a dated note in date order (newest first). Never drops or moves old notes.
+
+    The new entry goes in front of the first old entry dated on or before `day`,
+    so a note for today still goes first and a back-dated note lands among
+    older ones. Entries without a date are never used as an anchor; if no older
+    dated entry exists, the new one goes right after the last dated entry, so
+    undated entries stay where they are at the end.
+
+    Returns (new notes, 1-based position of the new entry, total entries).
+    """
     entry = f"{format_note_date(day)}: {note.strip()}"
-    old = old_notes.strip()
-    return f"{entry}{NOTE_SEPARATOR}{old}" if old else entry
+    old = [e.strip() for e in old_notes.split(NOTE_SEPARATOR.strip()) if e.strip()]
+    dates = [note_entry_date(e) for e in old]
+    position = next((i for i, d in enumerate(dates) if d is not None and d <= day), None)
+    if position is None:
+        dated = [i for i, d in enumerate(dates) if d is not None]
+        position = dated[-1] + 1 if dated else 0
+    entries = old[:position] + [entry] + old[position:]
+    return NOTE_SEPARATOR.join(entries), position + 1, len(entries)
 
 
 def base_status(status: str) -> Optional[str]:
@@ -562,7 +591,7 @@ def cmd_add(store: Store, args: argparse.Namespace) -> int:
             raise TrackerError(
                 f"Row {existing.number} already tracks {existing.company} / "
                 f"{existing.role} ({existing.status}). Use 'tracker.py update' instead.")
-    notes = prepend_note("", args.note, parse_day(args.date)) if args.note else ""
+    notes = insert_note("", args.note, parse_day(args.date))[0] if args.note else ""
     new = TrackerRow(
         number=0, status=status, company=company, role=role,
         location=(args.location or "").strip(), band=(args.band or "").strip(),
@@ -603,7 +632,7 @@ def cmd_update(store: Store, args: argparse.Namespace) -> int:
     if args.package:
         row.package = args.package.strip()
     if args.note:
-        row.notes = prepend_note(row.notes, args.note, parse_day(args.date))
+        row.notes, position, total = insert_note(row.notes, args.note, parse_day(args.date))
     saved = backup(store.path, args.tag or "update")
     if store.use_xlsx:
         xlsx_update(store.path, row)
@@ -611,6 +640,9 @@ def cmd_update(store: Store, args: argparse.Namespace) -> int:
         csv_write_all(store.path, rows)
     print(f"Updated row {row.number}: {row.status} | {row.company} | {row.role}")
     if args.note:
+        if position > 1:
+            print(f"The new note is dated earlier than newer notes, so it went in as entry "
+                  f"{position} of {total} (notes stay newest first).")
         print(f"Notes now start: {_truncate(row.notes, 120)}")
     if saved:
         print(f"Backup: {saved}")
@@ -683,7 +715,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     write = argparse.ArgumentParser(add_help=False)
     write.add_argument("--tag", help="word for the backup file name (default: the command)")
-    write.add_argument("--date", help="date for the note, YYYY-MM-DD (default: today)")
+    write.add_argument("--date", help="date for the note, YYYY-MM-DD (default: today); "
+                                      "an older date puts the note in date order")
 
     parser = argparse.ArgumentParser(
         description="Read and write job-tracker.xlsx, the one live log of the hunt. "
