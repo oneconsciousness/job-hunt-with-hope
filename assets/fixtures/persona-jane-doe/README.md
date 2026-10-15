@@ -35,7 +35,7 @@ hunt/
     _research/
       boards.txt                         3 real public boards: greenhouse:anthropic, ashby:ramp, lever:palantir
       shortlist-2026-10-14.md            produced by scripts/sweep_boards.py on 14 Oct 2026 (live data, will go stale)
-      shortlist-2026-10-14.json          the JSON copy the sweep writes next to it
+      (the sweep also writes a .json copy next to it; not kept in the fixture, it goes stale)
     acme-senior-product-designer/        one role folder, Acme Design Systems / Senior Product Designer
       JD.md
       APPLICATION-ANSWERS.md

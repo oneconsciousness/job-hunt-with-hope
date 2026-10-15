@@ -492,6 +492,8 @@ def main(argv: List[str]) -> int:
     parser.add_argument("--out", help="shortlist path (default: "
                                       "applications/_research/shortlist-<date>.md)")
     parser.add_argument("--date", help="date for the file, YYYY-MM-DD (default: today)")
+    parser.add_argument("--force", action="store_true",
+                        help="overwrite the shortlist file if it already exists")
     args = parser.parse_args(argv)
 
     try:
@@ -519,13 +521,18 @@ def main(argv: List[str]) -> int:
     tracker_path = Path(args.tracker) if Path(args.tracker).is_absolute() else hunt / args.tracker
     tracker = load_tracker(tracker_path, hunt)
 
+    out = Path(args.out) if args.out else Path(f"applications/_research/shortlist-{day.isoformat()}.md")
+    if not out.is_absolute():
+        out = hunt / out
+    if out.exists() and not args.force:
+        print(f"{out} already exists. Pick another --out name, or add --force to overwrite it.",
+              file=sys.stderr)
+        return 2
+
     found, results = sweep(boards)
     results = bad + results
     kept, skipped, no_match = screen(found, include, exclude, locations, tracker)
 
-    out = Path(args.out) if args.out else Path(f"applications/_research/shortlist-{day.isoformat()}.md")
-    if not out.is_absolute():
-        out = hunt / out
     out.parent.mkdir(parents=True, exist_ok=True)
     pieces = (day, include, exclude, locations, results, tracker, args.tracker,
               kept, skipped, no_match)
