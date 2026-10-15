@@ -375,7 +375,7 @@ def render_markdown(day: date, include: List[str], exclude: List[str], locations
     tier1 = [c for c in kept if c.title_hit]
     tier2 = [c for c in kept if not c.title_hit]
     if tracker.path is not None:
-        dedupe = (f"against {tracker_label} ({len(tracker.rows)} rows). A posting is dropped when "
+        dedupe = (f"against {Path(tracker.path).name} ({len(tracker.rows)} rows). A posting is dropped when "
                   "its company matches a tracker row (same name, or one name starts with the "
                   "other) AND either its link or job id appears in that row's notes, package or "
                   "JD.md, or its title matches the row's role.")

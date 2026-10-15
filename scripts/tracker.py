@@ -27,11 +27,15 @@ Commands (all take --file, default job-tracker.xlsx, and --hunt-dir, default .):
       [--package applications/acme-product-designer/] [--note "Found in the sweep"]
   tracker.py update --match "Acme" [--role "Designer"] [--status "Applied"] \\
       [--next "Wait for reply"] [--package ...] [--note "Applied on the site"]
-  tracker.py list [--status Applied] [--company Acme]
+  tracker.py list [--status Applied] [--company Acme] [--notes]
   tracker.py report
 
 No openpyxl: the same commands work on job-tracker.csv (same columns, same
 note format) and the script prints one line on how to install openpyxl.
+If the hunt folder has job-tracker.csv and no job-tracker.xlsx, every command
+uses the csv even when openpyxl is installed, so there is never a second log.
+With no openpyxl and an existing job-tracker.xlsx, the script stops instead of
+starting a csv next to it.
 
 Exit codes: 0 = done, 2 = a problem you can fix (message says what).
 """
@@ -43,6 +47,7 @@ import csv
 import logging
 import re
 import shutil
+import textwrap
 import sys
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -169,6 +174,7 @@ class Store:
     use_xlsx: bool
     note: Optional[str] = None
     xlsx_twin: Optional[Path] = None
+    csv_is_the_log: bool = False
 
     def check_no_hidden_xlsx(self) -> None:
         """Stop if a real .xlsx exists but we can only use the csv (would split the log)."""
@@ -262,6 +268,9 @@ def resolve_store(hunt_dir: Path, file_arg: str, no_openpyxl: bool = False) -> S
         csv_path = path.with_suffix(".csv")
         return Store(path=csv_path, use_xlsx=False,
                      note=INSTALL_LINE.format(csv_name=csv_path.name), xlsx_twin=path)
+    csv_path = path.with_suffix(".csv")
+    if not path.exists() and csv_path.exists():
+        return Store(path=csv_path, use_xlsx=False, csv_is_the_log=True)
     return Store(path=path, use_xlsx=True)
 
 
@@ -304,8 +313,8 @@ def _truncate(text: str, width: int) -> str:
     return text[: max(width - 3, 0)] + "..."
 
 
-def format_table(rows: List[TrackerRow]) -> str:
-    """A compact plain-text table for the terminal."""
+def format_table(rows: List[TrackerRow], notes: bool = False) -> str:
+    """A compact plain-text table for the terminal. notes=True adds each row's full Notes."""
     spec: List[Tuple[str, int]] = [("#", 4), ("Status", 30), ("Company", 22),
                                    ("Role", 36), ("Next action", 40)]
     lines = ["  ".join(name.ljust(w) for name, w in spec).rstrip()]
@@ -314,6 +323,11 @@ def format_table(rows: List[TrackerRow]) -> str:
         cells = [str(row.number), row.status, row.company, row.role, row.next_action]
         lines.append("  ".join(_truncate(v, w).ljust(w)
                                for v, (_, w) in zip(cells, spec)).rstrip())
+        if notes:
+            lines.append(textwrap.fill(row.notes or "(none)", width=110,
+                                       initial_indent="      Notes: ",
+                                       subsequent_indent=" " * 13,
+                                       break_long_words=False, break_on_hyphens=False))
     return "\n".join(lines)
 
 
@@ -366,11 +380,13 @@ def _check_header(header: List[str], path: Path) -> None:
 def read_rows(path: Path) -> List[TrackerRow]:
     """Read every non-empty tracker row from an .xlsx or .csv file.
 
-    Other scripts (sweep_boards.py) use this. For an .xlsx file without
-    openpyxl, it reads the .csv next to it if there is one.
+    Other scripts (sweep_boards.py) use this. If the .xlsx is missing, or
+    openpyxl is not installed, it reads the .csv next to it if there is one.
     """
     if path.suffix.lower() == ".csv":
         return _read_csv(path)
+    if not path.exists() and path.with_suffix(".csv").exists():
+        return _read_csv(path.with_suffix(".csv"))
     if not openpyxl_available():
         csv_path = path.with_suffix(".csv")
         if csv_path.exists():
@@ -519,6 +535,10 @@ def csv_write_all(path: Path, rows: List[TrackerRow]) -> None:
 def cmd_init(store: Store, args: argparse.Namespace) -> int:
     """Create the tracker if it does not exist yet."""
     store.check_no_hidden_xlsx()
+    if store.csv_is_the_log:
+        print(f"{store.path.name} is already the tracker in this folder, so I did not start "
+              f"a {store.path.with_suffix('.xlsx').name}. Left it as it is.")
+        return 0
     if store.path.exists():
         print(f"Tracker already exists at {store.path}. Left it as it is.")
         return 0
@@ -610,7 +630,7 @@ def cmd_list(store: Store, args: argparse.Namespace) -> int:
     if not rows:
         print("No rows match.")
         return 0
-    print(format_table(rows))
+    print(format_table(rows, notes=args.notes))
     print(f"\n{len(rows)} row(s).")
     return 0
 
@@ -646,6 +666,7 @@ EXAMPLES = """examples:
   tracker.py add --company "Acme" --role "Product Designer" --status Shortlisted --note "Found in the sweep"
   tracker.py update --match "Acme" --status "Applied" --next "Wait for a reply" --note "Applied on the site"
   tracker.py list --status Applied
+  tracker.py list --company Acme --notes
   tracker.py report
 
 statuses: """ + ", ".join(STATUSES) + "\n"
@@ -698,6 +719,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_list = sub.add_parser("list", parents=[common], help="print rows as a table")
     p_list.add_argument("--status", help="only rows whose status starts with this")
     p_list.add_argument("--company", help="only rows whose company contains this")
+    p_list.add_argument("--notes", action="store_true",
+                        help="also print each row's full Notes (newest first) under it")
 
     sub.add_parser("report", parents=[common],
                    help="counts by status and the rows that need you")
