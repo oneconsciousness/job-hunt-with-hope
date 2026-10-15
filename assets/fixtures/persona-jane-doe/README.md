@@ -25,13 +25,16 @@ A fictional persona used for testing Hope skills without requiring real user PII
 
 ```
 hunt/
-  HUNT-PROTOCOL.md                       Jane's rulebook: canon, rules, lessons (filled from the template)
+  HUNT-PROTOCOL.md                       Jane's rulebook: 16 canon facts, 1 open discrepancy (studio start year), 3 rules, 2 lessons (P4, P1)
+  WORKING-PAD.md                         in flight on 14 Oct 2026: Northwind paused for a portfolio refresh; waiting on Sam (Acme) and Contoso
+  user-story.md                          Jane's notebook: Now, who she is, how she works, the journey (18 Sep to 14 Oct 2026)
   job-tracker.xlsx                       the one live log, built by scripts/tracker.py (3 rows, see below)
   applications/
     _common/
-      profile.md                         the application profile: every answer a form asks
-      my-voice.md                        fictional writing samples and learned edit patterns
+      profile.md                         the application profile: every answer a form asks (1 TODO: references)
+      my-voice.md                        2 fictional samples, 1 learned pattern (2 Oct 2026), banned words, the signature block
       interview-stories.md               the detail behind each résumé bullet
+      question-bank.md                   every question from the Acme recruiter screen, by category, with verdicts
     _research/
       boards.txt                         3 real public boards: greenhouse:anthropic, ashby:ramp, lever:palantir
       shortlist-2026-10-14.md            produced by scripts/sweep_boards.py on 14 Oct 2026 (live data, will go stale)
@@ -61,7 +64,11 @@ Run every command from the repo root. Commands that write files point at a copy 
 cp -R assets/fixtures/persona-jane-doe/hunt /tmp/jane-hunt
 ```
 
-1. **Test Onboarding:** Start a fresh session, upload `resume.txt`, and let Hope onboard Jane. Compare the resulting graph to `profile.json`. For part 2 (the application profile and the hunt folder), compare what Hope writes with `hunt/applications/_common/profile.md` and `hunt/HUNT-PROTOCOL.md`.
+1. **Test Onboarding:** Start a fresh session, upload `resume.txt`, and let Hope onboard Jane. Compare the resulting graph to `profile.json`. For part 2 (the application profile and the hunt folder), compare what Hope writes with `hunt/applications/_common/profile.md`, `hunt/applications/_common/my-voice.md`, `hunt/HUNT-PROTOCOL.md` and `hunt/WORKING-PAD.md`.
+
+1b. **Test Start:** Copy `hunt/` to a scratch folder, add `career-graph/career.json` from `profile.json`, and ask "where am I?". Expect: `WORKING-PAD.md` read first, nothing urgent, the paused Northwind item with where to resume, a flag that Sam's interview times were due 7 Oct with nothing newer on file, and a suggestion to run `hope-sync`.
+
+1c. **Test Write:** In the same copy, ask for the Contoso nudge. Expect: the "Thanks," sign-off and the signature block from `my-voice.md`, the phone (718) 555-0142, none of the banned words, no em dashes, and the draft header with the posting link and folder path.
 
 2. **Test Portfolio:** Copy `profile.json` to `career-graph/career.json` and ask Hope to "make my portfolio for Anthropic." Verify the generated HTML matches Hope's design system and the content is sensible.
 
