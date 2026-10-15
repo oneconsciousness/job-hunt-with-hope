@@ -71,7 +71,7 @@ for r in read_rows(Path(sys.argv[2])):
 PY
 ```
 
-The user's time zone is the one `date` prints, unless `profile.md` section 4 says they work from somewhere else. **Check:** you can name today's weekday, the user's time zone, and every live company with the age of its newest note.
+The user's time zone is the `Time zone` row in `profile.md` section 1. No row: use the one `date` prints, and ask once if `profile.md` section 4 says they work from somewhere else. **Check:** you can name today's weekday, the user's time zone, and every live company with the age of its newest note.
 
 2. **Set the window.** The default is the last 2 days. If the user names a start ("since Monday"), compute the date with a command, never in your head: `python3 -c "from datetime import date, timedelta; print(date.today() - timedelta(days=2))"` (change the 2). Say the window in one line before you search: "Checking email and LinkedIn since Mon 12 Oct." **Check:** that line, with a weekday and a date, is in your reply.
 
@@ -140,12 +140,12 @@ python3 "$PLUGIN_ROOT/scripts/tracker.py" update --hunt-dir "<hunt folder>" --ta
    2. **Confirmations.**
    3. **Rejections,** with the reason if they gave one.
    4. **Deadlines,** in the user's time zone.
-   5. **Leads worth a look,** each with "Sponsorship not checked yet."
+   5. **Leads worth a look,** each with "Sponsorship not checked yet." Leave that line out when `profile.md` section 2 says no sponsorship is needed.
    6. **Checks:** one line for the checks that found nothing. Then "Nothing else new."
 
    **Check:** the report follows this order and ends with "Nothing else new."
 
-9. **Keep the notebook current.** Add one dated line to "The journey so far" in `user-story.md`, for example `- 2026-10-14: Sync since 12 Oct: 1 confirmation, 1 reply waiting on Jane.` A later sync the same day updates that line instead of adding one. Something now urgent (a call in the next 24 hours, a reply due today, a deadline): add it under "Urgent" in `WORKING-PAD.md`. Tell the user in one line. **Check:** `grep -c "$(date +%Y-%m-%d): Sync" user-story.md` prints `1`.
+9. **Keep the notebook current.** Add one dated line to "The journey so far" in `user-story.md`, for example `- 14 Oct 2026: Sync since 12 Oct: 1 confirmation, 1 reply waiting on Jane.` A later sync the same day updates that line instead of adding one. Something now urgent (a call in the next 24 hours, a reply due today, a deadline): add it under "Urgent" in `WORKING-PAD.md` (no `WORKING-PAD.md` yet: create it from `hunt-folder.md` section 5.7). Tell the user in one line. **Check:** `grep -cw "$(date '+%-d %b %Y'): Sync" user-story.md` prints `1`.
 
 ## Rules for this skill
 
@@ -172,13 +172,13 @@ Example (Jane Doe, Wednesday 14 Oct 2026):
 > **Sync, Wed 14 Oct, 9:05 am ET. Since Mon 12 Oct. Gmail and LinkedIn read. Nothing sent.**
 >
 > **Needs you**
-> - Acme Design Systems, Senior Product Designer. https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f · `applications/acme-senior-product-designer/`. Sam Lee sent two hiring manager slots: Thu 16 Oct 2:00 pm or Fri 17 Oct 11:00 am, your time. Record this one. Start Voice Memos before you join. Want a reply draft that picks one?
+> - Acme Design Systems, Senior Product Designer. https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f · `applications/acme-senior-product-designer/`. Sam Lee sent two hiring manager slots: Thu 15 Oct 1:00 pm or Fri 16 Oct 11:00 am, your time. Record this one. Start Voice Memos before you join. Want a reply draft that picks one?
 >
 > **Rejections**
 > - Contoso, Senior Product Designer: rejection email from Pat (pat@contoso.com) on Tue 13 Oct: "we have decided to move forward with other candidates". Row marked `Rejected`.
 >
 > **Leads worth a look**
-> - Northwind Labs posted a second design role, Design Engineer, Interfaces (Remote, US). Sponsorship not checked yet.
+> - Northwind Labs posted a second design role, Design Engineer, Interfaces (Remote, US).
 >
 > Checks: nothing unconfirmed, no agency overlap, no contradictions, no company at its cap, nothing stale. Nothing else new.
 

@@ -243,7 +243,7 @@ If the share images shipped (step 7c), add, plainly: "Paste this link on LinkedI
 
 ### 10. Record the URL and keep the notebook current
 
-Record the live URL on the user's `CuratedPortfolio` in the graph. Then update `user-story.md` per `$PLUGIN_ROOT/references/user-story-guide.md`: append a dated one-liner to "The journey so far", `- YYYY-MM-DD: Published to <url>` (re-publishes too). Groom the file on touch, as the guide says, and tell the user in one line.
+Record the live URL on the user's `CuratedPortfolio` in the graph. Then update `user-story.md` per `$PLUGIN_ROOT/references/user-story-guide.md`: append a dated one-liner to "The journey so far", `- <D Mon YYYY>: Published to <url>` (re-publishes too). Groom the file on touch, as the guide says, and tell the user in one line.
 
 **Check:** the `CuratedPortfolio` carries the URL, and `user-story.md` has today's dated line.
 

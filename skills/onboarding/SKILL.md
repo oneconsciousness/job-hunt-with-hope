@@ -40,7 +40,7 @@ echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; emp
 |---|---|
 | No `career-graph/career.json`, or `python3 "$PLUGIN_ROOT/scripts/graph_query.py"` prints "No Person node yet" | Part 1. A first-time user gets the welcome tour. Part 2 follows when the user is ready (Part 1 step 9). |
 | The user said "let's start over" | Confirm with a plain yes/no. Then Part 1 again, no tour. Deterministic IDs merge; nothing is downgraded. |
-| A Person node, and `HUNT-PROTOCOL.md`, `applications/_common/profile.md` or `job-tracker.xlsx` is missing, or the user asks for Part 2 | Part 2. No tour. |
+| A Person node, and `HUNT-PROTOCOL.md`, `applications/_common/profile.md` or the tracker (`job-tracker.xlsx` or `job-tracker.csv`) is missing, or the user asks for Part 2 | Part 2. No tour. |
 | A Person node and every Part 2 file | A returning user. Say what you have in two lines. Ask what changed (`AskUserQuestion`), update only that, then hand over to `hope-start`. |
 
 - **Stale-session check (returning users).** This file says `hope-skill-version: 2.0.0`. Read the installed version:
@@ -337,7 +337,7 @@ Group up to four related questions in one `AskUserQuestion` call. Each question 
    **Check:** `ls job-tracker.*` shows the file, and `report` exits 0 with the row count you expect.
 
 6. **Create `applications/_research/boards.txt`.**
-   1. Ask "Which companies would you love to work at?" Options: "I'll list a few now (recommended: five to ten is plenty)" / "💬 Help me think of some first" / "Skip: Find jobs builds this list later". Their typed answer holds the names.
+   1. Ask "Which companies would you love to work at?" Options: "I'll list a few now (recommended: five to ten is plenty)" / "💬 Help me think of some first" / "Skip: Find jobs builds this list later". Their typed answer holds the names. Skip: write no `boards.txt` and go to step 7. `hope-discovery` creates it on its first run.
    2. For each company, try the obvious slug (lowercase, no spaces) on all three boards. Test them in a temporary folder, so nothing lands in the hunt folder:
 
       ```bash
@@ -427,7 +427,7 @@ Part 2:
 - [ ] `applications/_common/my-voice.md` exists. Any samples are word for word.
 - [ ] `applications/_common/resume.pdf` exists, or the report lists it as missing with the next step.
 - [ ] `job-tracker.xlsx` (or `job-tracker.csv`) exists, and `report` exits 0.
-- [ ] `applications/_research/boards.txt` holds only boards that loaded.
+- [ ] `applications/_research/boards.txt` holds only boards that loaded, or the user chose Skip.
 - [ ] `WORKING-PAD.md` exists.
 - [ ] `git check-ignore` passes, or the folder is not a git repository.
 - [ ] `user-story.md` has today's journey line and a new "Now".

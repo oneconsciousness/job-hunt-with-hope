@@ -275,7 +275,7 @@ print("saved; rows:", ws.max_row - 1)
 
 ## 10. The standing checks on every sync
 
-hope-sync runs these five checks after it has updated the rows, every time. Each one ends in the sync report, under "needs you", or in one line saying it found nothing.
+hope-sync runs these six checks after it has updated the rows, every time. Each one ends in the sync report, under "needs you", or in one line saying it found nothing.
 
 1. **Top priority first.** Any reply the user flagged as top priority goes at the top of the report, before everything else.
 2. **Submissions not yet confirmed.** Run `list --status "Applied"`. Every row whose status is exactly `Applied` (not `Applied - confirmed`) has no confirmation yet. Search the user's email (read-only) for each company by name. If a confirmation is there, update the row to `Applied - confirmed`. If not, list the row in the report.

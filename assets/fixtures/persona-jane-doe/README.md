@@ -32,6 +32,7 @@ hunt/
   applications/
     _common/
       profile.md                         the application profile: every answer a form asks (1 TODO: references)
+      resume.pdf                         a one-page placeholder with Jane's name (the real one is exported from the portfolio by scripts/export_resume_pdf.py)
       my-voice.md                        2 fictional samples, 1 learned pattern (2 Oct 2026), banned words, the signature block
       interview-stories.md               the detail behind each résumé bullet
       question-bank.md                   every question from the Acme recruiter screen, by category, with verdicts

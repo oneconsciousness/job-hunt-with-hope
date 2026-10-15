@@ -142,7 +142,7 @@ python3 "$PLUGIN_ROOT/scripts/tracker.py" add --hunt-dir "<hunt folder>" \
 
    **Check:** every part that applies is in the review (part 5 only after three rejections), and every change the user agreed to printed a `Backup:` line.
 
-7. **Keep the notebook current.** Add one dated line to "The journey so far" in `user-story.md`, for example `- 2026-10-14: Weekly review: 3 tracked, 2 applied, 1 screened. Contoso parked.` Skip it for a quick look that changed nothing. Tell the user in one line. **Check:** `grep -n "$(date +%Y-%m-%d)" user-story.md` shows the line.
+7. **Keep the notebook current.** Add one dated line to "The journey so far" in `user-story.md`, for example `- 14 Oct 2026: Weekly review: 3 tracked, 2 applied, 1 screened. Contoso parked.` Skip it for a quick look that changed nothing. Tell the user in one line. **Check:** `grep -nw "$(date '+%-d %b %Y')" user-story.md` shows the line.
 
 ## Rules for this skill
 

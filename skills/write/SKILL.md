@@ -50,12 +50,12 @@ echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; emp
 | `applications/<slug>/dm-draft-<who>-<YYYY-MM-DD>.md` | A LinkedIn or chat message, or a connection note |
 | `applications/<slug>/cover-letter.md` | A cover letter (one per role) |
 | `applications/<slug>/APPLICATION-ANSWERS.md`, section "Drafted answers (edit freely)" | An answer to a form question |
-| `applications/_common/drafts/` (same file names) | Any of the above when no role folder exists (a referral ask, a networking note) |
+| `applications/_common/drafts/` (same file names) | Any of the above when the message belongs to no role (a referral ask, a networking note) |
 | `applications/<slug>/sent-<what>-<YYYY-MM-DD>.md` | After the user sends: their final text, word for word |
 
 After the user sends, Hope also updates `applications/_common/my-voice.md`, "What you have told them" in `APPLICATION-ANSWERS.md`, the tracker row, and `user-story.md`.
 
-- `<slug>` is the role folder name. Run `ls applications/` to find it.
+- `<slug>` is the role folder name. Run `ls applications/` to find it. A message about a role with no folder yet (its tracker Package is `-`): make the folder by the slug rule in `hunt-folder.md` section 3, and ask the user for the posting link if it is not on file.
 - `<who>` is the person's name exactly as the source gives it, lowercase, with hyphens: `sam-lee`, `pat`. Never expand it.
 - `<what>` in a sent file is the draft type plus `<who>`: `sent-email-sam-lee-2026-10-09.md`, `sent-dm-pat-2026-10-14.md`, `sent-cover-letter-2026-10-14.md`.
 
@@ -86,20 +86,19 @@ After the user sends, Hope also updates `applications/_common/my-voice.md`, "Wha
    |---|---|---|---|
    | An email to a hiring team | Fit claim, "Résumé attached.", one story, one belief paragraph, a warm close | 3.1 | email draft |
    | A first reply to a recruiter or agency | Show you read it. Hard blockers (visa, location, travel) in message one, leading with the yes. Never a missing nice-to-have. Close with "If this matches your hiring needs and timeline, let's chat." | 3.2 | email or DM draft |
-   | A cover letter | Paragraphs 2 and 3 and the personal line copied word for word from "Cover letter (approved)" in `my-voice.md`. Only the story paragraph changes. No practical-notes paragraph. 300 to 360 words. | 3.3 | `cover-letter.md` |
+   | A cover letter | Paragraphs 2 and 3 and the personal line copied word for word from "Cover letter (approved)" in `my-voice.md`. Only the story paragraph changes. No practical-notes paragraph. 300 to 360 words. No approved letter yet: write all of it, and save it as "Cover letter (approved)" once the user approves it. | 3.3 | `cover-letter.md` |
    | "Why us?" | About the user. At most one sentence about the company. Never pay. | 3.4 | `APPLICATION-ANSWERS.md` |
    | "What are you like?" | Lead with a behaviour or a preference, not a number | 3.5 | `APPLICATION-ANSWERS.md` |
    | "Why are you leaving?" | The answer in `profile.md` section 7. Short and true. | 3.6 | `APPLICATION-ANSWERS.md` |
-   | A withdrawal or decline | Short and warm. Thank them, say the decision plainly, leave the door open. Tracker status `Withdrawn`. | 3.8 | the role folder |
+   | A withdrawal or a decline | Short and warm. Thanks, the decision in one plain sentence, an open door. A reason only if the user wants one, short and true. No complaint. Tracker status `Withdrawn`. | 3.8 | email draft |
    | "A time you disagreed" | Six steps, 150 to 200 words | 3.7 | `APPLICATION-ANSWERS.md` |
-   | A thank-you after a call | Thanks, at most one line about the conversation, then ask about next steps. No recap of the call. | 3.8 ("After a round") | email draft |
+   | A thank-you after a call | The same day. Thanks, one specific thing from the call, anything you promised to send, one question about next steps only if they did not say them. No recap. | 3.8 | email draft |
    | A nudge (they have gone quiet) | One short check-in: a few words of thanks or context, then one question about next steps. Then wait. Never a second nudge. | 3.8 ("A check-in") | email or DM draft |
    | A rejection reply, a confirmation | A few lines. Brief thanks and an open door, or a statement, not a question. | 3.8 | email or DM draft |
    | A referral ask | Rank the open roles first. Ask only for roles in the contact's own team. Check the sponsorship line first if it matters. | 3.9 | DM or email draft |
    | A note to a hiring-post author | Apply first, then the note saying so. "Email me" in the post means an email. | 3.9 | DM or email draft |
    | A connection note | Under the character limit shown in the box. Reads as an invitation. | 3.9 | DM draft |
    | Going back to a company | A note to the warmest person met there, asking which role fits | 3.9 | email or DM draft |
-   | A withdrawal or a decline | Thanks, the decision in one plain sentence, an open door. A reason only if the user wants one, short and true. No complaint. | (this line) | email draft |
 
    Work authorization: say only what `profile.md` section 2 says, in the user's words. Never in a cold cover letter or cold email. With an agency recruiter, in message one.
 
@@ -176,7 +175,7 @@ After the user sends, Hope also updates `applications/_common/my-voice.md`, "Wha
       ```
 
    3. For each change that would change the next draft too, add a dated entry under "Patterns Hope learned" in `applications/_common/my-voice.md`: what Hope wrote, what the user wrote, the rule. A corrected fact goes into the canon in `HUNT-PROTOCOL.md` the same turn. Tell the user in one line. `my-voice.md` missing: create it from the template in `hunt-folder.md` section 5.4 first.
-   4. Anything the sent text says about the user (reason for leaving, timing, pay, location, other processes) gets a dated line in "What you have told them" in `APPLICATION-ANSWERS.md`: `<YYYY-MM-DD> · email to <who> · said: <...>`. It must be true.
+   4. Anything the sent text says about the user (reason for leaving, timing, pay, location, other processes) gets a dated line in "What you have told them" in `APPLICATION-ANSWERS.md`: `<D Mon YYYY> · email to <who> · said: <...>`. It must be true.
    5. Update the tracker with `scripts/tracker.py update` (commands in `references/tracker-contract.md` section 7):
 
       | What was sent | Add to the update |
@@ -203,13 +202,14 @@ After the user sends, Hope also updates `applications/_common/my-voice.md`, "Wha
 - **Rule 8.** No client names and no internal project names from the user's employer.
 - **Rule 12.** Plain English. Keep real technical terms. Cut decoration words.
 - **Rule 13.** No em dashes in anything in the user's name.
+- **Rule 14.** Nothing from the rest of the hunt reaches an employer. No other target company, prep note, strategy or tracker detail in any message.
 - **Rule 15.** A change to text the user approved or wrote is shown as a table first. For wording, two to four options.
 - **Rule 16.** Do what was asked, first and only. A long dictated message gets its asks restated as a numbered list, and a yes, before you draft. Every draft starts with the posting link and the folder path.
 - **Rule 17.** Check the date, weekday and time zone with a command. Read the whole thread before drafting and again before handing over. Links the user will copy are full raw URLs, one per line.
 - No pay numbers and no negotiation plans in writing, unless the user asks. If a recruiter asks in writing, use the written phrasing in `profile.md` section 3, and nothing more.
 - One follow-up, then wait. Never ask about their timeline twice. Do not propose the next call for them.
 - The record is what the user sent, never Hope's draft.
-- The user says "remind me" (for example, to nudge on Monday): create a calendar reminder with the host's calendar tool, or `python3 "$PLUGIN_ROOT/scripts/make_ics.py"`. No attendees, no invites.
+- The user says "remind me" (for example, to nudge on Monday): create a calendar reminder with the host's calendar tool, or `python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "Reminder: <what>" --start "<YYYY-MM-DD>T<HH:MM>" --minutes 15 --alarm 0 --out "applications/<slug>/reminder-<YYYY-MM-DD>.ics"`. No attendees, no invites.
 
 ## What to tell the user when you finish
 

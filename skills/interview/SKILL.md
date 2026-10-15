@@ -66,7 +66,7 @@ Also updated: `applications/_common/interview-stories.md`, "What you have told t
 
 A call is known when it is in an email, an invite, a `hope-sync` report, or the user says so.
 
-**A call within the next hour outranks everything.** Do step 1. Add a "Paused" entry to `WORKING-PAD.md` for the work it interrupts. Then do only the live-call sheet (step 3), the consent note (step 4) and the reminder (step 5). Say in one line that everything else waits until after the call.
+**A call within the next hour outranks everything.** Do step 1. Add a "Paused" entry to `WORKING-PAD.md` for the work it interrupts (no `WORKING-PAD.md` yet: create it from `hunt-folder.md` section 5.7). Then do only the live-call sheet (step 3), the consent note (step 4) and the reminder (step 5). Say in one line that everything else waits until after the call.
 
 1. **Say "Record this one. Start Voice Memos before you join." as the first line of your reply.** Then run `date "+%A %d %B %Y %H:%M %Z"`. Convert the call time to the user's time zone with a command, never in your head. Use full zone names: PT is `America/Los_Angeles`, MT `America/Denver`, CT `America/Chicago`, ET `America/New_York`. Change the date, the time and both zone names:
 
@@ -110,7 +110,7 @@ A call is known when it is in an email, an invite, a `hope-sync` report, or the 
 
    **Check:** the round line has a consent note that names the likely place and the action.
 
-5. **Put it on the calendar**, after steps 3 and 4. Use the host's calendar tool if it has one. Use the user's personal calendar, never a work calendar their employer can see (rule 14). Not sure which calendar: ask. Never add attendees. Never send invites. Guest notifications: none.
+5. **Put it on the calendar**, after steps 3 and 4. A reminder for this call may already exist (`hope-sync` makes one): update its description with the brief, never add a second. Use the host's calendar tool if it has one. Use the user's personal calendar, never a work calendar their employer can see (rule 14). Not sure which calendar: ask. Never add attendees. Never send invites. Guest notifications: none.
 
    | Event | Title | Start | Length | Show as | Alarms | Description |
    |---|---|---|---|---|---|---|
@@ -158,9 +158,11 @@ A call is known when it is in an email, an invite, a `hope-sync` report, or the 
    python3 "$PLUGIN_ROOT/scripts/tracker.py" update --hunt-dir "<hunt folder>" --match "<Company>" --role "<role words>" --status "Interviewing - <round> on <D Mon>" --next "You: record the call; then hand Hope the file" --note "<round> with <Person> booked for <D Mon>, <time> <zone>"
    ```
 
+   Skip the command if the row already shows this round and time (`hope-sync` may have set it).
+
    A call within the hour: add it under "Urgent" in `WORKING-PAD.md`. Say the record line again in the last message you send before the call. That is the one the user will see.
 
-   **Check:** the script printed `Updated row`, `Notes now start:` and `Backup:`.
+   **Check:** the script printed `Updated row`, `Notes now start:` and `Backup:`, or the row already showed this round.
 
 ### Part B: after the call
 
@@ -195,15 +197,15 @@ A call is known when it is in an email, an invite, a `hope-sync` report, or the 
     1. `applications/_common/question-bank.md`: every question, in their words, under its category, with company, round, date and timestamp, the verdict, and keywords for next time. Add each row inside its category's table, never at the end of the file. A repeat gets its own row. No file yet: create it from `interview-kit.md` section 8.
     2. The drift check: add the user's self-introduction to "Self-introductions across calls". Compare it with earlier rows and the canon. A changed fact (a number, a date, a title, a reason for leaving) is drift: tell the user, and fix it before the next call. No self-introduction on this call: skip the row and say so in the debrief.
     3. `interview-stories.md`: new story details the user confirmed, in their words, with the source (`transcript <date> <mm:ss>`).
-    4. "What you have told them" in `APPLICATION-ANSWERS.md`: `<YYYY-MM-DD> · call with <Person> · said: <...>`. A claim not yet confirmed carries "NOT CONFIRMED". A claim that has lapsed gets a new dated line with the true state.
+    4. "What you have told them" in `APPLICATION-ANSWERS.md`: `<D Mon YYYY> · call with <Person> · said: <...>`. A claim not yet confirmed carries "NOT CONFIRMED". A claim that has lapsed gets a new dated line with the true state.
     5. `INTERVIEW-PREP.md`: remove the finished round. Add this call to "Recap of earlier calls". Mark the questions the user asked as used, and refresh "Questions to ask". Put the debrief's fixes on the next round's sheet if that round is known.
     6. `WORKING-PAD.md`: clear the "Urgent" entry for this call.
     7. Look across all debriefs. A question rated Weak or Missed in two or more calls is a pattern worth facing. Say it in one line, and put it at the top of the next prep.
 
-    **Check:** `grep -c "<YYYY-MM-DD of the call>" applications/_common/question-bank.md` is at least the number of rows in the debrief table, plus one if there was a self-introduction.
+    **Check:** `grep -cw "<D Mon YYYY of the call>" applications/_common/question-bank.md` (for example `grep -cw "2 Oct 2026"`) is at least the number of rows in the debrief table, plus one if there was a self-introduction.
 
 12. **Draft the follow-up and close the loop.**
-    1. The same day, draft the follow-up with the `hope-write` shape "A thank-you after a call" (`writing-rules.md` section 3.8): thanks, at most one line about the conversation, then ask about next steps. No recap of the call. Send it to the person who ran the call, unless they named someone else. No address on file: write the To line as `hope-write` step 6 says. Run `hope-write` steps 5 and 6 on it (the checklist and the save), as `applications/<slug>/email-draft-<who>-<YYYY-MM-DD>.md`. The user sends.
+    1. The same day, draft the follow-up with the `hope-write` shape "A thank-you after a call" (`writing-rules.md` section 3.8): thanks, one specific thing from the call, anything you promised to send, one question about next steps only if they did not say them. No recap of the call. Send it to the person who ran the call, unless they named someone else. No address on file: write the To line as `hope-write` step 6 says. Run `hope-write` steps 5 and 6 on it (the checklist and the save), as `applications/<slug>/email-draft-<who>-<YYYY-MM-DD>.md`. The user sends.
     2. Update the tracker, with the call's date:
 
        ```bash

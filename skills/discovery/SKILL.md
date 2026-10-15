@@ -83,7 +83,7 @@ echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; emp
    ```
 
    It prints `Swept N board(s): X loaded, Y failed`, then the counts, then two `Wrote` lines. Exit code 2 means a problem you can fix: read the message, fix it, run again.
-   Then add a `## Your rules applied` section right under the title, above the script's `## Rules applied` (which lists only the words): each rule from step 1, quoted, with its source and date.
+   Then add a `## Your rules applied` section right under the script's "Made by" paragraph, above its `## Rules applied` (which lists only the words): each rule from step 1, quoted, with its source and date.
    **Check:** `ls applications/_research/shortlist-<YYYY-MM-DD>*` shows the `.md` and the `.json`. In the "Boards swept" table, every `failed` board goes under `## Deferred with reasons` (step 4).
 
 4. **Reach the surfaces the script cannot see.** Details in `search-surfaces.md` sections 3 to 7.
@@ -191,7 +191,7 @@ Jane Doe's example:
 - [ ] Every kept row has a URL that was opened, a band or "not published", a sponsorship line or "not stated", and an honest fit line.
 - [ ] Every skipped row has its reason.
 - [ ] The user picked. Each pick is a `Shortlisted` tracker row, and nothing else was added.
-- [ ] `user-story.md` has one dated line, for example `- 2026-10-14: Swept 3 boards; 5 kept; tracked Ramp, Product Designer.`
+- [ ] `user-story.md` has one dated line, for example `- 14 Oct 2026: Swept 3 boards; 5 kept; tracked Ramp, Product Designer.`
 
 ## Next
 

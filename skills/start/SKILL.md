@@ -88,9 +88,9 @@ No new files. This skill reads the hunt folder and keeps two files current:
 
 6. **Tell the user where they are.** Use the five-line shape in "What to tell the user when you finish".
    - Row 2 with no hunt files at all (a first-time user): skip the report. Say the row's one line and start `hope-onboarding` at once. Its first message is the welcome tour.
-   - Rows 2 to 5 otherwise, and row 13: the five lines, then the next step as an `AskUserQuestion` with 2 to 4 options. The routed step is the "(recommended)" option.
+   - Rows 2 to 5 otherwise: the five lines, then the next step as an `AskUserQuestion` with 2 to 4 options. The routed step is the "(recommended)" option.
    - Rows 6 to 12 (the user asked for something specific): skip the report. Say one line only if something is urgent or paused. Then start that skill.
-   - Row 13: line 5 says "Next: the morning sync. Running it now." Run `hope-sync`. When it finishes, ask the next step with `AskUserQuestion`. If sync already ran in this chat in the last three hours, offer it instead of running it.
+   - Row 13: the five lines. Line 5 says "Next: the morning sync. Running it now." Run `hope-sync`. When it finishes, ask the next step with `AskUserQuestion`. If sync already ran in this chat in the last three hours, offer it instead of running it.
 
    **Check:** the report is five lines or fewer, and every fact in it came from steps 1 to 4.
 
@@ -111,7 +111,7 @@ No new files. This skill reads the hunt folder and keeps two files current:
 | 4 | A portfolio folder, no `.publish.json`, the user asked for nothing specific, and "Decisions" in `user-story.md` does not say they chose not to publish. | Offer `hope-publish`. Options: publish now (recommended) / skip it and set up the hunt. A skip goes under "Decisions" in `user-story.md`. | "Your portfolio is built but not online yet." |
 | 5 | `HUNT-PROTOCOL.md`, `applications/_common/profile.md` or the tracker (`job-tracker.xlsx` or `job-tracker.csv`) is missing, and the user asks to find jobs, apply, sync, write, prep an interview, or update the tracker, or asks for nothing specific. | `hope-onboarding`, Part 2. | "Forms and the tracker read your application profile, so we set that up first. One sitting." |
 | 6 | The user gives a job link. | `hope-application`. | - |
-| 7 | "find me jobs", "anything new", "new roles". | `hope-discovery`. | - |
+| 7 | "find me jobs", "any new roles", "new since yesterday". | `hope-discovery`. | - |
 | 8 | "sync", "any news", "check my email", "did they reply". | `hope-sync`. | - |
 | 9 | "draft", "reply", "write", "cover letter", "message". | `hope-write`. | - |
 | 10 | "interview", "call", "screen", "they want to talk". | `hope-interview`. | - |
@@ -139,8 +139,8 @@ Rules for this skill:
 - A long dictated or voice-typed message gets restated as a numbered list of asks. Get a yes before acting on it.
 - Answer what was asked first. Never start other work until it is answered.
 - "Remind me to X on day D" means a calendar reminder for the user. Work out the real date with `date`. No attendees, no invites. No time given: ask (`AskUserQuestion`, "9:00 am" recommended). No calendar tool: write an `.ics` file and tell the user to double-click it:
-  `python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "Reminder: <what>" --start "<YYYY-MM-DD>T<HH:MM>" --minutes 15 --alarm 0 --out "<file>.ics"`.
-  Save it in the role folder when it is about a role, otherwise in `applications/_common/`. **Check:** read the event back, or open the `.ics` text and confirm the date and time.
+  `python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "Reminder: <what>" --start "<YYYY-MM-DD>T<HH:MM>" --minutes 15 --alarm 0 --out "<folder>/reminder-<YYYY-MM-DD>.ics"`.
+  `<folder>` is the role folder when it is about a role, otherwise `applications/_common`. **Check:** read the event back, or open the `.ics` text and confirm the date and time.
 - When the user will copy links, give full raw URLs, one per line. No markdown links.
 - Keep `WORKING-PAD.md` current. When work is interrupted, write what is paused and where to resume before you switch. Clear the entry when the work is done. No `WORKING-PAD.md` yet: create it from the template in `$PLUGIN_ROOT/references/hunt-folder.md` section 5.7.
 - Every question goes through `AskUserQuestion` (voice-guide rule #6), or is a plain yes/no.

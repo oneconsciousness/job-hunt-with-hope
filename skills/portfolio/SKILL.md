@@ -131,9 +131,8 @@ Follow these in order. Each step points to a section below for the details.
 4. **Build the folder.** Follow "The build contract" steps 1 to 5: write `data.js`, copy `portfolio.css` and `portfolio.js` verbatim, stamp the shell `index.html`, and make both share cards. Add the alternates and the design dock if the user picked all six looks. Write every line of copy by "Writing the portfolio copy".
    **Check:** `ls <portfolio-folder>/` shows `index.html`, `portfolio.css`, `portfolio.js`, `data.js`, `share-card.html`, and `share-card-square.html` (plus the alternates, `template-utils.js`, and `switcher.js` if picked).
 5. **Clean and verify.** Follow "Clean and verify before saving": strip the authoring comments, run every grep, check the anchor pairing, and run both verifiers.
-
-6. **Make the one résumé.** Follow "The one résumé" under "What you make": run `export_resume_pdf.py` so `applications/_common/resume.pdf` exists. If the user keeps their own résumé file there and does not want it replaced, skip this step and say so. **Check:** the script's summary line shows 1 or 2 pages and 0 bullets over two lines.
    **Check:** every grep returns zero matches, and both verifier tables show PASS. If `python3` or Chrome is missing, you checked by eye and told the user plainly what could not be verified.
+6. **Make the one résumé.** Follow "The one résumé" under "What you make": run `export_resume_pdf.py` so `applications/_common/resume.pdf` exists. If the user keeps their own résumé file there and does not want it replaced, skip this step and say so. **Check:** the script's summary line shows 1 or 2 pages and 0 bullets over two lines.
 7. **Show it.** Follow "Show it, then hand over the keys": give the path to the folder's `index.html`, say how to open it, and point out Share and Save as PDF.
    **Check:** your reply contains the exact path to `index.html`.
 8. **Ask "What's off?" and iterate.** Follow "Iteration loop". After each change, update the files and, if the curation changed, the `CuratedPortfolio`.
@@ -797,7 +796,7 @@ When the marker is **newer** than `plugin.json` (a dev or unsynced build: the ma
 
 `user-story.md` lives in the project folder beside `career-graph/`. It is the user's human-readable memory, defined in `$PLUGIN_ROOT/references/user-story-guide.md` (point to it; do not restate it). **Read it at skill start when it exists.** It is two pages, the cheapest context in the folder, and it sets the vocabulary level, the pacing, and what never to re-ask. This skill touches it at two moments, following the guide's habits: dated entries, journey newest-first, groom on every touch, tell the user in one line, and never write anything the user would be surprised to find.
 
-- **Journey line: portfolio generated or updated.** After saving the files, append one dated line to "The journey so far" (for example `- 2026-06-10: Portfolio v2 tailored for <company>, platform work up front.`). Record any decision worth keeping in "Decisions" (a `show_summary` choice and why, a curation angle). Rewrite "Now" so the next session, or the baton-pass handoff, picks up cleanly.
+- **Journey line: portfolio generated or updated.** After saving the files, append one dated line to "The journey so far" (for example `- 10 Jun 2026: Portfolio v2 tailored for <company>, platform work up front.`). Record any decision worth keeping in "Decisions" (a `show_summary` choice and why, a curation angle). Rewrite "Now" so the next session, or the baton-pass handoff, picks up cleanly.
 - **"Remember this" asides.** When the user says "remember this" (or anything close) mid-flow, write it into "## Remember this" **the same turn**, dated and tagged "(you asked me to remember this)". Then return to the portfolio work.
 
 If the file does not exist yet, create it per the guide and announce it in exactly these words: "I keep a little notebook about how you like to work: `user-story.md`, yours to read or edit." It is the user's file: never committed, never published. The stale-session handoff above draws from it.
@@ -817,7 +816,7 @@ If the file does not exist yet, create it per the guide and announce it in exact
 
 - Hope keeps **one** canonical résumé PDF at `applications/_common/resume.pdf`, exported from this portfolio's résumé view (Save as PDF).
 - Every application uses that file, unless the user asks for a tailored cut for a specific role.
-- Tailoring happens in the cover letter and the answers, not in the résumé.
+- Tailoring happens in the cover letter and the answers, not in the résumé. A keyword swap is allowed only when the keyword is missing from the résumé and true for the user, and only after it is shown as a table first (rule 15).
 - Ask before removing any true claim or skill from the résumé. Removing a true claim is as bad as adding a false one.
 
 ### This skill's own rules
