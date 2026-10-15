@@ -178,7 +178,7 @@ Repeat the table for each country the user would work in.
 
 ## 8. What Hope writes when a posting says no sponsorship
 
-Two places: the `Sponsorship:` line in `JD.md`, and the `Sponsorship:` line under "Honest fit" in `APPLICATION-ANSWERS.md`. In a shortlist, the "Sponsorship line" column carries the posting's exact words.
+Two places: the `Sponsorship:` line in `JD.md`, and the `Sponsorship:` line under "Honest fit" in `APPLICATION-ANSWERS.md`. In a shortlist, the "Sponsorship" column carries the posting's exact words.
 
 **In `JD.md`:** the posting's exact words, in quotes, or "not stated".
 

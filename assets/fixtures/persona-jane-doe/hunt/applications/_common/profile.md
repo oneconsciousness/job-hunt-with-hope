@@ -13,6 +13,7 @@
 | Preferred name | Jane |
 | Email | jane.doe@example.com |
 | Phone | (718) 555-0142 |
+| Time zone (IANA name, for example America/New_York) | America/New_York |
 | Phone format by ATS | Match the placeholder the field shows before typing. Default: (718) 555-0142. Ashby forms want 1-718-555-0142 (placeholder `1-555-555-5555`). Notes per ATS go in section 9. |
 | City / ZIP | Brooklyn, NY 11215 |
 | Mailing address | Not stored here, by Jane's choice. When a form requires it, Jane types it herself. |

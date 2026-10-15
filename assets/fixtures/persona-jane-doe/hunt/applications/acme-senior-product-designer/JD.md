@@ -1,6 +1,6 @@
 # Acme Design Systems - Senior Product Designer
 
-**Posting:** https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f · **Apply:** https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f/application · **Captured:** 2026-09-17 · **Posted:** 2026-09-15 · **Source:** Jane's link (Acme careers page)
+**Posting:** https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f · **Apply:** https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f/application · **Captured:** 17 Sep 2026 · **Posted:** 15 Sep 2026 · **Source:** Jane's link (Acme careers page)
 **Location:** New York, NY (hybrid, 2 days a week in office); Remote (US) · **Pay:** $165,000 - $195,000 base, plus equity · **Sponsorship:** "Acme is not able to sponsor work visas for this role."
 **Caps / limits:** "Candidates may apply to up to 3 roles in any 90 days."
 

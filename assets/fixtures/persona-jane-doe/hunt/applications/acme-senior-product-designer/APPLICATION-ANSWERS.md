@@ -1,7 +1,7 @@
 # Acme Design Systems - Senior Product Designer (Ashby)
 
 **Apply:** https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f/application · **Band:** $165,000 - $195,000 base, plus equity · **Location:** New York, NY (hybrid, 2 days) or Remote (US)
-**Status (2026-09-18):** filled by Hope on 2026-09-17 / submitted by Jane on 2026-09-18 / confirmed 2026-09-18 (confirmation email). `job-tracker.xlsx` is the truth from here on.
+**Status (18 Sep 2026):** filled by Hope on 17 Sep 2026 / submitted by Jane on 18 Sep 2026 / confirmed 18 Sep 2026 (confirmation email). `job-tracker.xlsx` is the truth from here on.
 
 ## Résumé
 
@@ -15,7 +15,7 @@
 | First name | Jane |
 | Last name | Doe |
 | Email | jane.doe@example.com |
-| Phone | 1-718-555-0142 (placeholder showed `1-555-555-5555`) |
+| Phone | 1-718-555-0142 (profile.md: (718) 555-0142; placeholder showed `1-555-555-5555`) |
 | Location | Brooklyn, New York, United States (combobox option clicked) |
 | LinkedIn | https://linkedin.com/in/janedoe-fictional |
 | Portfolio | https://janedoe.example.com |
@@ -26,7 +26,7 @@
 | Gender | Decline to self-identify (profile.md section 6) |
 | Veteran status | Decline to self-identify (profile.md section 6) |
 
-Read back on 2026-09-17: full-form screenshot matched this table. Yes/No answers checked by the pressed button, not the hidden checkbox. AI notice: none on this form.
+Read back on 17 Sep 2026: full-form screenshot matched this table. Yes/No answers checked by the pressed button, not the hidden checkbox. AI notice: none on this form.
 
 ## Left for the user
 
@@ -36,7 +36,7 @@ Read back on 2026-09-17: full-form screenshot matched this table. Yes/No answers
 
 ## Submitted answers
 
-Read back from the form on 2026-09-18, after Jane edited Hope's drafts. This is what Acme has.
+Read back from the form on 18 Sep 2026, after Jane edited Hope's drafts. This is what Acme has.
 
 ### Why Acme? (up to 150 words)
 
@@ -59,13 +59,13 @@ What I would change: publish the deprecation calendar on day one, not in month t
 
 ## What you have told them
 
-- 2026-09-17 · email search for acme-design-systems.example · nothing earlier: no past application, no recruiter thread.
-- 2026-09-18 · Ashby form · said: authorized to work in the US; no sponsorship needed; Brooklyn, 2 days a week in the New York office is fine; heard via the careers page; desired base 195000.
-- 2026-10-02 · call with Sam Lee · said: reason for looking: pay first, then the work; one other process at an early stage; start about a month after an offer; pay "around 190".
-- 2026-10-03 · Jane's decision · 195000 stands. Say "195 base" on the next call.
+- 17 Sep 2026 · email search for acme-design-systems.example · nothing earlier: no past application, no recruiter thread.
+- 18 Sep 2026 · Ashby form · said: authorized to work in the US; no sponsorship needed; Brooklyn, 2 days a week in the New York office is fine; heard via the careers page; desired base 195000.
+- 2 Oct 2026 · call with Sam Lee · said: reason for looking: pay first, then the work; one other process at an early stage; start about a month after an offer; pay "around 190".
+- 3 Oct 2026 · Jane's decision · 195000 stands. Say "195 base" on the next call.
 
 ## ATS notes learned
 
-Added to `profile.md` section 9: `- 2026-09-17 · Ashby · Yes/No questions are buttons · check aria-pressed, not the hidden checkbox`
+Added to `profile.md` section 9: `- 17 Sep 2026 · Ashby · Yes/No questions are buttons · check aria-pressed, not the hidden checkbox`
 
 <!-- Fixture: fictional. Jane Doe and Acme Design Systems are invented for testing Hope. -->

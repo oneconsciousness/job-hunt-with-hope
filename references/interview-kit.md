@@ -2,6 +2,7 @@
 
 This file holds everything the `hope-interview` skill needs. The `hope-sync` and `hope-application` skills reuse section 1 (record every call).
 Every rule here came from real recorded calls. Examples use the fixture persona Jane Doe.
+Dates inside these files are written `14 Oct 2026` (`<D Mon YYYY>` in the templates). File names and script flags use `YYYY-MM-DD` (`references/hunt-folder.md` section 3).
 
 ## Contents
 
@@ -43,17 +44,18 @@ A call counts as scheduled when it appears in an email, a calendar invite, or th
 3. **Create the call itself** if it is not already on the calendar. Title: `<Company> - <round> with <Person>`. Popup alarms at 60 and 15 minutes.
 4. **Prep blocks, only if the user asks.** Give each a focus line, not just "prep". Example: `Prep: Acme - say the three beats out loud, twice`.
 5. **Add the consent note** to the brief (see "Consent" below).
-6. **No calendar tool?** Write an `.ics` file with `scripts/make_ics.py` and tell the user to double-click it. Example (start time is local time; `$PLUGIN_ROOT` is the plugin folder, set by the skill's "Before you start" block):
+6. **No calendar tool?** Write an `.ics` file with `scripts/make_ics.py` and tell the user to double-click it. The description file is `INTERVIEW-PREP.md` itself: its top holds the round line and the live-call sheet. Example (start time is the user's local clock time, with no zone; `$PLUGIN_ROOT` is the plugin folder, set by the skill's "Before you start" block):
    ```
-   python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "🔴 RECORD THE CALL - Acme Design Systems / Sam Lee in 10 min" --start "2026-10-02T10:50" --minutes 10 --alarm 10 --alarm 0 --description-file applications/acme-senior-product-designer/INTERVIEW-PREP.md --out applications/acme-senior-product-designer/record-reminder.ics
+   python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "🔴 RECORD THE CALL - Acme Design Systems / Sam Lee in 10 min" --start "2026-10-02T10:50" --minutes 10 --alarm 10 --alarm 0 --free --description-file applications/acme-senior-product-designer/INTERVIEW-PREP.md --out applications/acme-senior-product-designer/record-reminder-2026-10-02.ics
    ```
+   `--free` shows the reminder as free, not busy. Each `--alarm` is minutes before the start; `0` is at the start.
 7. **Repeat the record line in the last message before the call.** That is the one the user will actually see.
 
 Three cases that come up:
 
 - **The time is not fixed yet** ("let's find a time next week"). Say the record line now. Create the events once the time is confirmed.
 - **Dates and time zones.** Check today's date and weekday before writing "today", "tomorrow" or a day name. Give every call time in the user's time zone. Use the zone written in the invite or email to convert. If none is given, ask the user. Never assume.
-- **No prep file yet.** Fill the brief with what you have, and add the line `Full prep: applications/<slug>/INTERVIEW-PREP.md`. Update the event description once the prep file is written.
+- **No prep file yet.** Fill the brief with what you have. Keep the `Full prep:` line, and update the event description once the prep file is written.
 
 **Calendar rules:** use whatever calendar tool the host has. Never add attendees. Never send invites. If the tool asks whether to notify guests, choose none.
 
@@ -68,6 +70,7 @@ Have ready: the résumé as sent, the one comp number, the two questions, water.
 Ask: 1) <question about their problem> 2) <question about their problem>
 Already settled (do not reopen): <comp stated / location / work authorization / start date>
 Consent: <Person> may be in <state or country>. <Ask first, or record only your side.>
+Full prep: applications/<slug>/INTERVIEW-PREP.md
 ```
 
 ### Consent
@@ -86,13 +89,14 @@ This is background, not legal advice. The user decides.
 
 ### After the call
 
-1. **Ask for the recording file.** A recap from memory is not a substitute. Save it as `applications/<company>-<role-slug>/recording.<ext>`.
+1. **Ask for the recording file.** A recap from memory is not a substitute. Save it as `applications/<company>-<role-slug>/recording.<ext>`. If that file is already there from an earlier call, never overwrite it: name the new one `recording-<YYYY-MM-DD>-<who>.<ext>`.
 2. **Transcribe it locally:**
    ```
-   python3 "$PLUGIN_ROOT/scripts/transcribe.py" applications/<slug>/recording.m4a --out applications/<slug>/transcript-<YYYY-MM-DD>-<who>.txt
+   python3 "$PLUGIN_ROOT/scripts/transcribe.py" "applications/<slug>/<recording file>" --out "applications/<slug>/transcript-<YYYY-MM-DD>-<who>.txt"
    ```
-   The script uses faster-whisper, model `small.en`, int8, beam size 5, with the VAD (silence) filter on. It writes a timestamp about every 30 seconds and marks the speaker where it is obvious.
-   If faster-whisper is not installed, the script prints the install line. The fallback is to ask the user to paste a transcript from their meeting tool.
+   `<recording file>` is `recording.<ext>`, or `recording-<YYYY-MM-DD>-<who>.<ext>` for a later call (step 1).
+   The script uses faster-whisper, model `small.en`, int8, beam size 5, with the VAD (silence) filter on. It writes one `[mm:ss] text` block about every 30 seconds. It does not label speakers: Hope notes the speaker where it is obvious from the flow of the conversation, and writes "speaker unclear" otherwise (section 6, rule 3).
+   If faster-whisper is not installed, the script prints the install line and exits 2. The fallback is to ask the user to paste a transcript from their meeting tool or phone.
 3. **Names in a transcript are machine-spelled.** Never copy a name from a transcript into a document or an email until you have checked it against an email signature, the invite or the user.
 4. **Write the debrief** (section 6).
 
@@ -423,9 +427,9 @@ One file per role: `applications/<company>-<role-slug>/INTERVIEW-PREP.md`. It co
 # <Company> - <Role> · interview prep
 
 **Posting:** <url> · **Folder:** applications/<slug>/
-**Band:** <published band or "not published"> · **Location:** <...>
+**Band:** <published band or "not published"> · **Location:** <...> · **Updated:** <D Mon YYYY>
 
-## Round: <round name> · <YYYY-MM-DD> (<weekday>), <start-end time and zone> · <length> · with <Person, title>
+## Round: <round name> · <D Mon YYYY> (<weekday>), <start-end time and zone>, or "not booked yet" · <length> · with <Person, title>
 **Decides:** <one line>. **Record:** reminder set (`🔴 RECORD THE CALL - <Company> / <Person> in 10 min`). Consent: <note>.
 
 ### Live-call sheet
@@ -507,7 +511,7 @@ Pay stays out of writing until the call: no numbers and no negotiation plans in 
 
 ## 6. The debrief: debrief-who-date.md
 
-One per call: `applications/<company>-<role-slug>/debrief-<who>-<YYYY-MM-DD>.md`. `<who>` is the person's name exactly as the source gives it, lowercase, with hyphens.
+One per call: `applications/<company>-<role-slug>/debrief-<who>-<YYYY-MM-DD>.md`. `<who>` is the person's name exactly as the source gives it, lowercase, with hyphens. Like every file about a role, it starts with the posting link and the role folder path (hard rule 16).
 An invite from "Sam Lee" gives `sam-lee`. An email signed only "Pat" gives `pat`. Never expand a name (see `references/hunt-folder.md` section 3).
 
 **Rules for filling it:**
@@ -521,7 +525,7 @@ An invite from "Sam Lee" gives `sam-lee`. An email signed only "Pat" gives `pat`
 7. **Explain what the user agreed to but may not have followed:** a term, a process step, an assessment format. Plain words, two or three lines each.
 8. **The consistency check** compares the call with "What you have told them" in `APPLICATION-ANSWERS.md`. Any mismatch gets an action.
 9. **Feed the other files:**
-   - Add what the user said on the call (reason for leaving, other processes, location, timing, pay) to "What you have told them", one line: `<YYYY-MM-DD> · call with <Person> · said: <...>`. It must be true. If an earlier line is no longer true, add a new dated line with the true state; never keep repeating a lapsed claim.
+   - Add what the user said on the call (reason for leaving, other processes, location, timing, pay) to "What you have told them", one line: `<D Mon YYYY> · call with <Person> · said: <...>`. It must be true. If an earlier line is no longer true, add a new dated line with the true state; never keep repeating a lapsed claim.
    - Add every question they asked to `applications/_common/question-bank.md`, and the user's self-introduction to its drift check (section 8).
    - Update `job-tracker.xlsx` with `scripts/tracker.py update`: status, next action, and a note. Pass the call date with `--date YYYY-MM-DD`. Never type a date into the note text; the script writes it.
    - Remove the finished round's live-call sheet from `INTERVIEW-PREP.md`.
@@ -529,10 +533,11 @@ An invite from "Sam Lee" gives `sam-lee`. An email signed only "Pat" gives `pat`
 **Template:**
 
 ```
-# Debrief - <Company> <round> with <Person> · <YYYY-MM-DD> (<weekday>, <length>)
+# Debrief - <Company> <round> with <Person> · <D Mon YYYY> (<weekday>, <length>)
 
+**Posting:** <url> · **Folder:** applications/<slug>/
 <Person, title (spelling checked against <source> / unconfirmed)>. <Role>, <req id>.
-Recording: `recording.<ext>` · Transcript: `transcript-<date>-<who>.txt` (faster-whisper small.en, local).
+Recording: `<recording file>` · Transcript: `transcript-<YYYY-MM-DD>-<who>.txt` (faster-whisper small.en, local).
 
 **Outcome:** <one line, e.g. "Moving to the hiring manager round" or "No decision on the call">.
 
@@ -551,7 +556,7 @@ Recording: `recording.<ext>` · Transcript: `transcript-<date>-<who>.txt` (faste
 ## What worked (keep doing it)
 - ...
 
-## Fix before the next round
+## Fix before <the next round, by name, e.g. "the hiring manager round">
 1. **<Question or habit>:** <the better answer, as keywords, true details only>.
 
 ## Things you agreed to, explained
@@ -668,7 +673,7 @@ One file for the whole hunt: `applications/_common/question-bank.md`. The interv
 
 **Rules:**
 
-1. After every debrief, add each question the interviewer asked, in their words, with the company, round, date and timestamp.
+1. After every debrief, add each question the interviewer asked, in their words, with the company, round, date and timestamp. One table row per question: `| "<question>" | <Company>, <round>, <D Mon YYYY> (<mm:ss>) | <Strong / Weak / Missed> | <keywords> |`.
 2. The same question asked again gets a new row. Do not merge rows: the repeats show what this market asks most.
 3. The verdict comes from the debrief (Strong, Weak, Missed). "Keywords for next time" holds the better answer as keywords.
 4. Prep (section 5) takes likely questions from here, then adds the follow-ups the user's own talking points will trigger.
@@ -685,6 +690,7 @@ Every question asked in any interview so far, grouped by category. Built from tr
 ## Opening and motivation
 | Question (their words) | Company, round, date (timestamp) | Verdict | Keywords for next time |
 |---|---|---|---|
+| "<question>" | <Company>, <round>, <D Mon YYYY> (<mm:ss>) | <Strong / Weak / Missed> | <keywords> |
 
 ## Your work, in depth
 ## Craft and technical
@@ -695,4 +701,7 @@ Every question asked in any interview so far, grouped by category. Built from tr
 ## Self-introductions across calls (drift check)
 | Date | Company, round | Beats used (keywords) | Matches the canon? | Drift |
 |---|---|---|---|---|
+| <D Mon YYYY> | <Company>, <round> | <beat 1> · <beat 2> · <beat 3> | <Yes / No: what differs> | <None / what changed> |
 ```
+
+Every category heading gets the same four-column table, even when it is empty. An empty category keeps its header row and one line under the table: `None asked yet.`

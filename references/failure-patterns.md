@@ -68,7 +68,7 @@ cat applications/northwind-senior-product-designer/APPLICATION-ANSWERS.md   # wh
 
 To answer "what did I send?", open the file and quote it (`sent-*.md` in the role folder, or "Submitted answers" in `APPLICATION-ANSWERS.md`). Never rebuild it from memory.
 
-**Facts about the outside world.** A fact about a company, a product, an interview format, a law or a tool is researched fresh every time, never taken from memory. Hand it over with a source link the user can open and the date it was checked: `(source: <url>, checked 2026-10-14)`. This applies to briefings and prep files for the user, not only to documents that ship.
+**Facts about the outside world.** A fact about a company, a product, an interview format, a law or a tool is researched fresh every time, never taken from memory. Hand it over with a source link the user can open and the date it was checked: `(source: <url>, checked 14 Oct 2026)`. This applies to briefings and prep files for the user, not only to documents that ship.
 
 **A user correction about the outside world** is checked against a primary source before it goes into `HUNT-PROTOCOL.md`. A primary source is the company's own page, the vendor's own documentation, or the text of the law or a government page. A blog or a forum post is not. If the source disagrees with the user, show them the source and the exact line, and let them decide what gets written.
 
@@ -145,7 +145,7 @@ grep -n "$(printf '\342\200\224')" applications/northwind-senior-product-designe
 - Match on the description text, not the title. Titles hide the job.
 - Build the search from the user's whole record, not from how they are being positioned this week.
 - Say what the method cannot see. Example: "I matched descriptions on the 20 boards in `boards.txt`. This misses companies not in that file and roles posted only on LinkedIn."
-- Every shortlist header has a "What this method cannot see" line (see `references/hunt-folder.md`, section 5.6).
+- Every shortlist header has a `**Blind spot:**` line that says what the method cannot see (see `references/hunt-folder.md`, section 5.6).
 
 ## P7: Fixing the instance instead of the class
 

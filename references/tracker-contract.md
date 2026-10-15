@@ -47,7 +47,7 @@ Use these exactly, so filters work. Spelling, capitals and the spaced hyphen all
 | `Inbound` | Someone reached out to the user about a role, and the user has not replied or decided yet. | hope-sync |
 | `Parked` | The user chose to hold it: waiting on a referral, a per-company cap, a relocation decision, or just later. The note says why. | the user |
 
-**`Applied` is never a guess.** Mark a row `Applied` only when the user names what they submitted ("I sent the Northwind one"), or when the user's Sent folder holds the application email for an apply-by-email role. When a confirmation email arrives, it becomes `Applied - confirmed`. A form Hope filled, or a tab that was open, is `Ready to apply`, not `Applied`. If unsure, ask.
+**`Applied` is never a guess.** A row moves to `Applied` only on the user's word (they name what they submitted: "I sent the Northwind one"), or on a confirmation email from the company, which makes it `Applied - confirmed`. For an apply-by-email role, the application email in the user's Sent folder counts as the user's word. When Hope clicks submit after the user's "submit it" (hard rule 1), the confirmation page Hope saw counts too. A form Hope filled, or a tab that was open, is `Ready to apply`, not `Applied`. If unsure, ask.
 
 **Suffixes.** A skill may add a short detail after a spaced hyphen: `Interviewing - round 2 on 15 Oct`. When you filter, match the start of the cell: `Interviewing - round 2 on 15 Oct` counts as `Interviewing`.
 
@@ -93,7 +93,8 @@ The workbook is the truth. Markdown tables about status go stale: the status lin
 python3 -m pip install openpyxl
 ```
 
-- While there is a `job-tracker.csv` and no `job-tracker.xlsx`, the CSV is the live log. The same rules apply: the status words, the note format, back up before writing.
+- While there is a `job-tracker.csv` and no `job-tracker.xlsx`, the CSV is the live log. Every command finds it on its own and uses it, even after openpyxl is installed, so there is never a second log. `init` leaves it as it is. The same rules apply: the status words, the note format, back up before writing (the backup is `job-tracker.backup-<YYYY-MM-DD>-<tag>.csv`).
+- One case stops instead: openpyxl is missing and a `job-tracker.xlsx` already exists. The script exits `2` and asks for openpyxl, rather than start a CSV next to the real log.
 - Tell the user once, in one line, that the tracker is a CSV until openpyxl is installed.
 
 ---
@@ -107,12 +108,15 @@ Every command below is run with `python3 "$PLUGIN_ROOT/scripts/tracker.py"`. `$P
 1. Replace `<hunt folder>` with the absolute path of the user's hunt folder (the folder that holds `career-graph/` and `applications/`).
 2. Inside double quotes, write every dollar sign as `\$`. Without the backslash the shell eats it: `"$180K"` becomes `80K` with no error. `"\$180K"` stays `$180K`.
 
-Every command also takes `--file` (default `job-tracker.xlsx`). You rarely need it. `add` and `update` also take `--tag` (the backup tag) and `--date` (the note's date, `YYYY-MM-DD`, default today).
+Every command also takes `--file` (default `job-tracker.xlsx`). You rarely need it. `add` and `update` also take `--tag` (the backup tag) and `--date` (the note's date, `YYYY-MM-DD`, default today). There is no `--force`: `add` never overwrites an existing row, and notes are only ever prepended. Run `python3 "$PLUGIN_ROOT/scripts/tracker.py" <command> --help` to see a command's flags.
 
 **Exit codes:**
 
 - `0`: done.
-- `2`: something needs attention. Read what it printed. The usual cause is a match that fits more than one row: the script prints the candidate rows and changes nothing. Add `--role` with more of the role title and run it again. Never guess which candidate was meant.
+- `2`: something needs attention. Read what it printed. Nothing was changed. The usual causes:
+  - `update` matched more than one row: the script prints the candidate rows. Add `--role` with more of the role title and run it again. Never guess which candidate was meant.
+  - `add` for a company and role that already have a row: the script names the row. Use `update` instead.
+  - A status that is not in section 2: the script prints the allowed words.
 
 ### 7.1 Check the script is there
 
@@ -124,7 +128,7 @@ python3 "$PLUGIN_ROOT/scripts/tracker.py" --help
 
 ### 7.2 Create the workbook
 
-Run this only when `job-tracker.xlsx` (or `job-tracker.csv`) does not exist yet.
+Run this only when `job-tracker.xlsx` (or `job-tracker.csv`) does not exist yet. If either exists, `init` leaves it as it is and says so.
 
 ```bash
 python3 "$PLUGIN_ROOT/scripts/tracker.py" init --hunt-dir "<hunt folder>"
@@ -134,7 +138,7 @@ python3 "$PLUGIN_ROOT/scripts/tracker.py" init --hunt-dir "<hunt folder>"
 
 ### 7.3 Add a row
 
-First check the row is not already there: run `list --company "<company>"` (section 7.6). If the role is listed, use `update` instead.
+First check the row is not already there: run `list --company "<company>"` (section 7.6). If the role is listed, use `update` instead. (`add` also refuses a company and role that already have a row, and exits `2`.)
 
 ```bash
 python3 "$PLUGIN_ROOT/scripts/tracker.py" add --hunt-dir "<hunt folder>" \
@@ -191,11 +195,14 @@ Never type a date into the note text. The script adds its own, and the note ends
 python3 "$PLUGIN_ROOT/scripts/tracker.py" list --hunt-dir "<hunt folder>"
 python3 "$PLUGIN_ROOT/scripts/tracker.py" list --hunt-dir "<hunt folder>" --status "Interviewing"
 python3 "$PLUGIN_ROOT/scripts/tracker.py" list --hunt-dir "<hunt folder>" --company "Northwind"
+python3 "$PLUGIN_ROOT/scripts/tracker.py" list --hunt-dir "<hunt folder>" --company "Northwind" --notes
 ```
 
-The first lists every row. The second lists rows whose status starts with the word you give. The third lists rows whose company contains the word you give.
+The first lists every row. The second lists rows whose status starts with the word you give. The third lists rows whose company contains the word you give. Both matches ignore capitals. The fourth adds each row's full `Notes`, newest first, on the lines under it.
 
-`list` prints four columns: the row number, `Status`, `Company`, `Role`, `Next action`. It does not print `Location`, `Band`, `Package` or `Notes`. To read those, open the workbook, or read the `Notes now start:` line that `update` prints.
+`list` prints five columns: the row number, `Status`, `Company`, `Role`, `Next action`. Long cells are cut and end in `...`. It does not print `Location`, `Band` or `Package`; to read those, open the workbook.
+
+**Read a row's note history with `list --notes`.** Add `--company` (and `--status`) to narrow it to the rows you need. Never rebuild what happened from memory.
 
 ### 7.7 Report
 
@@ -262,7 +269,7 @@ print("saved; rows:", ws.max_row - 1)
 | hope-application | `add` or `update` to `Ready to apply`; `update` to `Applied` only when the user names what they submitted |
 | hope-sync | `update` (status, next action, note) for every matched item; `add` for new companies; the standing checks in section 10 |
 | hope-interview | `update` to `Interviewing - <round> on <date>`; a note after each call |
-| hope-tracker | `list`, `report`, the weekly review |
+| hope-tracker | `list`, `list --notes`, `report`, the weekly review |
 
 ---
 
@@ -274,4 +281,4 @@ hope-sync runs these five checks after it has updated the rows, every time. Each
 2. **Submissions not yet confirmed.** Run `list --status "Applied"`. Every row whose status is exactly `Applied` (not `Applied - confirmed`) has no confirmation yet. Search the user's email (read-only) for each company by name. If a confirmation is there, update the row to `Applied - confirmed`. If not, list the row in the report.
 3. **Two agencies, one company.** Read the `Recruiter contact` rows and their notes. If two agencies are putting the user forward to the same company, flag it at once. One company receiving the same person from two agencies can sink both submissions.
 4. **Status contradictions.** A row whose status disagrees with the newest dated evidence: `Rejected` but an interview invite arrived later; `Shortlisted` but the Sent folder shows an application. Update the row to match the newest evidence, write a note that names both, and tell the user.
-5. **The per-company cap.** Count the live applications for each company: rows whose status starts with `Ready to apply`, `Applied`, `Interviewing` or `Offer`. `Shortlisted`, `Parked`, `Inbound` and `Recruiter contact` are not applications yet. If a company is at the cap in `applications/_common/profile.md` (default 2), say so before any new application there.
+5. **The per-company cap.** Count the live applications for each company. Live rows are those whose status starts with `Ready to apply`, `Applied`, `Interviewing` or `Offer` (so `Applied - confirmed` counts). `Shortlisted`, `Parked`, `Recruiter contact`, `Inbound`, `Rejected`, `Closed` and `Withdrawn` do not count. If a company is at the cap in `applications/_common/profile.md` (default 2), say so before any new application there.

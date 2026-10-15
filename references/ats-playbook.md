@@ -45,8 +45,8 @@ Look at the apply link. If the company's careers page hides it, open the page an
 | `icims.com` or `taleo.net` | iCIMS or Taleo | [iCIMS and Taleo](#icims-and-taleo) |
 | `linkedin.com/jobs` or `indeed.com` | LinkedIn or Indeed | [Guide only](#linkedin-easy-apply-and-indeed-apply-guide-only) |
 
-The fastest way to get a job description (JD) is `python3 "$PLUGIN_ROOT/scripts/fetch_jd.py" <url>`. It knows the API shapes below.
-If it exits 2, the ATS is unknown to it. Open the posting in the browser and copy the text.
+The fastest way to get a job description (JD) is `python3 "$PLUGIN_ROOT/scripts/fetch_jd.py" <url>`. It knows the API shapes below. With no `--out` or `--slug` it only prints the JD; `--slug auto` writes `applications/<slug>/JD.md`.
+If it exits 2, read its message: the ATS is unknown to it, or the posting could not be fetched (closed, or a wrong link). Open the posting in the browser and copy the text.
 (`$PLUGIN_ROOT` is the plugin folder. The skill's "Before you start" block sets it.)
 
 ---
@@ -57,14 +57,16 @@ Do these in order, for every application.
 
 1. **Use exactly the link the user gave.** Do not swap in a "better" role. If you see one, mention it separately and let the user decide.
 2. **Check the posting is still live.** Fetch it again. A 404 or "no longer accepting applications" means stop and tell the user.
-3. **Search the user's email for the company's domain** (for example `acme.example`), read-only. Look for an earlier application, a recruiter thread, or a résumé already sent.
+3. **Check the per-company cap.** Run `python3 "$PLUGIN_ROOT/scripts/tracker.py" list --hunt-dir "<hunt folder>" --company "<Company>"`. Live rows are those whose status starts with `Ready to apply`, `Applied`, `Interviewing` or `Offer` (so `Applied - confirmed` counts). `Shortlisted`, `Parked`, `Recruiter contact`, `Inbound`, `Rejected`, `Closed` and `Withdrawn` do not count.
+   If this role would pass the cap in `applications/_common/profile.md` section 5 (default 2), or the posting's own limit in the `Caps / limits` line of `JD.md`, stop and tell the user.
+4. **Search the user's email for the company's domain** (for example `acme.example`), read-only. Look for an earlier application, a recruiter thread, or a résumé already sent.
    Anything new must agree with what was sent before. Write what you found under "What you have told them" in `APPLICATION-ANSWERS.md`.
-4. **Ask whether the user wants to upload the résumé themselves.** Some users prefer to. Offer it as a choice.
-5. **Open the form in its own new tab.** One application per tab. Take a screenshot to bring the tab forward (General rule 4).
+5. **Ask whether the user wants to upload the résumé themselves.** Some users prefer to. Offer it as a choice.
+6. **Open the form in its own new tab.** One application per tab. Take a screenshot to bring the tab forward (General rule 4).
    Leave the user's own tabs alone. Never navigate away from a filled form: the entries can be lost.
-6. **Read any AI notice on the form** before you type anything (General rule 9).
+7. **Read any AI notice on the form** before you type anything (General rule 9).
 
-**Check:** you can name the posting link, the role folder path, and what the email search found.
+**Check:** you can name the posting link, the role folder path, the company's live rows against the cap, and what the email search found.
 
 ---
 
@@ -532,15 +534,15 @@ If the session drops halfway, the file still shows what was entered. The full sh
    When you have the value on file, add it, so the user can paste it.
 5. **Drafted answers.** Each essay question as a `###` heading with the draft below it. When the AI notice rules out prose (General rule 9), write the notice here instead, word for word, and the user's choice.
 6. **Honest fit.** Strong, Gaps, and the Sponsorship line (what the posting says, what the profile says). See `references/visa-and-sponsorship.md`.
-7. **What you have told them.** One line per source: `<YYYY-MM-DD> · <source, e.g. Ashby form> · said: <...>`. Cover reason for leaving, other processes, location, timing and pay. Add what the email search found ("Before you open a form", step 3). Everything here must be true.
+7. **What you have told them.** One line per source: `<D Mon YYYY> · <source, e.g. Ashby form> · said: <...>`. Cover reason for leaving, other processes, location, timing and pay. Add what the email search found ("Before you open a form", step 4). Everything here must be true.
 8. **After the user submits, the record is what they sent.** Read the final form back (or the confirmation email, or the user's paste). Replace "Drafted answers" with "Submitted answers", word for word. Update the status line. Then update `job-tracker.xlsx` with `scripts/tracker.py update`.
-9. **ATS notes learned.** If you met a quirk this file does not list, add one line to `applications/_common/profile.md` section 9, "ATS notes learned": `- <YYYY-MM-DD> · <ATS> · <what happened> · <what to do next time>`.
+9. **ATS notes learned.** If you met a quirk this file does not list, add one line to `applications/_common/profile.md` section 9, "ATS notes learned": `- <D Mon YYYY> · <ATS> · <what happened> · <what to do next time>`.
 
 Example rows for Jane Doe on an Ashby form:
 
 | Field | Value |
 |---|---|
-| Phone | `1-718-555-0142` (placeholder showed `1-555-555-5555`) |
+| Phone | `1-718-555-0142` (profile.md: `(718) 555-0142`; placeholder showed `1-555-555-5555`) |
 | Location | Brooklyn, New York, United States (combobox option clicked) |
 | Will you now or in the future require sponsorship? | No (button pressed: No) |
 | How did you hear about us? | Company careers page (from `profile.md` section 7) |

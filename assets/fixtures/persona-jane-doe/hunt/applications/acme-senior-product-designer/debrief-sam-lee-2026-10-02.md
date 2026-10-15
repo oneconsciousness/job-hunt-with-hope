@@ -1,6 +1,7 @@
-# Debrief - Acme Design Systems recruiter screen with Sam Lee · 2026-10-02 (Fri, 27 min)
+# Debrief - Acme Design Systems recruiter screen with Sam Lee · 2 Oct 2026 (Fri, 27 min)
 
-Sam Lee, Recruiter (spelling checked against Sam's 2026-09-29 email). Senior Product Designer, no req id.
+**Posting:** https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f · **Folder:** applications/acme-senior-product-designer/
+Sam Lee, Recruiter (spelling checked against Sam's 29 Sep 2026 email). Senior Product Designer, no req id.
 Recording: `recording.m4a` · Transcript: `transcript-2026-10-02-sam-lee.txt` (faster-whisper small.en, local). Verdicts written after reading the whole transcript.
 
 **Outcome:** moving to the hiring manager round.
@@ -18,7 +19,7 @@ Recording: `recording.m4a` · Transcript: `transcript-2026-10-02-sam-lee.txt` (f
 1. Hiring manager call, 45 min, with the design director (name heard as "Alex Kim", spelling unconfirmed).
 2. Portfolio review, 60 min, with three designers and one engineer.
 3. Values conversation with a cofounder, 30 min.
-- Timeline: "three to four weeks, start to finish." Sam sends hiring manager slots by 2026-10-07.
+- Timeline: "three to four weeks, start to finish." Sam sends hiring manager slots by 7 Oct 2026.
 
 ## Question by question
 
@@ -59,7 +60,7 @@ Recording: `recording.m4a` · Transcript: `transcript-2026-10-02-sam-lee.txt` (f
 
 | Topic | Told them before (form, emails, calls) | Said on this call | Match? |
 |---|---|---|---|
-| Pay | 195000 (form, 2026-09-18) | "around 190" | No: Jane decides which number stands, then says it on the next call. Recruiters pass on the lower number. |
+| Pay | 195000 (form, 18 Sep 2026) | "around 190" | No: Jane decides which number stands, then says it on the next call. Recruiters pass on the lower number. |
 | Location | Brooklyn, 2 days in office (form) | "Brooklyn, happy with two days" | Yes |
 | Start date | Not asked on the form | "about a month after an offer" | New: added to "What you have told them" |
 | Work authorization | No sponsorship needed (form) | Not discussed | Yes |
@@ -67,7 +68,7 @@ Recording: `recording.m4a` · Transcript: `transcript-2026-10-02-sam-lee.txt` (f
 
 ## Next step
 
-- Sam sends hiring manager slots by 2026-10-07. If nothing by 2026-10-09, nudge once (draft with hope-write; Jane sends).
+- Sam sends hiring manager slots by 7 Oct 2026. If nothing by 9 Oct 2026, nudge once (draft with hope-write; Jane sends).
 - Before that round: fixes 1 to 3, and the open story in `applications/_common/interview-stories.md`.
 - Done: the six questions added to `question-bank.md`; the call added to "What you have told them"; the screen's live-call sheet removed from `INTERVIEW-PREP.md`.
 - Tracker, written with `scripts/tracker.py update --match "Acme Design Systems" --status "Interviewing - hiring manager round next" --next "Wait for Sam's hiring manager slots (due 7 Oct). If none by 9 Oct, nudge once; you send." --note "Recruiter screen with Sam Lee. Moving to hiring manager round. Sam sends slots by 7 Oct." --date 2026-10-02`

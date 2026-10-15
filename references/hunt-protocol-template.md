@@ -5,7 +5,7 @@ This is the starting `HUNT-PROTOCOL.md` a new user gets. hope-onboarding copies 
 **How onboarding fills it:**
 
 1. Copy everything below the `===` line into `HUNT-PROTOCOL.md` in the hunt folder.
-2. Replace `<Name>` with the user's preferred name, and `<YYYY-MM-DD>` with today's date.
+2. Replace `<Name>` with the user's preferred name, and `<D Mon YYYY>` with today's date, written like `14 Oct 2026`. Every date inside this file uses that style.
 3. Each table has one row marked `(example)`. It shows the shape, using the test persona Jane Doe. Delete every `(example)` row. Write the user's own rows in its place, or leave the table with its header only.
 4. Add the facts the user confirmed during onboarding to section 2, one row each.
 5. **Check:** `grep -c "(example)" HUNT-PROTOCOL.md` prints `0`.
@@ -24,7 +24,7 @@ Section 6 is not a table. Keep it as written. Its last two lines end in `TODO`: 
 > - A fact about the outside world (a company, a law, a tool) goes in only after Hope checks it against a primary source, such as the company's own page. "Verified how" then carries the link and the date.
 > - This file stays on your machine. It is never committed or published.
 >
-> Last updated: <YYYY-MM-DD>
+> Last updated: <D Mon YYYY>
 
 ## 1. The one principle
 
@@ -42,7 +42,7 @@ Every number, title, date and credential you have confirmed. The facts are fixed
 
 | Fact | Approved wording | Verified how (who said it, when) |
 |---|---|---|
-| Design-system consolidation at Figma (example) | "Led the consolidation of Figma's design system across 12 product teams. 37% surface-area unification in 8 months." | Jane, in chat, 2026-10-02. Matches the résumé. |
+| Design-system consolidation at Figma (example) | "Led the consolidation of Figma's design system across 12 product teams. 37% surface-area unification in 8 months." | Jane, in chat, 2 Oct 2026. Matches the résumé. |
 
 ## 3. Open discrepancies
 
@@ -58,7 +58,7 @@ Your standing instructions, dated, in your words. Every skill follows these.
 
 | Date | The rule, in <Name>'s words | What Hope does about it |
 |---|---|---|
-| 2026-10-03 (example) | "No Manager or Director titles. I want to stay an IC." | hope-discovery drops these titles. hope-application stops and asks before filling one. |
+| 3 Oct 2026 (example) | "No Manager or Director titles. I want to stay an IC." | hope-discovery drops these titles. hope-application stops and asks before filling one. |
 
 ## 5. Lessons learned
 
@@ -66,7 +66,7 @@ What went wrong, the class it belongs to, and the check that would have caught i
 
 | Date | What went wrong | Class | The check that would have caught it |
 |---|---|---|---|
-| 2026-10-05 (example) | A cover letter said "the last six years leading design systems". Figma started in Sep 2022, so it was 4 years 1 month. | Lesson 14 (compute every duration) and P1 (asserting instead of computing) | Compute every duration from the dates in the canon before it ships. Then grep every draft for "years" and check each hit. |
+| 5 Oct 2026 (example) | A cover letter said "the last six years leading design systems". Figma started in Sep 2022, so it was 4 years 1 month. | Lesson 14 (compute every duration) and P1 (asserting instead of computing) | Compute every duration from the dates in the canon before it ships. Then grep every draft for "years" and check each hit. |
 
 ## 6. Recording protocol
 

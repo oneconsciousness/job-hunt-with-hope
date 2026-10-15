@@ -191,7 +191,7 @@ Someone posts "we're hiring" on LinkedIn or elsewhere, and lists roles or says h
 3. **Dedupe against the tracker.** Match on company and on posting URL. Also check req IDs in the tracker's Notes column, the folder names in `applications/`, and earlier shortlists (to see earlier cut reasons).
    Flag near-duplicates of a req that already rejected the user.
 4. **Per-company cap.** Default: 2 live applications per company, for the same skill set. The user may set a different number in `profile.md` section 5.
-   Count the company's tracker rows at `Ready to apply`, `Applied`, `Applied - confirmed`, `Interviewing` or `Offer`. `Rejected`, `Closed` and `Withdrawn` never count.
+   Live rows are those whose status starts with `Ready to apply`, `Applied`, `Interviewing` or `Offer` (so `Applied - confirmed` counts). `Shortlisted`, `Parked`, `Recruiter contact`, `Inbound`, `Rejected`, `Closed` and `Withdrawn` do not count. To see them: `tracker.py list --company "<Company>"`.
    The full rule is in `references/hunt-folder.md` (profile section 5). A company at the cap goes to "Skipped and why". Also respect any cap the posting itself states (for example "3 applications per 90 days").
 5. **Title and seniority exclusions** come from `profile.md` section 5. A stated years bar well above the user's years is a seniority wall. Note it.
 6. **The pay screen** comes from `profile.md` section 3. If the top of the band is below the user's screen, cut it and say why. If no band is published, keep it and write "not published".
@@ -227,7 +227,7 @@ Example:
 
 ```
 ### Fabrikam - deferred
-Tried: Workday search API at fabrikam.wd5 (3 site names), 2026-10-14. All returned 404.
+Tried: Workday search API at fabrikam.wd5 (3 site names), 14 Oct 2026. All returned 404.
 Seen elsewhere (not verified): "Staff Product Designer, Platform", New York.
 At apply time: open careers.fabrikam.example in the browser, search "design system". About two minutes.
 Recommendation: worth the two minutes. The visible role matches Jane's design-system work.
@@ -237,21 +237,42 @@ Recommendation: worth the two minutes. The visible role matches Jane's design-sy
 
 ## 10. The shortlist header
 
-The full shortlist shape is in `references/hunt-folder.md` section 5.6. The header is where most mistakes hide. Its "How this list was made" block always states:
+The full shortlist shape is in `references/hunt-folder.md` section 5.6. The header is where most mistakes hide. `scripts/sweep_boards.py` writes most of it, and hope-discovery adds one section. Together they always state:
 
-1. **Your rules applied:** the user's rules that shaped the sweep, quoted, with dates.
-2. **Boards swept and method:** how many boards, how postings were pulled, and the keywords matched against each description.
-3. **What this method cannot see:** the blind spot.
-4. **Dedupe:** what was matched against, with counts.
+1. **`## Your rules applied`** (added by hope-discovery, right under the "Made by" paragraph): the user's rules that shaped the sweep and the screens, quoted, with their source and date. On a refresh run, each change to the words, with its reason and date (section 8, rule 14).
+2. **`## Rules applied`** (the script): the include words, the title exclusions and the locations, exactly as they were passed.
+3. **`## Boards swept`** (the script): one row per board, with the postings read and `loaded` or `failed: <error>`. Every failed board goes under "Deferred with reasons" (section 9).
+4. **Method and blind spot** (the script, as the `**Method:**` and `**Blind spot:**` lines): how postings were pulled, and what the method cannot see. In chat, also name the surfaces the script never reaches (section 1).
+5. **Dedupe** (the script, as the `**Dedupe:**` line): the tracker it matched against, its row count, and the match rule.
 
-Example for Jane Doe:
+Example for Jane Doe, after hope-discovery added its section:
 
 ```
-# Shortlist - 2026-10-14
+# Shortlist - 14 Oct 2026
 
-## How this list was made
-- **Your rules applied:** "Senior IC roles only, no management" (Jane, 2026-10-06). "No more than 25% travel" (profile.md section 4). Per-company cap: 2 live applications.
-- **Boards swept and method:** 42 Greenhouse, Ashby and Lever boards from boards.txt, through their public APIs. Matched description text against: design system, design tokens, component library, typography, developer tools. Dropped titles with Manager, Director, Head of. Kept New York, Remote (US), San Francisco.
-- **What this method cannot see:** Workday and other big-company sites, LinkedIn-only postings, and any board not in boards.txt.
-- **Dedupe:** against job-tracker.xlsx on company + posting URL (23 rows), the 4 role folders, and 1 earlier shortlist. 3 postings were already tracked.
+Made by `scripts/sweep_boards.py` on 14 Oct 2026. Every row is a live posting that is not in the tracker yet. Read the JD before you apply; nothing here is checked against your rules beyond what is listed below.
+
+## Your rules applied
+
+- "No Manager titles. No Director or Head of either. I want to keep designing." (HUNT-PROTOCOL.md section 4, 16 Sep 2026)
+- "Two live applications per company, max." (HUNT-PROTOCOL.md section 4, 16 Sep 2026)
+- No roles with more than 25% travel (profile.md section 5)
+
+## Rules applied
+
+- **Include words** (title or full description; whole word; any case; plural s allowed): design system, design tokens, component library, typography, developer tools, prototyping
+- **Title exclusions** (whole word; any case; "Intern" does not drop "Internship"): Manager, Director, Head of, Intern, Contract
+- **Locations kept:** New York, Remote, San Francisco ("Remote" also matches the board's remote flag)
+
+## Boards swept
+
+| Board | Postings read | Result |
+|---|---|---|
+| greenhouse:anthropic | 647 | loaded |
+| ashby:ramp | 162 | loaded |
+| lever:palantir | 314 | loaded |
+
+**Method:** Each board's public job API, read in full (title and description), one board at a time.
+**Blind spot:** Only these boards; roles whose title and description use none of the include words are invisible; postings behind a login are invisible.
+**Dedupe:** against job-tracker.xlsx (3 rows). A posting is dropped when its company matches a tracker row (same name, or one name starts with the other) AND either its link or job id appears in that row's notes, package or JD.md, or its title matches the row's role.
 ```

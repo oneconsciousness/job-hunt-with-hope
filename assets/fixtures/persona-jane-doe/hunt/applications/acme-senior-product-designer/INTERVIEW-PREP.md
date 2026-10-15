@@ -1,11 +1,11 @@
 # Acme Design Systems - Senior Product Designer · interview prep
 
 **Posting:** https://jobs.ashbyhq.com/acme-design-systems/7c1e2f40-5a6b-4c3d-9e8f-0a1b2c3d4e5f · **Folder:** applications/acme-senior-product-designer/
-**Band:** $165,000 - $195,000 base, plus equity · **Location:** New York hybrid (2 days) or Remote (US) · **Updated:** 2026-10-03
+**Band:** $165,000 - $195,000 base, plus equity · **Location:** New York hybrid (2 days) or Remote (US) · **Updated:** 3 Oct 2026
 
-## Round: hiring manager call · not booked yet (Sam sends slots by 2026-10-07) · 45 min · with the design director
-**Decides:** whether Jane goes to the portfolio review. **Record:** set the reminder once the time is booked. Consent: ask; Acme's office is in San Francisco (all-party).
-Name heard on the 2026-10-02 call as "Alex Kim". Unconfirmed until the invite arrives.
+## Round: hiring manager call · not booked yet (Sam sends slots by 7 Oct 2026) · 45 min · with the design director
+**Decides:** whether Jane goes to the portfolio review. **Record:** set the reminder once the time is booked. Consent: ask first. Acme's office is in New York (one-party consent), but where the design director sits is not confirmed.
+Name heard on the 2 Oct 2026 call as "Alex Kim". Unconfirmed until the invite arrives.
 
 ### Live-call sheet
 
@@ -22,10 +22,10 @@ Name heard on the 2026-10-02 call as "Alex Kim". Unconfirmed until the invite ar
 | Ask them | 1) token adoption vs code sync 2) first six months |
 
 ## Company brief
-- **In their words:** "Acme keeps your design system and your code in sync." (acme-design-systems.example/about, read 2026-10-03)
+- **In their words:** "Acme keeps your design system and your code in sync." (acme-design-systems.example/about, read 3 Oct 2026)
 - **Customers:** design-system and front-end teams at mid-size software companies.
 - **What they buy, and why:** one place to define tokens and components, so a design change reaches code without copying by hand.
-- **Latest news:** Series B announced 2026-09-08 (acme-design-systems.example/blog, read 2026-10-03).
+- **Latest news:** Series B announced 8 Sep 2026 (acme-design-systems.example/blog, read 3 Oct 2026).
 - **This role in that relationship:** designs the token editor those teams use every day, and sits in their research sessions.
 
 ## Overlap: what the JD asks, and the evidence
@@ -54,6 +54,6 @@ Name heard on the 2026-10-02 call as "Alex Kim". Unconfirmed until the invite ar
 **The team** · SAM (02:10): "The design team is **eight people**, and this hire **owns the token editor** end to end."
 **What landed** · SAM (04:35): "The **governance piece** is exactly what our customers ask us about."
 **The process** · SAM (22:40): "**No take-home.** We do a **portfolio review** instead."
-**Pay** · JANE (16:05): "**around 190**." Form says 195000. Jane decided on 2026-10-03: 195 stands.
+**Pay** · JANE (16:05): "**around 190**." Form says 195000. Jane decided on 3 Oct 2026: 195 stands.
 
 <!-- Fixture: fictional. Jane Doe, Sam Lee and Acme Design Systems are invented for testing Hope. -->

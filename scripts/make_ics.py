@@ -11,7 +11,7 @@ DESCRIPTION and one VALARM per --alarm. Text is escaped and long lines are
 folded at 75 octets, as RFC 5545 asks. No attendees, so no invites go out.
 
 Usage:
-  make_ics.py --title "RECORD THE CALL - Acme / Sam Lee in 10 min" \\
+  make_ics.py --title "🔴 RECORD THE CALL - Acme / Sam Lee in 10 min" \\
       --start 2026-10-15T12:50 --minutes 10 --alarm 10 --alarm 0 --free \\
       --description "Start the recording before you join." --out reminder.ics
   make_ics.py --title "Prep: Acme round 2" --start 2026-10-15T09:00 --minutes 45 \\
@@ -133,7 +133,7 @@ def main(argv: List[str]) -> int:
     parser = argparse.ArgumentParser(
         description="Write a one-event .ics file with alarms. Open the file to add the "
                     "event to any calendar.",
-        epilog="example:\n  make_ics.py --title \"RECORD THE CALL - Acme / Sam Lee in 10 min\" "
+        epilog="example:\n  make_ics.py --title \"🔴 RECORD THE CALL - Acme / Sam Lee in 10 min\" "
                "--start 2026-10-15T12:50 --minutes 10 --alarm 10 --alarm 0 --free "
                "--description \"Start the recording before you join.\" --out reminder.ics",
         formatter_class=argparse.RawDescriptionHelpFormatter)
