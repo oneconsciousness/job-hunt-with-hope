@@ -22,7 +22,7 @@ Every skill ends the same way: one dated line in `user-story.md`. File shapes ar
 
 ### Onboarding (`hope-onboarding`)
 - **When it runs:** the first time, or when the user says "let's start over". Users coming from Hope 1.5 run it once more to get the profile and the hunt folder.
-- **What it makes:** `career-graph/career.json` and `user-story.md`. Then `applications/_common/profile.md`, `applications/_common/my-voice.md`, `HUNT-PROTOCOL.md`, an empty `job-tracker.xlsx`, and the protective `.gitignore`. `WORKING-PAD.md` appears later, the first time work is interrupted.
+- **What it makes:** `career-graph/career.json` and `user-story.md`. Then `applications/_common/profile.md`, `applications/_common/my-voice.md`, `HUNT-PROTOCOL.md`, an empty `job-tracker.xlsx`, and the protective `.gitignore`. `WORKING-PAD.md` and `applications/_research/boards.txt` are created in Part 2 too.
 - **The user controls:** every answer in `profile.md`. They type or confirm each one. Hope never guesses work authorization, pay rules or self-identification answers.
 - **Done when:** the career file is built, every section of `profile.md` has an answer or a `TODO (ask <name>)`, and `HUNT-PROTOCOL.md` and `job-tracker.xlsx` exist.
 

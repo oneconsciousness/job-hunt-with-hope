@@ -69,7 +69,7 @@ Files that also appear, but are not in the tree above:
 | `applications/_common/resume.pdf` | hope-portfolio (export), or the user | hope-application |
 | `applications/_common/interview-stories.md` | hope-interview | hope-interview, hope-write |
 | `applications/_common/question-bank.md` | hope-interview, from every transcript | hope-interview (prep) |
-| `applications/_research/boards.txt` | hope-discovery, or the user | `scripts/sweep_boards.py` |
+| `applications/_research/boards.txt` | hope-onboarding Part 2 (hope-discovery adds to it, or creates it if missing), or the user | `scripts/sweep_boards.py` |
 | `applications/_research/shortlist-<YYYY-MM-DD>.md` | `scripts/sweep_boards.py`, then hope-discovery | the user, hope-application |
 | `applications/<slug>/JD.md` | `scripts/fetch_jd.py`, then hope-application | hope-application, hope-write, hope-interview |
 | `applications/<slug>/APPLICATION-ANSWERS.md` | hope-application; hope-write, hope-interview and hope-sync add to "What you have told them" | the user; every skill before a call or a message to that company |
