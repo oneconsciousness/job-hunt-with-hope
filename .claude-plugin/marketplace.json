@@ -9,7 +9,7 @@
       "name": "hope",
       "displayName": "JobHunt with Hope",
       "description": "JobHunt with Hope - Hope runs your whole job hunt with the AI you already use: a designed portfolio and one résumé, real openings found through the job boards' own data feeds, applications filled in your browser (you press send), every message drafted in your voice, interview prep with a record-the-call reminder and a debrief, a daily read-only sync of email and LinkedIn, and one tracker spreadsheet you own. Free, open-source, your data stays on your machine.",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "source": ".",
       "license": "MIT",
       "tags": [

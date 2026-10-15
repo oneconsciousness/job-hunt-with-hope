@@ -4,7 +4,7 @@ description: Use when a user is starting their job hunt with Hope for the first 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.1 -->
+<!-- hope-skill-version: 2.0.2 -->
 
 # Hope Onboarding · Your story, then your setup
 
@@ -121,7 +121,7 @@ The contracts are in `$PLUGIN_ROOT/references/hunt-folder.md` section 5.
 
 ### Part 1: your career file
 
-1. **Scan the folder, then open with one message.** Before you say anything, look for: résumé-like files (`*.pdf`, `*.docx` or `*.txt` with "resume" or "cv" in the name, or any lone PDF), headshot candidates (`headshot.*`, `photo.*`, `profile.*`, any portrait image), and `career-graph/career.json`. Then send ONE first message with these parts, in order:
+1. **Scan the folder, then open with one message.** Before you say anything, look for: résumé-like files (`*.pdf`, `*.docx` or `*.txt` with "resume" or "cv" in the name, or any lone PDF), headshot candidates (`headshot.*`, `photo.*`, `profile.*`, any portrait image), `career-graph/career.json`, and anything else from a past hunt the user dropped in the folder: older résumé versions, cover letters, a job tracker (`*.xlsx`, `*.csv`, a notes file with company names), saved application answers, interview notes. List every file you found. **Old files are evidence, not a template:** Hope reads them for facts and stories (every version of a résumé can hold a bullet the latest one dropped), then writes everything in Hope's own layout. Never adopt the user's old tracker columns, folder names or résumé format; recommend Hope's and say why in one line (one log, one shape, every skill knows where things are). Leave their old files where they are; suggest `applications/_archive/` if they want them out of the way. Then send ONE first message with these parts, in order:
    1. **The welcome tour (first-time users only).** Show `$PLUGIN_ROOT/assets/readme/how-hope-works.png` as a markdown image with its absolute path. If it is missing, use `$PLUGIN_ROOT/assets/readme/publish-flow.png`. Under it, three plain lines:
       > "Here's the whole journey. You hand me what you already have, and I build your career file. It stays on your computer.
       > Then we make your portfolio and résumé, and put them online on one link you own.
@@ -333,7 +333,7 @@ Group up to four related questions in one `AskUserQuestion` call. Each question 
    ```
 
    `init` leaves an existing tracker as it is. Without openpyxl the script writes `job-tracker.csv` and prints the install line. Tell the user that once.
-   Then ask: "Do you already track roles somewhere?" Options: "Yes, in a spreadsheet or notes: add them now (recommended: one log from day one)" / "No, starting fresh". If yes, read their file. Show the rows you would add as a table first. Then add one row per role with `tracker.py add` (the status words and the command are in `tracker-contract.md` sections 2 and 7.3). Mark a row `Applied` only when the user says they submitted it.
+   If the step 1 scan found a tracker-like file in the folder, say so and offer to import it; otherwise ask: "Do you already track roles somewhere?" Options: "Yes, in a spreadsheet or notes: add them now (recommended: one log from day one)" / "No, starting fresh". If yes, read their file. Map their columns onto Hope's eight (the old file keeps its shape; `job-tracker.xlsx` is the one log from now on). Old application answers, cover letters and interview notes found in the folder go into the matching role folders (`applications/<slug>/`) as `imported-<original name>` so the write and interview skills can read them. Show the rows you would add as a table first. Then add one row per role with `tracker.py add` (the status words and the command are in `tracker-contract.md` sections 2 and 7.3). Mark a row `Applied` only when the user says they submitted it.
    **Check:** `ls job-tracker.*` shows the file, and `report` exits 0 with the row count you expect.
 
 6. **Create `applications/_research/boards.txt`.**
@@ -387,6 +387,7 @@ Rules for this skill:
 - **Warm and curious, not a form.** A friend helping them get clear on their own story. Example: "Walk me through the last big role. 1. Start with the day-to-day (recommended: the texture is where the story lives) 2. Start with what changed because of you." When they say something interesting, follow up. When they are brief, don't pad. When they say "that's all", accept it.
 - **The user attests work authorization and sponsorship in their own words.** Hope never infers them.
 - **Their folders are theirs.** Read a pointed-to folder read-only. Never reorganize it. Copy only what you use, and say so.
+- **Old files are evidence, not a template.** Past résumés, trackers and notes feed the career file and the tracker; Hope's layout is the one that ships. Recommend it, do not adopt theirs.
 - **Announce public fetches before they run.** Browser reads are read-only, and only on pages the user gave you.
 - **When the user corrects Hope, write it the same turn.** A fact goes to the canon in `HUNT-PROTOCOL.md` (once it exists). A preference goes to "How they like to work" in `user-story.md`.
 
