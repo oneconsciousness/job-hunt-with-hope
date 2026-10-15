@@ -1,6 +1,6 @@
 ---
 name: hope-discovery
-description: Use when a user wants Hope to find open roles worth applying to. Hope sweeps job boards through their own public data feeds, matches on the full job description and not just the title, screens every posting against the user's own rules, skips what is already in the tracker, and hands over a shortlist file. The user picks. Nothing is applied to. Trigger phrases include "find me jobs", "help me find a job I'd love", "what roles are out there", "scout jobs for me", "who's hiring", "find openings", "look for roles", "job search", "add jobs to my dashboard", "new since yesterday", "sweep the boards", "what's new on the boards", "any new roles", or any request for a set of real, current openings to choose from.
+description: Use when a user wants Hope to find open roles worth applying to. Hope sweeps job boards through their own public data feeds, matches on the full job description and not just the title, screens every posting against the user's own rules, skips what is already in the tracker, and hands over a shortlist file. The user picks. Nothing is applied to. Trigger phrases include "find me jobs", "help me find a job I'd love", "what roles are out there", "scout jobs for me", "who's hiring", "find openings", "look for roles", "job search", "new since yesterday", "sweep the boards", "what's new on the boards", "any new roles", or any request for a set of real, current openings to choose from.
 user-invocable: true
 ---
 

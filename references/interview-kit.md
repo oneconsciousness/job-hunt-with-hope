@@ -44,7 +44,7 @@ A call counts as scheduled when it appears in an email, a calendar invite, or th
 3. **Create the call itself** if it is not already on the calendar. Title: `<Company> - <round> with <Person>`. Popup alarms at 60 and 15 minutes.
 4. **Prep blocks, only if the user asks.** Give each a focus line, not just "prep". Example: `Prep: Acme - say the three beats out loud, twice`.
 5. **Add the consent note** to the brief (see "Consent" below).
-6. **No calendar tool?** Write an `.ics` file with `scripts/make_ics.py` and tell the user to double-click it. The description file is `INTERVIEW-PREP.md` itself: its top holds the round line and the live-call sheet. Example (start time is the user's local clock time, with no zone; `$PLUGIN_ROOT` is the plugin folder, set by the skill's "Before you start" block):
+6. **No calendar tool?** Write an `.ics` file with `scripts/make_ics.py` and tell the user to double-click it. The description file is `record-brief.md` in the role folder: the brief section of `INTERVIEW-PREP.md` copied out (round, three beats, have-ready list, two questions, consent note; never pay numbers). The whole prep file never goes into a calendar event. Its top holds the round line and the live-call sheet. Example (start time is the user's local clock time, with no zone; `$PLUGIN_ROOT` is the plugin folder, set by the skill's "Before you start" block):
    ```
    python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "🔴 RECORD THE CALL - Acme Design Systems / Sam Lee in 10 min" --start "2026-10-02T10:50" --minutes 10 --alarm 10 --alarm 0 --free --description-file applications/acme-senior-product-designer/INTERVIEW-PREP.md --out applications/acme-senior-product-designer/record-reminder-2026-10-02.ics
    ```

@@ -41,7 +41,7 @@ echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; emp
 - Read `user-story.md` and `WORKING-PAD.md` if they exist.
 - Never delay the record line (step 1) to read files. Say it first, then read.
 - The user's time zone is the `Time zone` row in `applications/_common/profile.md` section 1. Missing: ask once, then add the row with their answer.
-- `applications/_common/profile.md` or `HUNT-PROTOCOL.md` missing: run the quick path. Steps 1, 3 (with what you have), 4, 5 and 7. Fill the brief with what you have. Then offer `hope-onboarding` (part 2). Full prep needs the canon.
+- `applications/_common/profile.md` or `HUNT-PROTOCOL.md` missing: run the quick path. Steps 1, 2 (the role folder only), 3 (with what you have), 4, 5 and 7. Fill the brief with what you have. Then offer `hope-onboarding` (part 2). Full prep needs the canon.
 
 ## What you make
 
@@ -63,6 +63,8 @@ Also updated: `applications/_common/interview-stories.md`, "What you have told t
 ## Steps
 
 ### Part A: when a call is known
+
+**A time is confirmed when the other side has agreed to it in writing** (their calendar invite, or their reply naming the day and time). A slot the user picked but the other side has not yet agreed to is **proposed**: write the prep, but create no calendar events and no "booked" wording until it is confirmed; set the next action to "You: send the reply; tell Hope when they confirm". **If a source's weekday and date disagree** (for example "Thu 16 Oct" when 16 Oct is a Friday), do not pick one: ask the user to confirm the day with the sender first. **If the interviewer's name differs from the prep file**, use the newest source and note the change in the prep file.
 
 A call is known when it is in an email, an invite, a `hope-sync` report, or the user says so.
 
@@ -133,7 +135,9 @@ A call is known when it is in an email, an invite, a `hope-sync` report, or the 
    No calendar tool: ask whether the invite is already on the user's calendar. Then make the `.ics` files. As in `interview-kit.md` section 1, the description file is `INTERVIEW-PREP.md` itself: its top holds the round line and the live-call sheet. `--start` is the user's own clock time, with no zone.
 
    ```bash
-   python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "🔴 RECORD THE CALL - Acme Design Systems / Alex Kim in 10 min" --start "2026-10-15T12:50" --minutes 10 --alarm 10 --alarm 0 --free --description-file "applications/acme-senior-product-designer/INTERVIEW-PREP.md" --out "applications/acme-senior-product-designer/record-reminder-2026-10-15.ics"
+   Write the brief section of `INTERVIEW-PREP.md` (the round, three beats, have-ready list, two questions, consent note; never pay numbers) to `applications/<slug>/record-brief.md` first; that short file is the event description. The whole prep file never goes into a calendar event.
+
+   python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "🔴 RECORD THE CALL - Acme Design Systems / Alex Kim in 10 min" --start "2026-10-15T12:50" --minutes 10 --alarm 10 --alarm 0 --free --description-file "applications/acme-senior-product-designer/record-brief.md" --out "applications/acme-senior-product-designer/record-reminder-2026-10-15.ics"
    python3 "$PLUGIN_ROOT/scripts/make_ics.py" --title "Acme Design Systems - hiring manager call with Alex Kim" --start "2026-10-15T13:00" --minutes 45 --alarm 60 --alarm 15 --description "Join: https://zoom.example/j/123 · Full prep: applications/acme-senior-product-designer/INTERVIEW-PREP.md" --out "applications/acme-senior-product-designer/call-2026-10-15.ics"
    ```
 
@@ -155,7 +159,7 @@ A call is known when it is in an email, an invite, a `hope-sync` report, or the 
 7. **Update the tracker and the working pad.**
 
    ```bash
-   python3 "$PLUGIN_ROOT/scripts/tracker.py" update --hunt-dir "<hunt folder>" --match "<Company>" --role "<role words>" --status "Interviewing - <round> on <D Mon>" --next "You: record the call; then hand Hope the file" --note "<round> with <Person> booked for <D Mon>, <time> <zone>"
+   python3 "$PLUGIN_ROOT/scripts/tracker.py" update --hunt-dir "<hunt folder>" --match "<Company>" --role "<role words>" --status "Interviewing - <round> on <D Mon>" --next "You: record the call; then hand Hope the file" (or "You: send the reply; tell Hope when they confirm" while the time is only proposed) --note "<round> with <Person> booked for <D Mon>, <time> <zone>"
    ```
 
    Skip the command if the row already shows this round and time (`hope-sync` may have set it).
@@ -163,6 +167,8 @@ A call is known when it is in an email, an invite, a `hope-sync` report, or the 
    A call within the hour: add it under "Urgent" in `WORKING-PAD.md`. Say the record line again in the last message you send before the call. That is the one the user will see.
 
    **Check:** the script printed `Updated row`, `Notes now start:` and `Backup:`, or the row already showed this round.
+
+Part A also writes one dated line in `user-story.md` ("prep written for <Company>, <round> on <D Mon YYYY>") and updates `WORKING-PAD.md`: the call under "Urgent" if it is within 24 hours, and the "Waiting on someone" line for this company cleared or rewritten. **Check:** `grep -c "<Company>" WORKING-PAD.md user-story.md` prints at least 1 for each.
 
 ### Part B: after the call
 

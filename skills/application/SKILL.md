@@ -43,7 +43,7 @@ echo "PLUGIN_ROOT=$PLUGIN_ROOT"   # check this before reading bundled files; emp
 4. Read these hunt-folder files: `HUNT-PROTOCOL.md` (the canon and "My rules"), `applications/_common/profile.md` (all nine sections; section 8 is the hard limits, section 9 the ATS notes), `applications/_common/my-voice.md`, `career-graph/career.json`, and `user-story.md` and `WORKING-PAD.md` if they exist.
 5. Preconditions:
    - No `applications/_common/profile.md`: run `hope-onboarding` Part 2 first. Never fill a form without it.
-   - No `applications/_common/resume.pdf`: `hope-portfolio` exports it, or ask the user for their file.
+   - No `applications/_common/resume.pdf`: steps 1 to 3 may still run (capture the posting, run the gates). Step 4 then stops: `hope-portfolio` exports the file (`scripts/export_resume_pdf.py`), or ask the user for their own PDF and copy it to that path. Do not open the form without it.
    - No `job-tracker.xlsx` and no `job-tracker.csv`: run `tracker.py init --hunt-dir .`
 6. Check today's date and time: `date "+%A %d %B %Y %H:%M %Z"`.
 
@@ -85,7 +85,8 @@ Also: the form filled and left open in its own tab, not submitted. A tracker row
    | Per-company cap | Live rows in that list: the status starts with `Ready to apply`, `Applied`, `Interviewing` or `Offer` | This one would pass the cap in `profile.md` section 5 (default 2), or it is a different skill set from the live one |
    | Posting's own cap | The `Caps / limits` line in `JD.md` | The user's rows at this company would pass it |
    | Title, seniority and shape | `profile.md` section 5 (exclusions, the verb test); the user's years, from the lesson 14 command with the start date changed to their first relevant start | An excluded title, a family that is out, duties that break a rule (managing a team for an individual contributor), or a years bar well above the user's |
-   | Pay | Top of the band in `JD.md` vs the screen in `profile.md` section 3 | The top is below the screen. "not published" passes: say so. OTE is not base pay. |
+   | Location | `JD.md` location and remote line vs `profile.md` section 4 (where they will work from, cities they would move to, remote stance) | The role needs a city or an in-office share the profile rules out. "Open to relocation" rows and travel limits are the user's call: Ask. |
+| Pay | Top of the band in `JD.md` vs the screen in `profile.md` section 3 | The top is below the screen. "not published" passes: say so. OTE is not base pay. |
    | Sponsorship | Quote the `JD.md` line and `profile.md` section 2 side by side | Pass only when the profile needs no sponsorship. Otherwise Ask: the user decides. Never infer their status. |
    | Referral | Tracker notes, `HUNT-PROTOCOL.md`, the user's words | Someone is referring the user for this role. Never cold-apply. Ask how the referrer submits. |
    | AI notice | The form's notice, read when the form opens (step 5), before typing | It bans AI-written answers or any AI help (hard rule 7). Say what it bans. |

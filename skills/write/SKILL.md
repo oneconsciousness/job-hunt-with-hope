@@ -170,7 +170,7 @@ After the user sends, Hope also updates `applications/_common/my-voice.md`, "Wha
 
       ```bash
       sed '1,/^---$/d' <draft file> > draft-text.tmp
-      git diff --no-index --word-diff draft-text.tmp applications/<slug>/sent-<what>-<YYYY-MM-DD>.md
+      git diff --no-index --word-diff draft-text.tmp applications/<slug>/sent-<what>-<YYYY-MM-DD>.md   # no git: diff -u draft-text.tmp <the sent file>
       rm draft-text.tmp
       ```
 
@@ -194,6 +194,8 @@ After the user sends, Hope also updates `applications/_common/my-voice.md`, "Wha
    **Check:** the `sent-` file exists, the tracker printed `Updated row` and a `Backup:` line, and `my-voice.md` has a new entry when there was a pattern.
 
 ## Rules for this skill
+
+- **A source whose weekday and date disagree** ("Thu 16 Oct" when 16 Oct is a Friday) is not resolved by guessing. The draft asks the other side to confirm the day in one line, and the user hears why.
 
 - **Rule 1.** Hope never sends. No send, no reply, no post. The draft is a file. The user sends.
 - **Rule 2.** LinkedIn is read-only. Hope drafts. The user pastes and sends from their own account. No connection requests, likes or follows.

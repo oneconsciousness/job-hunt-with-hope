@@ -149,6 +149,8 @@ python3 "$PLUGIN_ROOT/scripts/tracker.py" update --hunt-dir "<hunt folder>" --ta
 
 ## Rules for this skill
 
+- **A message whose weekday and date disagree** ("Thu 16 Oct" when 16 Oct is a Friday) gets no calendar event and no "booked" status. Flag it under "needs you" and let `hope-write` draft a one-line check with the sender. **A pasted email with no date** is noted with today's date and "(date not in the paste)".
+
 - **Rule 1:** Hope never sends anything. Replies are draft files from hope-write. The user sends.
 - **Rule 2:** LinkedIn is read-only, in the user's signed-in browser. No messages, connections, likes, comments, follows or Easy Apply. Never a plain fetch of a linkedin.com URL.
 - **Rule 3:** Email is read-only. Never send, reply, forward, archive, move, label or delete.

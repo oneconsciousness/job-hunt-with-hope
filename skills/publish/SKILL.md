@@ -104,6 +104,14 @@ gh api "repos/<login>/<login>.github.io" --jq '.name + " - " + (.description // 
 
 ### 5. Scan for secrets
 
+Run this on the staging folder and read every hit before you push:
+
+```bash
+grep -rniE "api[_-]?key|secret|token|password|BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|AKIA[0-9A-Z]{16}" site/ --include="*.html" --include="*.js" --include="*.css" || echo "no secret shapes found"
+```
+
+Contact details in a portfolio are intentional; do not block on them. Anything that looks like a key or a password stops the publish until the user has seen it.
+
 Grep the staging folder for obvious secret patterns. If you find one, stop and show the user. Contact info is expected in a portfolio: note it and continue.
 
 **Check:** the scan ran on `site/`, and it found no secrets (or the user has seen what it found).

@@ -107,7 +107,7 @@ No new files. This skill reads the hunt folder and keeps two files current:
 |---|---|---|---|
 | 1 | A call starts within the next hour (`WORKING-PAD.md` "Urgent", the calendar, a tracker row, or the user says so). | `hope-interview`: prep that call. | "Your call with <who> is at <time, user's zone>. Prepping that first. Everything else waits." |
 | 2 | No `career-graph/career.json`, or `graph_query.py` prints "No Person node yet". | `hope-onboarding`, Part 1. | "First I need to know you. That is onboarding, one sitting." If the user gave a link, save it under "Paused" in `WORKING-PAD.md`. |
-| 3 | A career file, no portfolio folder, no `applications/_common/resume.pdf`, and the user asked for nothing specific. | `hope-portfolio`. | "Your career file is in. Next is your portfolio and the résumé it exports." |
+| 3 | A career file, no portfolio folder, no `applications/_common/resume.pdf`, the tracker is missing or has no rows (the hunt has not started), and the user asked for nothing specific. | `hope-portfolio`. | "Your career file is in. Next is your portfolio and the résumé it exports." |
 | 4 | A portfolio folder, no `.publish.json`, the user asked for nothing specific, and "Decisions" in `user-story.md` does not say they chose not to publish. | Offer `hope-publish`. Options: publish now (recommended) / skip it and set up the hunt. A skip goes under "Decisions" in `user-story.md`. | "Your portfolio is built but not online yet." |
 | 5 | `HUNT-PROTOCOL.md`, `applications/_common/profile.md` or the tracker (`job-tracker.xlsx` or `job-tracker.csv`) is missing, and the user asks to find jobs, apply, sync, write, prep an interview, or update the tracker, or asks for nothing specific. | `hope-onboarding`, Part 2. | "Forms and the tracker read your application profile, so we set that up first. One sitting." |
 | 6 | The user gives a job link. | `hope-application`. | - |
@@ -115,7 +115,7 @@ No new files. This skill reads the hunt folder and keeps two files current:
 | 8 | "sync", "any news", "check my email", "did they reply". | `hope-sync`. | - |
 | 9 | "draft", "reply", "write", "cover letter", "message". | `hope-write`. | - |
 | 10 | "interview", "call", "screen", "they want to talk". | `hope-interview`. | - |
-| 11 | "where do I stand", "what needs me", "update the tracker". | `hope-tracker`. | - |
+| 11 | "where do I stand", "where am I", "what needs me", "update the tracker". For "where am I" give the five-line report (step 5) and then route by the rest of the table. | `hope-tracker`. | - |
 | 12 | "portfolio", "résumé", "publish", "put it online". | `hope-portfolio` or `hope-publish`. | - |
 | 13 | Anything else, or nothing specific ("morning", "let's go", "what's next", "I'm back"). | The daily rhythm: run `hope-sync`, then offer the next step. | "Next: the morning sync. Running it now." |
 
@@ -153,7 +153,7 @@ Five lines or fewer, in this shape:
 
 ```
 **Where you are:** <the stage, and the tracker counts by status>
-**Needs you:** <the tracker's "Needs you" rows, most urgent first, one short clause each; or "nothing in the tracker">
+**Needs you:** <the tracker's "Needs you" rows, most urgent first, one short clause each, with the role folder path and the posting link from its `JD.md` after each; or "nothing in the tracker">
 **Paused:** <what WORKING-PAD.md holds, and where it resumes; or "nothing">
 **Today:** <weekday, date, time and zone; any call today>
 **Next:** <the one recommended step>

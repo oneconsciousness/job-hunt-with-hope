@@ -318,7 +318,7 @@ Group up to four related questions in one `AskUserQuestion` call. Each question 
    **Check:** `grep -c "^## " applications/_common/my-voice.md` prints `4`. `grep -n "<[A-Za-z]" applications/_common/my-voice.md` prints nothing. Each sample matches the paste, word for word.
 
 4. **Put the one résumé at `applications/_common/resume.pdf`.**
-   - **A portfolio exists** (a folder in `career-graph/documents/portfolios/`): ask the user to open its `index.html`, click **Save as PDF** (it exports the résumé), and save the file as `applications/_common/resume.pdf`. Wait until they say it is saved. If they saved it somewhere else, copy it here. `hope-portfolio` explains the export if they need help.
+   - **A portfolio exists** (a folder in `career-graph/documents/portfolios/`): run `python3 "$PLUGIN_ROOT/scripts/export_resume_pdf.py" <portfolio-folder> --out applications/_common/resume.pdf` (the portfolio skill's "The one résumé" explains it). If the script exits 2, ask the user to open the portfolio's `index.html`, click **Save as PDF**, and save the file as `applications/_common/resume.pdf`; wait until they say it is saved, and copy it here if they saved it elsewhere.
    - **The user has their own PDF:** copy it here as `applications/_common/resume.pdf`. Say the portfolio can replace it later.
    - **Neither:** leave it missing. `hope-portfolio` becomes the next step.
 
