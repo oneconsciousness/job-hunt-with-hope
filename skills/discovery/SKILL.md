@@ -4,7 +4,7 @@ description: Use when a user wants Hope to find open roles worth applying to. Ho
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.1 -->
+<!-- hope-skill-version: 2.0.2 -->
 
 # Hope Find jobs · Real openings, you pick
 

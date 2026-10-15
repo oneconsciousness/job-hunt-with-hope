@@ -4,7 +4,7 @@ description: Use when a user wants to generate a portfolio of their work, their 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.1 -->
+<!-- hope-skill-version: 2.0.2 -->
 
 # Hope Portfolio · The page recruiters stop for
 

@@ -2,6 +2,10 @@
 
 All notable changes to the Hope plugin are documented here. Versions track `plugin.json` / `.claude-plugin/marketplace.json`.
 
+## 2.0.2
+
+- Onboarding now reads everything from a past hunt that you drop into the folder: older résumés, cover letters, an old tracker, saved application answers, interview notes. It uses them as evidence (facts, stories, a bullet an older résumé kept), imports tracker rows into Hope's one log, files old answers into the matching role folders, and keeps Hope's layout rather than adopting the old format.
+
 ## 2.0.1
 
 - The website now shows copy-paste instructions for Claude Code and for OpenAI Codex (a terminal agent), instead of ChatGPT web chat, which was never tested. Claude is named as Claude Code everywhere. No skill behavior changed.

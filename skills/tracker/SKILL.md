@@ -4,7 +4,7 @@ description: Use when the user wants to know where their job hunt stands or what
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.1 -->
+<!-- hope-skill-version: 2.0.2 -->
 
 # Hope Tracker · One sheet you own
 

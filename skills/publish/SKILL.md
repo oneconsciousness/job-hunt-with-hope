@@ -4,7 +4,7 @@ description: Use when a user wants to put their generated portfolio on the web, 
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.1 -->
+<!-- hope-skill-version: 2.0.2 -->
 
 # Hope Publish · One link you own
 
