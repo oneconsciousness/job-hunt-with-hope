@@ -4,7 +4,7 @@ description: Use at the start of any Hope session, and whenever the user wants t
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.0 -->
+<!-- hope-skill-version: 2.0.1 -->
 
 # Hope Start · Where you stand, what's next
 

@@ -4,7 +4,7 @@ description: Use when the user wants Hope to check email and LinkedIn for job-hu
 user-invocable: true
 ---
 
-<!-- hope-skill-version: 2.0.0 -->
+<!-- hope-skill-version: 2.0.1 -->
 
 # Hope Sync · Read everything, send nothing
 

@@ -2,6 +2,11 @@
 
 All notable changes to the Hope plugin are documented here. Versions track `plugin.json` / `.claude-plugin/marketplace.json`.
 
+## 2.0.1
+
+- The website now shows copy-paste instructions for Claude Code and for OpenAI Codex (a terminal agent), instead of ChatGPT web chat, which was never tested. Claude is named as Claude Code everywhere. No skill behavior changed.
+- README: the agents named are Claude Code and Codex.
+
 ## 2.0.0
 
 Hope 2.0 makes the plugin match a real job hunt, end to end. Its maker ran a full hunt with an AI partner, and every habit that helped is now a skill, a reference file, or a script. Every skill is also rewritten so a smaller model (Claude Sonnet) can run it reliably.
