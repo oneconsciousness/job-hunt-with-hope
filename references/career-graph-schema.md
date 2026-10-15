@@ -174,6 +174,11 @@ Skills are **derived deterministically from contributions, not extracted as a fl
 
 Same shape — `id`, descriptive fields, `contributions` (STAR with metrics), `confidence`, `source`, timestamps.
 
+> **Hope 2.0 note: the tracker is the live log of the hunt.**
+> In Hope 2.0 the hunt is logged in `job-tracker.xlsx`, not in the graph. See `references/tracker-contract.md`.
+> The JobPosting and Application nodes below (and Interview and Offer) are optional. No shipped skill requires them.
+> The portfolio still reads the rest of this schema unchanged.
+
 ### JobPosting
 
 ```json
@@ -267,6 +272,8 @@ A subgraph curated for one specific job. Picks subset of skills, experiences, pr
 `show_summary` (boolean, optional) — whether this portfolio renders the summary band (the Person's `headline_stats` + `interests`). A **presentation choice per portfolio, not a Person fact** — the same person may show the band for one role and hide it for another. Absent → the band is omitted.
 
 ### Application — NEW (Milestone 4)
+
+Optional in Hope 2.0. The live record of each application is its row in `job-tracker.xlsx` (see the note above JobPosting).
 
 ```json
 {
@@ -417,6 +424,8 @@ These are the patterns the original Hope team got right. The port preserves them
 **Schema versioning.** Every graph file carries `hope_schema_version`. Future Hope versions auto-migrate older graphs.
 
 ## How each milestone touches the graph
+
+Hope 2.0: the Discovery, Application and Interview lines below describe the optional nodes. The shipped skills log the hunt in `job-tracker.xlsx` instead.
 
 - **Onboarding** — creates the Person node and seeds Skills, Experiences, Education, Projects from résumé/conversation. Writes initial Memories about preferences and constraints.
 - **Discovery** — creates JobPosting nodes (one per role found). Adds `TARGETING` edges from Person. Adds `REQUIRES_SKILL` edges. Computes match scores via graph traversal (which Person.HAS_SKILL edges intersect Job.REQUIRES_SKILL edges).

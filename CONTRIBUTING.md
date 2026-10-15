@@ -22,56 +22,90 @@ If you're unsure whether something violates one of these, **treat it as a violat
 
 ## 1. What Hope is (and what you're maintaining)
 
-Hope is a **free, open-source (MIT) Claude plugin for the job hunt.** It is for **job seekers** — anyone looking for work — not recruiters. It does **not** specialize in *finding* job listings — other plugins do that, and they coexist with Hope (skills are namespaced). Hope's strength is helping a person **present themselves and apply well.**
+Hope is a **free, open-source (MIT) Claude plugin for the job hunt.** It is for **job seekers**, anyone looking for work, not recruiters. Hope runs the whole hunt with the person: it helps them **present themselves, find roles worth their time, apply well, and keep score.** Other job-search plugins can run alongside it (skills are namespaced).
 
-The hunt is organized as **milestones**, not pipelines — seeker-centric, not item-centric. **Twelve skills** live under `skills/<name>/SKILL.md`:
+The hunt is organized around the person, not a pipeline. **Ten skills** live under `skills/<folder>/SKILL.md`. Each one's frontmatter name is `hope-<folder>` (for example `hope-start`).
 
-| Milestone | Skills |
-|---|---|
-| 1 · Onboarding — meet the person, build the career graph | `onboarding` |
-| 2 · Discovery — find roles worth pursuing | `discovery` |
-| 3 · Presentation — **the signature output** | `portfolio` · `resume-tailor` · `cover-letter` · `publish` |
-| 4 · Application — submit, with confirm-before-submit guardrails | `application` |
-| 5 · Interview — prep, rehearse, reflect | `interview` |
-| 6 · Negotiation — comp, scripts, competing offers | `negotiation` |
-| 7 · Decision — accept, decline, close out | `decision` |
-| Cross-cut — the pulse of the hunt | `dashboard` |
-| Orchestrator — routes the user to the right skill | `hope` |
+| Group | Skill (`skills/<folder>/`) | What it does |
+|---|---|---|
+| Set up | `start` | The front door. Reads the hunt folder, tells the user where they are, routes them to the right skill, and teaches the daily rhythm. |
+| | `onboarding` | Meets the person and builds the career file. Then builds the application profile and the hunt folder. |
+| Show your work | `portfolio` | **The signature output.** The designed portfolio and the one résumé. |
+| | `publish` | Puts the portfolio on a free website the user owns. |
+| Run the hunt | `discovery` | Sweeps job boards through their public APIs, matches on the description, screens against the user's rules, skips what is already in the tracker, and writes a shortlist. |
+| | `application` | One job link in: the posting saved, the role folder made, the form filled with real keystrokes, the answers file written, the tracker row added. Stops at submit. |
+| | `write` | Any message in the user's own voice, saved to a file. The user sends. |
+| | `interview` | The record-the-call reminder, the prep file, the calendar. After the call: transcript, debrief, follow-up draft. |
+| | `sync` | Reads email and LinkedIn (read-only), updates the tracker, and reports what changed and what needs the user. |
+| Keep score | `tracker` | Owns `job-tracker.xlsx`: where the user stands, what needs them, the weekly review. |
 
-**The signature artifact** is a designed, self-contained **HTML portfolio website**, built from a personal **career graph** — a single file (`career.json`) that lives on the user's own machine. Hope can now **publish** that portfolio to a free website the user owns (GitHub Pages).
+Three 1.5 skills retired in 2.0 (`skill-gap`, `proof-projects`, `dashboard`). They live in `skills-roadmap/retired/` and do not load with the plugin.
 
-**Brand promises you must not break:** your data stays on your machine (no telemetry, nothing phones home); the design is consistent (light/dark themes, fixed layout); the voice is honest and warm. Works wherever Claude Code runs — CLI, Cowork desktop, claude.ai.
+**The signature artifact** is a designed, self-contained **HTML portfolio website**, built from a personal **career graph**: a single file (`career.json`) that lives on the user's own machine. Hope can now **publish** that portfolio to a free website the user owns (GitHub Pages).
 
-**Voice, in one line:** warm, plain, specific, honest, quiet — a thoughtful friend who knows how this works, not a hype-y chatbot. **Read `references/voice-guide.md` in full before touching any user-facing text.** See §11.
+**The hunt's live log** is `job-tracker.xlsx` in the user's hunt folder: one row per role, written through `scripts/tracker.py`. If a markdown file and the workbook disagree, the workbook wins.
+
+**Brand promises you must not break:** your data stays on your machine (no telemetry, nothing phones home); Hope never sends anything in the user's name (it drafts and fills; the user sends); LinkedIn and email are read-only; the design is consistent (light/dark themes, fixed layout); the voice is honest and warm. The full list is `references/hard-rules.md`. Works wherever Claude Code runs: CLI, Cowork desktop, claude.ai.
+
+**Voice, in one line:** warm, plain, specific, honest, quiet. A thoughtful friend who knows how this works, not a hype-y chatbot. **Read `references/voice-guide.md` in full before touching any user-facing text.** See §11.
 
 ---
 
 ## 2. Setup and fixture verification
 
-Hope is a content-and-skills plugin — there's no build step and **no Python test suite yet.** Verification is **fixture-driven.**
+Hope is a content-and-skills plugin. There's no build step and **no Python test suite yet.** Verification is **fixture-driven.**
 
-1. Clone the repo. The scripts (`scripts/graph_query.py`, `scripts/markdown_graph_convert.py`) use the standard library first; `networkx` is optional.
-2. The persona fixture lives at **`assets/fixtures/persona-jane-doe/`** (`profile.json`, `resume.txt`, `sample-portfolio.html`). It's your smoke test for every change.
-3. To test a skill or template end-to-end: run the skill against `assets/fixtures/persona-jane-doe/profile.json`, generate the artifact, and verify it in **both** themes.
+1. Clone the repo. The scripts use the standard library first. Optional dependencies degrade gracefully: `networkx` (graph scripts), `openpyxl` (`tracker.py` writes a CSV without it), `faster-whisper` (`transcribe.py` prints the install line without it).
+2. The persona fixture lives at **`assets/fixtures/persona-jane-doe/`** (`profile.json`, `resume.txt`, `sample-portfolio/`). It's your smoke test for every change.
+3. **`assets/fixtures/persona-jane-doe/hunt/`** is a worked hunt folder for the hunt skills and scripts: the tracker (`job-tracker.xlsx`), the application profile and voice file (`applications/_common/profile.md`, `my-voice.md`), the protocol (`HUNT-PROTOCOL.md`), a sample application folder (`applications/acme-senior-product-designer/`: `JD.md`, `APPLICATION-ANSWERS.md`, `INTERVIEW-PREP.md`, a debrief), the boards list (`applications/_research/boards.txt`), and a dated shortlist in `applications/_research/`.
+4. To test a skill or template end-to-end: run the skill against `assets/fixtures/persona-jane-doe/profile.json`, generate the artifact, and verify it in **both** themes. For the hunt skills (`start`, `discovery`, `application`, `write`, `interview`, `sync`, `tracker`), copy `hunt/` to a temp folder and run the skill there, so the fixture stays clean. A quick read-only check: `python3 scripts/tracker.py report --hunt-dir assets/fixtures/persona-jane-doe/hunt`.
 
 **Fixture-driven verification is the gate.** If you can't verify a change against the fixture, you can't claim it works.
 
 ---
 
-## 3. Architecture — where everything lives
+## 3. Architecture: where everything lives
 
 ```
-skills/<name>/SKILL.md     the main unit of work — loads on demand by frontmatter description
-assets/templates/*.html    the visual identity — self-contained HTML, inline CSS, design tokens
-assets/fixtures/           the persona fixture you verify against
-references/                schema · voice · design tokens · milestones · Computer Use guardrails
-scripts/                   graph_query.py, markdown_graph_convert.py
+skills/<folder>/SKILL.md   the main unit of work: ten skills, one shape, loaded on demand by frontmatter description
+assets/templates/          the visual identity: portfolio, résumé, cover-letter templates (self-contained HTML, inline CSS, design tokens)
+assets/fixtures/           the persona fixture you verify against (career file + a worked hunt folder)
+references/                the shared rules, file contracts, and guides every skill reads (listed below)
+scripts/                   the mechanical work, so the model does not improvise (listed below)
+skills-roadmap/            not loaded by the plugin: later-release skills and the retired 1.5 skills
 plugin.json                the plugin manifest (+ .claude-plugin/marketplace.json)
 ```
 
-**The career graph schema is the data contract.** Every skill reads and writes the shape documented in **`references/career-graph-schema.md`** — node types, fields, deterministic IDs, confidence propagation, source attribution. Reference fields by their canonical names from that file. See §13.
+**`references/`**
 
-> **Agent-local, not in the public repo:** `CLAUDE.md` (your deeper rulebook), `references/design-cookbook.md` and `references/design-system.md` (maintainers' design deep-dive), `tasks/`, and `.claude/`. These are gitignored on purpose. **Never commit them.** If you're operating in a cloned workspace, CLAUDE.md is your local technical layer — but the load-bearing rules are all here too.
+| File | What it holds |
+|---|---|
+| `hard-rules.md` | The rules every skill follows (never sends, read-only LinkedIn and email, never invents a fact, and the rest). |
+| `hunt-folder.md` | The user's hunt folder and the contract for every file in it. |
+| `hunt-protocol-template.md` | The empty `HUNT-PROTOCOL.md` a new user gets. |
+| `tracker-contract.md` | `job-tracker.xlsx`: the columns, the status words, the note format, the backup rule. |
+| `ats-playbook.md` | Per ATS: how to get the posting, form quirks, what to read back. |
+| `writing-rules.md` | Email and cover-letter shapes, plain English, how to learn from an edit. |
+| `interview-kit.md` | The record-the-call protocol, the prep file and debrief shapes. |
+| `failure-patterns.md` | Seven ways an agent goes wrong, with the check for each. |
+| `visa-and-sponsorship.md` | Work authorization in plain words. Not legal advice; the user states their own status. |
+| `search-surfaces.md` | Where good roles come from and how to read each one, read-only. |
+| `career-graph-schema.md` · `voice-guide.md` · `design-tokens.md` · `user-story-guide.md` · `computer-use-guardrails.md` · `milestones.md` | Kept from 1.5. `milestones.md` now describes the 2.0 journey. |
+
+**`scripts/`**
+
+| Script | What it does |
+|---|---|
+| `tracker.py` | Creates and updates `job-tracker.xlsx`. Backs up before every write. CSV fallback. |
+| `fetch_jd.py` | Fetches a posting through the ATS's public API and writes `JD.md`. |
+| `sweep_boards.py` | Sweeps many boards, matches on the description, skips roles already tracked, writes a shortlist. |
+| `make_ics.py` | Writes a one-event calendar file when the agent has no calendar tool. |
+| `transcribe.py` | Transcribes a call recording locally with faster-whisper, if installed. |
+| `graph_query.py` · `markdown_graph_convert.py` · `verify_portfolio_structure.py` · `verify_portfolio_pdf.py` | Kept from 1.5. |
+
+**The career graph schema is the data contract.** Every skill reads and writes the shape documented in **`references/career-graph-schema.md`**: node types, fields, deterministic IDs, confidence propagation, source attribution. Reference fields by their canonical names from that file. See §13. The hunt files (`job-tracker.xlsx`, `applications/`, `HUNT-PROTOCOL.md`) have their own contracts in `references/hunt-folder.md` and `references/tracker-contract.md`.
+
+> **Agent-local, not in the public repo:** `CLAUDE.md` (your deeper rulebook), `references/design-cookbook.md` and `references/design-system.md` (maintainers' design deep-dive), `tasks/`, and `.claude/`. These are gitignored on purpose. **Never commit them.** If you're operating in a cloned workspace, CLAUDE.md is your local technical layer, but the load-bearing rules are all here too.
 
 ---
 
@@ -79,23 +113,23 @@ plugin.json                the plugin manifest (+ .claude-plugin/marketplace.jso
 
 | You touched… | Gate before you open a PR |
 |---|---|
-| a **skill** (`skills/<name>/SKILL.md`) | Run it against the persona fixture. The **output shape must match the skill's spec.** Keep the frontmatter `description` precise — it's what Claude reads to decide when to invoke the skill. Don't add scope; propose a new skill instead. |
+| a **skill** (`skills/<folder>/SKILL.md`) | Run it against the persona fixture. The **output shape must match the skill's spec.** Keep the frontmatter `description` precise: it's what Claude reads to decide when to invoke the skill. Don't add scope; propose a new skill instead. **Keep the seven-heading shape**, in order (`Before you start` · `What you make` · `Steps` · `Rules for this skill` · `What to tell the user when you finish` · `Done when` · `Next`), keep the `hope-skill-version` marker, and pass the 2.0 checks: **no em dashes**, **none of the maker's personal data** (examples use Jane Doe), and **every `references/` and `scripts/` file the skill cites exists.** Maintainers run these checks locally as `tasks/verify-2.0.sh`; `grep` covers each one. |
 | a **template** (`assets/templates/*.html`) | Render it in **both dark and light** themes. Open **each** render, enumerate every visible defect, and confirm the theme toggle works and persists. See the rule below. |
 | the **schema** (`references/career-graph-schema.md`) | Bump `hope_schema_version`, document the migration path, update `scripts/graph_query.py` **and** `scripts/markdown_graph_convert.py`, and update the persona fixture so it still conforms. |
-| a **script** (`scripts/*.py`) | Run it **end-to-end** against the persona fixture. |
-| the **publish path** (GitHub Pages) | After publishing, fetch the **live URL cache-busted** (e.g. `?v=<timestamp>` or a no-cache request) and confirm it serves the **new** content — not just that `git push` or the Pages Action went green. Pages has deploy lag + CDN caching; that's an **external wait**, and "the Action is green" is not "the new site is live." |
-| **anything a user will feel** (a new or upgraded skill, a roadmap skill published from here on, a visible template change) | Add a **user-facing changelog entry** — see *"Every user-visible change earns a changelog line"* below. A skill that ships without one is an **incomplete ship.** |
+| a **script** (`scripts/*.py`) | Run it **end-to-end** against the persona fixture (the hunt scripts run against a temp copy of `assets/fixtures/persona-jane-doe/hunt/`). `python3 scripts/<name>.py --help` exits 0. Standard library first; optional dependencies degrade gracefully. |
+| the **publish path** (GitHub Pages) | After publishing, fetch the **live URL cache-busted** (e.g. `?v=<timestamp>` or a no-cache request) and confirm it serves the **new** content, not just that `git push` or the Pages Action went green. Pages has deploy lag + CDN caching; that's an **external wait**, and "the Action is green" is not "the new site is live." |
+| **anything a user will feel** (a new or upgraded skill, a roadmap skill published from here on, a visible template change) | Add a **user-facing changelog entry**. See *"Every user-visible change earns a changelog line"* below. A skill that ships without one is an **incomplete ship.** |
 
-**Captured is not correct.** When a change touches a template, theme, or the portfolio, **open every render and name each defect** — truncation, leaked layout, a token that resolved wrong, a broken toggle. Never report success from a single glance. "Rendered" is not "correct," and "10/10 generated" without a per-render defect list is not a passing report.
+**Captured is not correct.** When a change touches a template, theme, or the portfolio, **open every render and name each defect**: truncation, leaked layout, a token that resolved wrong, a broken toggle. Never report success from a single glance. "Rendered" is not "correct," and "10/10 generated" without a per-render defect list is not a passing report.
 
-**Choosing between variants** (two layouts, two cover-letter tones, a theme tweak)? Render both, have a **separate reviewer** — a second agent or a human — judge them against the voice guide and design tokens, and record **problem → options → findings → pick** in the PR. **You never grade your own variant** — the implementer is biased toward its own work.
+**Choosing between variants** (two layouts, two cover-letter tones, a theme tweak)? Render both, have a **separate reviewer** (a second agent or a human) judge them against the voice guide and design tokens, and record **problem → options → findings → pick** in the PR. **You never grade your own variant**: the implementer is biased toward its own work.
 
 **If you can't verify a change, say so explicitly in the PR.** Don't claim success you didn't earn.
 
-**Every user-visible change earns a changelog line.** A skill that ships — a new one, an upgrade to one that exists, **any roadmap skill published from here on** — is **not done until a non-technical, benefit-first entry lands in the user-facing changelog**: `agenthope.ai`'s `_data/changelog.yml`, rendered on `/skills/`. Adding it is one YAML row; the format makes consistency automatic. This is a **release gate**, not an afterthought — shipping a skill without a changelog line is an incomplete ship, the same as shipping it without bumping the version. Write for the **job seeker, not the engineer**: the `headline` is the **one thing they gain**, in plain words (this is the skim target); the `body` is a sentence on what it means for them. **No jargon** (`graph`, `node`, `schema`, filenames), no version numbers, no internal mechanics — what matters to *them* is what matters.
+**Every user-visible change earns a changelog line.** A skill that ships (a new one, an upgrade to one that exists, **any roadmap skill published from here on**) is **not done until a non-technical, benefit-first entry lands in the user-facing changelog**: `agenthope.ai`'s `_data/changelog.yml`, rendered on `/skills/`. Adding it is one YAML row; the format makes consistency automatic. This is a **release gate**, not an afterthought: shipping a skill without a changelog line is an incomplete ship, the same as shipping it without bumping the version. Write for the **job seeker, not the engineer**: the `headline` is the **one thing they gain**, in plain words (this is the skim target); the `body` is a sentence on what it means for them. **No jargon** (`graph`, `node`, `schema`, filenames), no version numbers, no internal mechanics. What matters to *them* is what matters.
 
-> Good — *"Hope now learns your goal and your timeline."*
-> Bad — *"Added a Goal node to the career-graph schema (v1.1)."*
+> Good: *"Hope now learns your goal and your timeline."*
+> Bad: *"Added a Goal node to the career-graph schema (v1.1)."*
 
 ---
 
@@ -104,8 +138,8 @@ plugin.json                the plugin manifest (+ .claude-plugin/marketplace.jso
 **Branches** are lowercase, hyphenated, type-prefixed. No spaces, no underscores, no camelCase, no personal names, **no quality claims.**
 
 - Prefixes: `feature/` · `fix/` · `docs/` · `chore/` · `refactor/` · `perf/` · `test/`
-- ✅ `feature/portfolio-light-mode-fix` · `fix/dashboard-theme-toggle` · `docs/voice-guide-examples`
-- ❌ `arun-fix` · `claude-update` · `tmp` · `wip` · `my-changes`
+- ✅ `feature/portfolio-light-mode-fix` · `fix/portfolio-theme-toggle` · `docs/voice-guide-examples`
+- ❌ `jane-fix` · `claude-update` · `tmp` · `wip` · `my-changes`
 - ❌ `portfolio-final` · `fix-actually-working` · `theme-v2-fixed` · `passing` — a quality claim in the name primes the next reviewer toward confirmation instead of skepticism. The assessment lives inside the file's summary, not in its name.
 
 Skill self-fixes use a reserved pattern (see §12): `chore/skills/<skill-name>/<issue-kebab>`.
@@ -124,7 +158,7 @@ Types: `feat` · `fix` · `refactor` · `perf` · `chore` · `docs` · `test`. C
 
 ```
 feat(portfolio): add light-mode section break
-fix(dashboard): persist theme toggle on reload
+fix(portfolio): persist theme toggle on reload
 docs(voice): add met-not-processed example pair
 ```
 
@@ -307,18 +341,26 @@ The `chore/skills/…` pattern is intentional — maintainers filter skill fixes
 
 **Public (committed):**
 
-- Skills: `skills/<name>/SKILL.md`
-- Templates: `assets/templates/*.html`
-- Persona fixture: `assets/fixtures/persona-jane-doe/`
+- Skills: `skills/<folder>/SKILL.md` (`start`, `onboarding`, `portfolio`, `publish`, `discovery`, `application`, `write`, `interview`, `sync`, `tracker`)
+- Later-release and retired skills (not loaded): `skills-roadmap/` (retired 1.5 skills in `skills-roadmap/retired/`)
+- Templates: `assets/templates/`
+- Persona fixture: `assets/fixtures/persona-jane-doe/` (worked hunt folder: `hunt/`)
+- Hard rules: `references/hard-rules.md`
+- Hunt folder and file contracts: `references/hunt-folder.md`, `references/tracker-contract.md`, `references/hunt-protocol-template.md`
+- Applying: `references/ats-playbook.md`, `references/computer-use-guardrails.md`
+- Writing: `references/writing-rules.md`
+- Interviews: `references/interview-kit.md`
+- Finding roles: `references/search-surfaces.md`, `references/visa-and-sponsorship.md`
+- Failure patterns: `references/failure-patterns.md`
 - Schema: `references/career-graph-schema.md`
 - Voice: `references/voice-guide.md`
 - Design tokens (locked canon): `references/design-tokens.md`
-- Computer Use guardrails: `references/computer-use-guardrails.md`
-- Milestones: `references/milestones.md`
-- Scripts: `scripts/graph_query.py`, `scripts/markdown_graph_convert.py`
+- The journey: `references/milestones.md`
+- Scripts: `scripts/tracker.py`, `scripts/fetch_jd.py`, `scripts/sweep_boards.py`, `scripts/make_ics.py`, `scripts/transcribe.py`, `scripts/graph_query.py`, `scripts/markdown_graph_convert.py`, `scripts/verify_portfolio_structure.py`, `scripts/verify_portfolio_pdf.py`
 - Manifest: `plugin.json`, `.claude-plugin/marketplace.json`
+- Release notes: `CHANGELOG.md`
 
-**Local-only (gitignored — never commit):** `CLAUDE.md` · `references/design-cookbook.md` · `references/design-system.md` · `tasks/` · `.claude/`
+**Local-only (gitignored, never commit):** `CLAUDE.md` · `references/design-cookbook.md` · `references/design-system.md` · `tasks/` · `.claude/`
 
 ---
 

@@ -1,0 +1,10 @@
+# Job boards for scripts/sweep_boards.py. One board per line: <ats>:<slug>.
+# The slug is the company's name in the board's own link:
+#   job-boards.greenhouse.io/<slug>  ->  greenhouse:<slug>
+#   jobs.ashbyhq.com/<slug>          ->  ashby:<slug>
+#   jobs.lever.co/<slug>             ->  lever:<slug>
+# Lines that start with # are ignored. All three below returned postings on 14 Oct 2026.
+
+greenhouse:anthropic
+ashby:ramp
+lever:palantir

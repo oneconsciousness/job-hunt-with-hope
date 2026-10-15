@@ -1,107 +1,112 @@
-# Hope Milestone Framework · v1.0
+# Hope Milestones · v2.0
 
-Hope is structured around **milestones**, not pipelines. Pipelines are item-centric — jobs flow through evaluation, application, tracking. Milestones are seeker-centric — *you* progress through achievements: I have a portfolio. I am interview-ready. I have offers.
+Hope follows a person through a job hunt. It does not push jobs through a pipeline. Each step below is something the user gets done, at their own pace. They can skip a step, repeat it, or come back to it later.
 
-Pipelines are about throughput. Milestones are about transformation. Hope's whole frame — presentation, dashboard, portfolio, the felt quality of being seen — maps to milestones. Most competitor tools have pipelines. None have milestone-based architecture for job seekers. This is Hope's moat.
+There are ten skills. The first time through, they usually run in this order:
 
-## The 7 milestones + 1 cross-cut
+**Start → Onboarding → Portfolio & résumé → Publish → Find jobs → Apply → Write → Interview → Sync → Tracker**
 
-Each milestone has explicit entry triggers, the skills available inside, the controls the user retains, and the exit criteria that mark completion. Order is the typical seeker journey, but a user can skip, repeat, or reorder.
+Onboarding to Publish set the user up, once. Find jobs to Tracker run every day and every week of the hunt. Start is the front door to all of them.
 
-### 1. Onboarding
+Every skill ends the same way: one dated line in `user-story.md`. File shapes are in `references/hunt-folder.md`.
 
-Meet the seeker as a person. Their work, ambitions, constraints, what makes them rare.
+---
 
-- **Entry:** First time the user invokes Hope, OR explicitly says "let's start over."
-- **Skills active:** `onboarding`
-- **Controls (L3):** which sources to import (résumé file, LinkedIn, GitHub, manual), what to skip, voice preferences.
-- **Graph writes:** Person node, initial Skills, Experiences, Education, Projects, foundational Memories.
-- **Exit when:** Person node has `headline`, `summary`, `location`; at least 3 Experience nodes (or first Experience for early-career); at least 5 Skill nodes with USED_SKILL evidence.
+## The steps
 
-### 2. Discovery
+### Start (`hope-start`)
+- **When it runs:** at the start of any session, or when the user says "where am I?" or "let's do today's hunt".
+- **What it makes:** no new files. It reads `WORKING-PAD.md` first, then the rest of the hunt folder, and gives a short report of where the user stands and the next step. It also runs the daily rhythm below.
+- **The user controls:** which step comes next.
+- **Done when:** the user knows where they stand and has picked the next step.
 
-Find roles worth pursuing. Pattern-match opportunities to who they are.
+### Onboarding (`hope-onboarding`)
+- **When it runs:** the first time, or when the user says "let's start over". Users coming from Hope 1.5 run it once more to get the profile and the hunt folder.
+- **What it makes:** `career-graph/career.json` and `user-story.md`. Then `applications/_common/profile.md`, `applications/_common/my-voice.md`, `HUNT-PROTOCOL.md`, an empty `job-tracker.xlsx`, and the protective `.gitignore`. `WORKING-PAD.md` appears later, the first time work is interrupted.
+- **The user controls:** every answer in `profile.md`. They type or confirm each one. Hope never guesses work authorization, pay rules or self-identification answers.
+- **Done when:** the career file is built, every section of `profile.md` has an answer or a `TODO (ask <name>)`, and `HUNT-PROTOCOL.md` and `job-tracker.xlsx` exist.
 
-- **Entry:** User asks Hope to find roles, OR onboarding completes and user opts to continue.
-- **Skills active:** `discovery`
-- **Controls (L3):** which portals to scan, salary floor, geo constraints, must-haves vs. nice-to-haves, exclusions (companies they won't work for).
-- **Graph writes:** JobPosting nodes, Company nodes (if new), `TARGETING` edges, `REQUIRES_SKILL` edges, match scores.
-- **Exit when:** at least 5 JobPosting nodes with status `targeted`. The user has reviewed and confirmed which to advance.
+### Portfolio & résumé (`hope-portfolio`)
+- **When it runs:** after onboarding, and whenever the user wants to show new work.
+- **What it makes:** a portfolio build in `career-graph/documents/portfolios/<build>/`, and the one résumé at `applications/_common/resume.pdf`.
+- **The user controls:** what is featured, every word, the look. Hope asks before removing any true claim.
+- **Done when:** the user has approved the portfolio and the résumé is exported.
 
-### 3. Presentation — Hope's signature
+### Publish (`hope-publish`)
+- **When it runs:** when the user wants a link to share.
+- **What it makes:** a live link. Only the allow-listed portfolio files leave the machine.
+- **The user controls:** whether it goes live, and where. They review it locally first.
+- **Done when:** the link loads and shows the latest build.
 
-The visible differentiator. This is where Hope wins on quality. Portfolio, tailored résumé, cover letter — every artifact ships with Hope's design tokens, branded and beautiful.
+### Find jobs (`hope-discovery`)
+- **When it runs:** during an active hunt, a daily "new since yesterday" sweep; a wider sweep weekly; or whenever the user asks for roles.
+- **What it makes:** `applications/_research/shortlist-<YYYY-MM-DD>.md`, which says how the search was done and what it could not see. The first time, also `applications/_research/boards.txt`.
+- **The user controls:** the rules the search follows (titles, places, pay screen, per-company cap), and which roles go into the tracker.
+- **Done when:** the user has the shortlist, and the roles they picked are tracker rows marked `Shortlisted`.
 
-- **Entry:** User has at least one targeted JobPosting and asks for a portfolio / résumé / cover letter, OR Discovery completes.
-- **Skills active:** `portfolio`, `resume-tailor`, `cover-letter`
-- **Controls (L3):** which work to feature, voice and tone, length, format (HTML / PDF / Markdown), depth of customization per role.
-- **Graph writes:** CuratedPortfolio nodes per Job, Document nodes per artifact, INCLUDES_* edges to selected Skills/Experiences/Projects.
-- **Exit when:** for each targeted job, a CuratedPortfolio + at least one Document (résumé OR portfolio OR cover letter) exists. User has reviewed and approved.
+### Apply (`hope-application`)
+- **When it runs:** when the user hands Hope a job link.
+- **What it makes:** the role folder `applications/<company>-<role words>/` with `JD.md`, `APPLICATION-ANSWERS.md` and the résumé copy. The form filled with real keystrokes. A tracker row marked `Ready to apply`.
+- **The user controls:** submitting, every legal checkbox, every answer not on file, and the final review. Hope never submits, unless the user says "submit it" for this application in this session.
+- **Done when:** every field is filled or listed under "Left for the user", every value has been read back, and the tracker row is updated.
 
-### 4. Application
+### Write (`hope-write`)
+- **When it runs:** whenever something needs writing in the user's voice: a reply, a cover letter, a form answer, a nudge.
+- **What it makes:** a draft file in the role folder (`email-draft-<who>-<date>.md`, `dm-draft-<who>-<date>.md`, or `cover-letter.md`). After the user edits a draft, a new pattern in `my-voice.md`.
+- **The user controls:** every word, and sending. Hope never sends.
+- **Done when:** the draft is saved with its header and passes the checklist in `references/writing-rules.md`.
 
-Submit. With Computer Use guardrails — see `computer-use-guardrails.md`.
+### Interview (`hope-interview`)
+- **When it runs:** the moment a call is known, and again after the call.
+- **What it makes:** before the call, the record reminder, the calendar event and `INTERVIEW-PREP.md`. After it, the transcript, the debrief, a follow-up draft and a tracker note.
+- **The user controls:** recording (and asking consent where needed), what they say, and sending the follow-up.
+- **Done when:** before the call, the reminder is set and the prep file is saved. After it, the transcript and debrief are saved and the tracker is updated.
 
-- **Entry:** User has approved Documents for a job and says "apply" or equivalent.
-- **Skills active:** `application`
-- **Controls (L3):** auto-fill (default OFF, opt-in per submission), confirmation level (every field / every page / every submission), follow-up cadence.
-- **Graph writes:** Application nodes per submission, status updates, follow-up dates.
-- **Exit when:** Application nodes for each pursued role exist with status `submitted` or beyond. User has scheduled follow-ups.
+### Sync (`hope-sync`)
+- **When it runs:** every morning, again whenever the user checks in during an active hunt, or when the user asks "what's new?".
+- **What it makes:** tracker updates from email and LinkedIn, both read-only, backed up first. A short report.
+- **The user controls:** every reply. Hope drafts; the user sends. Hope never sends, archives or deletes anything.
+- **Done when:** every new item is matched to a tracker row and the user has the report.
 
-### 5. Interview
+### Tracker (`hope-tracker`)
+- **When it runs:** "where do I stand?", "what needs me?", and the weekly review.
+- **What it makes:** answers from `job-tracker.xlsx`, the one live log, which the user owns.
+- **The user controls:** the workbook is theirs. Hope asks before changing anything the user wrote.
+- **Done when:** the user knows what needs them, and every live row has a next action.
 
-Prep, rehearsal, research, post-interview reflection. Companies hire for people who can talk to AI; Hope is meta-helpful here — Hope helps the user think clearly, not just regurgitate prep.
+---
 
-- **Entry:** Application status moves to `interviewing`, OR user announces an upcoming interview.
-- **Skills active:** `interview`
-- **Controls (L3):** prep depth (light / standard / deep), research scope (interviewer / company / industry), rehearsal style.
-- **Graph writes:** Interview nodes, prep Document, optional Connection nodes (interviewers), reflections as Memory nodes.
-- **Exit when:** Interview is complete and reflection captured. Application status updated.
+## The daily rhythm
 
-### 6. Negotiation
+**A call in the next hour outranks everything.** Prep it first, move other work to the background, and say so. Write the paused work into `WORKING-PAD.md` before switching.
 
-Compensation, terms, multi-offer comparisons. Scripts, benchmarks, evaluation frames.
+**Every morning:**
 
-- **Entry:** Application status moves to `offered`, OR user pastes an offer letter.
-- **Skills active:** `negotiation`
-- **Controls (L3):** what to optimize (base / equity / signing / start date / title / scope), risk tolerance, ethical floor, scripts (assertive / collaborative / declining gracefully).
-- **Graph writes:** Offer nodes with compensation breakdown, negotiation notes as Memory.
-- **Exit when:** Offer.decision is set to `accepted`, `declined`, or `negotiating` is closed.
+1. Sync: read email and LinkedIn, update the tracker.
+2. Write: anything new that needs a reply gets a draft.
+3. Apply: new links the user found get filled. The user sends.
+4. Interview: any new call gets the record reminder and a prep file.
 
-### 7. Decision
+**During the day, in an active hunt:**
 
-Close out the job hunt with intention. Accept, decline, follow up. Reflect on the journey.
+1. Offer Sync again whenever the user checks in. The real hunt ran it a few times a day.
+2. Offer a daily "new since yesterday" sweep (Find jobs).
 
-- **Entry:** User has at least one Offer with decision pending, OR ends the hunt by choice.
-- **Skills active:** `decision`
-- **Controls (L3):** decision criteria (values / comp / role / team / growth), follow-up tone (warm / professional / brief).
-- **Graph writes:** Final Offer.decision, closing Memory capturing what they learned, follow-up Documents (acceptance / decline letters).
-- **Exit when:** Offer.decision is final. Closing Memory written. (The hunt isn't "done" — it's punctuated.)
+**Every week:**
 
-### Cross-cut: Dashboard
+1. Tracker: the report. What moved, what is stuck, what needs the user.
+2. Find jobs: a wider sweep.
+3. Protocol review: what did the user correct this week, and is each correction written down in `HUNT-PROTOCOL.md`?
 
-The pulse of the hunt. Visualizes across every milestone. Shows: where you are, what's pending, who's overdue for follow-up, which prep is incomplete, what offers are open, what your next action is.
+## What you can skip or repeat
 
-- **Entry:** Anytime. User asks "show me my dashboard" or invokes any cross-milestone view.
-- **Skills active:** `dashboard`
-- **Controls (L3):** which milestones to show, time horizon, level of detail, color theme (Hope dark or warm-cream light).
-- **Graph writes:** None. Pure read.
+- **Skip Publish:** send the résumé PDF instead of a link.
+- **Skip Portfolio:** bring your own résumé and save it as `applications/_common/resume.pdf`.
+- **Skip Find jobs:** bring your own links straight to Apply.
+- **Repeat Onboarding (the profile part)** whenever something changes: a new city, a new pay rule, a new kind of role.
+- **Repeat Interview** for every round. **Write** any time. **Sync** every day. **Tracker** any time.
+- **Come back after a break:** run Start. It reads the folder and says where things stand.
 
-## How a user moves between milestones
+## Retired in 2.0
 
-There's no enforced sequence. A user might:
-
-- Run Discovery before Onboarding (they want to see what's out there before committing to set up Hope).
-- Loop back to Onboarding from Interview (they realize they want to add a project they had forgotten).
-- Skip Negotiation entirely (they take the offer as-is, or they're declining).
-- Stay in Presentation for weeks (they're polishing one portfolio for one specific role).
-
-Hope detects which milestone the user is in by reading the graph state and listening to the conversation. Skills are defensive about their entry criteria — `negotiation` won't activate if there's no Offer node, and Hope will redirect to whichever milestone makes sense.
-
-## Why this matters
-
-Career-Ops, Career-Helper, and the other open-source job-hunt tools structure work as **stages** items pass through. That's a fine model for processing. It's not a model for *being met as a person*.
-
-Hope's milestones are achievements *the seeker* attains. The frame is honoring. The user isn't a queue item. They're someone in motion through a meaningful arc, and Hope holds the shape of that arc. Anthropic provides the runtime (Layer 1). Hope provides the milestone framework (Layer 2). The user moves through it (Layer 3) at their pace, on their terms.
-
-That's the pitch in one sentence.
+`skill-gap`, `proof-projects` and `dashboard` moved to `skills-roadmap/retired/`. The real hunt never used them. The honest-fit note in Apply and the tracker replaced them.

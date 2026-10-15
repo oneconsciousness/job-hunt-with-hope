@@ -3,13 +3,13 @@
   "owner": {
     "name": "Hope contributors"
   },
-  "description": "Hope — a Claude plugin for the job hunt. Build your portfolio, publish it free.",
+  "description": "Hope - a Claude plugin that runs your whole job hunt with you. Portfolio, real openings, applications you send, messages in your voice, interview prep, one tracker you own.",
   "plugins": [
     {
       "name": "hope",
       "displayName": "JobHunt with Hope",
-      "description": "JobHunt with Hope — build a designed portfolio website from your own facts and publish it to a free GitHub Pages site you own, all from a career file stored on your machine. One link to share.",
-      "version": "1.5.1",
+      "description": "JobHunt with Hope - Hope runs your whole job hunt with the AI you already use: a designed portfolio and one résumé, real openings found through the job boards' own data feeds, applications filled in your browser (you press send), every message drafted in your voice, interview prep with a record-the-call reminder and a debrief, a daily read-only sync of email and LinkedIn, and one tracker spreadsheet you own. Free, open-source, your data stays on your machine.",
+      "version": "2.0.0",
       "source": ".",
       "license": "MIT",
       "tags": [
@@ -17,7 +17,9 @@
         "job-search",
         "portfolio",
         "resume",
-        "interview"
+        "applications",
+        "interview",
+        "tracker"
       ],
       "category": "productivity",
       "homepage": "https://github.com/oneconsciousness/job-hunt-with-hope"
